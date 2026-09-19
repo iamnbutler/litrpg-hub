@@ -240,7 +240,7 @@
 	function downloadLibrary() {
 		const blob = new Blob([JSON.stringify(libraryExport(library), null, 2)], { type: 'application/json' });
 		const url = URL.createObjectURL(blob); const link = document.createElement('a');
-		link.href = url; link.download = `litrpg-hub-library-${today}.json`; link.click(); URL.revokeObjectURL(url);
+		link.href = url; link.download = `shelf-goblin-library-${today}.json`; link.click(); URL.revokeObjectURL(url);
 	}
 	async function importLibrary(event: Event) {
 		const input = event.currentTarget as HTMLInputElement, file = input.files?.[0];
@@ -251,7 +251,7 @@
 			if (!imported) throw new Error('Invalid export');
 			save(mergeLibraries(library, imported));
 			announce(`Imported ${Object.keys(imported.books).length} books and ${Object.keys(imported.series).length} series`);
-		} catch { announce('That file is not a valid LitRPG Hub library export.'); }
+		} catch { announce('That file is not a valid Shelf Goblin library export.'); }
 		input.value = '';
 	}
 
@@ -339,13 +339,13 @@
 </script>
 
 <svelte:head>
-	<title>{selectedBook ? `${selectedBook.title} · ` : currentSeries ? `${currentSeries.title} · ` : ''}LitRPG Hub</title>
+	<title>{selectedBook ? `${selectedBook.title} · ` : currentSeries ? `${currentSeries.title} · ` : ''}Shelf Goblin</title>
 	<meta name="description" content="Follow LitRPG and progression fantasy series, track the audiobooks you have read, find similar series, and check release dates."/>
 </svelte:head>
 <svelte:window onpopstate={readUrl} onstorage={syncStorage}/>
 <a class="skip-link" href="#main">Skip to series</a>
 <header class="site-header">
-	<button class="brand" onclick={() => navigate('index')}><span class="brand-mark"><Icon name="book" size={18}/></span>LitRPG Hub</button>
+	<button class="brand" onclick={() => navigate('index')}><span class="brand-mark" aria-hidden="true">🪎</span>Shelf Goblin</button>
 	<nav aria-label="Main navigation">
 		{#each navigation as item (item.id)}<button class:active={view === item.id || (item.id === 'index' && view === 'series')} aria-current={view === item.id ? 'page' : undefined} onclick={() => navigate(item.id)}>{item.label}{#if item.id === 'library' && followedCount}<span class="nav-count">{followedCount}</span>{/if}</button>{/each}
 	</nav>

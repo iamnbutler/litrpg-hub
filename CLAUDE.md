@@ -1,4 +1,6 @@
-# LitRPG Hub
+# Shelf Goblin
+
+The public app lives at https://shelfgobl.in/. The repository, Worker, database, and browser storage identifiers retain their original `litrpg-hub` names to preserve deployment and library continuity.
 
 ## Product and UI
 

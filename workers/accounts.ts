@@ -4,6 +4,8 @@ export interface Env {
   DB: D1Database;
   ASSETS?: Fetcher;
   SITE_URL: string;
+  /** Temporary old-origin access lets existing sessions finish syncing before moving. */
+  LEGACY_SITE_URL?: string;
   OAUTH_GITHUB_CLIENT_ID: string;
   OAUTH_GITHUB_CLIENT_SECRET: string;
   OAUTH_GITHUB_REDIRECT_URI: string;
@@ -143,10 +145,27 @@ async function callback(request: Request, env: Env, fetcher: typeof fetch): Prom
 }
 
 export async function handle(request: Request, env: Env, fetcher: typeof fetch = fetch): Promise<Response> {
-  const site = new URL(env.SITE_URL), url = new URL(request.url);
-  if (url.origin !== site.origin) return json({ error: 'Unknown host.' }, 404);
+  const canonicalSite = new URL(env.SITE_URL), url = new URL(request.url);
+  const legacySite = env.LEGACY_SITE_URL ? new URL(env.LEGACY_SITE_URL) : null;
+  const isLegacy = url.origin !== canonicalSite.origin && url.origin === legacySite?.origin;
+  if (url.origin !== canonicalSite.origin && !isLegacy) return json({ error: 'Unknown host.' }, 404);
+  const site = isLegacy ? legacySite! : canonicalSite;
+  const cookieEnv = isLegacy ? { ...env, SITE_URL: site.href } : env;
   const route = url.pathname.slice(site.pathname.length).replace(/\/$/, '');
   if (!url.pathname.startsWith(site.pathname)) return json({ error: 'Not found.' }, 404);
+  if (isLegacy && request.method === 'GET' && route === 'auth/login') {
+    // New sessions belong to the canonical origin. Preserve only the same safe app-root
+    // return path accepted by login(), never a destination supplied by another host.
+    const target = new URL(returnTo(url.searchParams.get('returnTo'), site));
+    const loginUrl = new URL('auth/login/', canonicalSite);
+    loginUrl.searchParams.set('returnTo', `${canonicalSite.pathname}${target.search}${target.hash}`);
+    return redirect(loginUrl.href);
+  }
+  if (isLegacy && request.method === 'GET' && route === 'auth/callback') {
+    // An in-flight old-domain login cannot transfer its host-only state cookie. Restart
+    // on the canonical site rather than exchange a code using a different redirect URI.
+    return redirect(`${canonicalSite.href}?auth=failed`, [setCookie(cookieEnv, STATE_COOKIE, '', 0)]);
+  }
   if (request.method === 'GET' && route === 'auth/login') return login(request, env, site);
   if (request.method === 'GET' && route === 'auth/callback') return callback(request, env, fetcher);
   if (!['api/session', 'api/library', 'auth/logout'].includes(route)) {
@@ -166,7 +185,7 @@ export async function handle(request: Request, env: Env, fetcher: typeof fetch =
   if (route === 'auth/logout' && request.method === 'POST') {
     await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(auth.tokenHash).run();
     const response = json({ ok: true });
-    response.headers.set('Set-Cookie', setCookie(env, SESSION_COOKIE, '', 0));
+    response.headers.set('Set-Cookie', setCookie(cookieEnv, SESSION_COOKIE, '', 0));
     return response;
   }
   if (route === 'api/library' && request.method === 'GET') return json(await library(env, auth.user.id));

@@ -32,7 +32,15 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build frontend
+      - name: Build canonical Cloudflare site
         run: npm run build
         env:
-          BASE_PATH: /litrpg-hub
+          BASE_PATH: ''
+
+      - name: Validate Worker deployment
+        run: npx wrangler deploy --dry-run --env=""
+
+      - name: Build legacy Pages site
+        run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}

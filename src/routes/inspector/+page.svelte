@@ -62,15 +62,15 @@
 </script>
 
 <svelte:head>
-	<title>{selected ? `${selected.series.title} · ` : ''}Catalog inspector · LitRPG Hub</title>
-	<meta name="description" content="Inspect the completeness, evidence, and missing data behind the LitRPG Hub core catalog." />
+	<title>{selected ? `${selected.series.title} · ` : ''}Catalog inspector · Shelf Goblin</title>
+	<meta name="description" content="Inspect the completeness, evidence, and missing data behind the Shelf Goblin core catalog." />
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
 <div class="inspector">
 	<a class="inspector-skip" href="#inspector-content">Skip to catalog</a>
 	<aside class="inspector-sidebar" aria-label="Catalog inspector navigation">
-		<a class="inspector-brand" href={resolve('/inspector/')}><span class="inspector-mark"><Icon name="grid" size={22} /></span><span><strong>LitRPG</strong><small>CATALOG INSPECTOR</small></span></a>
+		<a class="inspector-brand" href={resolve('/inspector/')}><span class="inspector-mark" aria-hidden="true">🪎</span><span><strong>Shelf Goblin</strong><small>CATALOG INSPECTOR</small></span></a>
 		<div class="nav-section-label">CORE CATALOG</div>
 		<nav class="inspector-nav" aria-label="Series filters">
 			{#each filters as item (item.id)}
@@ -79,7 +79,7 @@
 				</button>
 			{/each}
 		</nav>
-		<div class="sidebar-links"><a href="#inspector-definitions"><Icon name="info" size={16} /> How checks work</a><a href={resolve('/')}><Icon name="back" size={16} /> Open LitRPG Hub</a></div>
+		<div class="sidebar-links"><a href="#inspector-definitions"><Icon name="info" size={16} /> How checks work</a><a href={resolve('/')}><Icon name="back" size={16} /> Open Shelf Goblin</a></div>
 		<div class="sidebar-foot"><span class="snapshot-marker" class:loaded={!!report}></span><span>{report ? 'Public snapshot' : loading ? 'Loading snapshot' : 'Snapshot unavailable'}<small>Read only · no background jobs</small></span></div>
 	</aside>
 
@@ -156,7 +156,7 @@
 	.inspector-skip { position:fixed; left:16px; top:-60px; z-index:100; color:#10212a; background:#8edee0; padding:10px 14px; border-radius:4px; } .inspector-skip:focus { top:12px; }
 	.inspector-sidebar { position:sticky; top:0; height:100vh; height:100dvh; display:flex; flex-direction:column; background:#10151d; border-right:1px solid #28313d; padding:25px 12px 18px; }
 	.inspector-brand { display:flex; align-items:center; gap:11px; padding:0 9px; color:#e2eaf4; text-decoration:none; margin-bottom:42px; }
-	.inspector-mark { color:#72d4d1; width:31px; height:35px; display:grid; place-items:center; border:1px solid #35505a; background:#1b2e37; border-radius:5px; }
+	.inspector-mark { flex-shrink:0; width:31px; height:35px; display:grid; place-items:center; font:27px/1 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; }
 	.inspector-brand strong { display:block; font-size:17px; letter-spacing:.01em; font-weight:650; } .inspector-brand small { display:block; margin-top:5px; font-size:8px; color:#8396ac; letter-spacing:.12em; }
 	.nav-section-label { color:#64758b; letter-spacing:.11em; font-size:9px; font-weight:650; padding:0 12px 11px; }
 	.inspector-nav { display:flex; flex-direction:column; gap:4px; align-self:auto; min-height:0; }

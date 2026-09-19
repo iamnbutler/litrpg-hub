@@ -50,7 +50,7 @@ footer { display:flex; align-items:center; gap:16px; justify-content:space-betwe
 @media(max-width:800px) { .site-header { gap:0 20px; padding:0 12px 10px; } .global-search { flex-basis:100%; width:100%; } .main-shell { padding:12px 12px 0; } .browse-toolbar { gap:9px 12px; } .list-heading { display:none; } .preference-grid { grid-template-columns:1fr 1fr; } .match-layout { grid-template-columns:1fr; gap:16px; } .taste-controls { border-right:0; border-bottom:1px solid var(--line); padding:0 0 12px; display:grid; grid-template-columns:1fr 1fr; column-gap:20px; } .taste-controls > label:first-child,.weight-heading,.taste-controls > .small-note,.seed-book { grid-column:1 / -1; } .results-meta { align-items:start; flex-wrap:wrap; } }
 @media(max-width:480px) { .site-header { column-gap:16px; } .brand { font-size:13px; } nav { gap:12px; } nav button { font-size:11px; } .page-heading { flex-wrap:wrap; } .page-heading h1 { font-size:18px; } .preference-grid { grid-template-columns:1fr; } .browse-toolbar { font-size:12px; } .filter-button { margin-left:0; } .preference-foot { align-items:start; } }
 
-.brand-mark { display:grid; place-items:center; width:30px; height:32px; border-radius:4px; background:var(--rust); color:#fff; }
+.brand-mark { display:grid; place-items:center; flex-shrink:0; width:30px; height:32px; font:26px/1 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; }
 .results-controls { display:flex; align-items:center; gap:18px; }
 .view-controls { display:inline-flex; border:1px solid var(--line); border-radius:4px; overflow:hidden; flex-shrink:0; }
 .view-controls button { padding:4px 9px; font-size:11px; border:0; background:transparent; color:var(--muted); }
@@ -61,7 +61,7 @@ footer { display:flex; align-items:center; gap:16px; justify-content:space-betwe
 @media(max-width:1100px) { .book-list.cover-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px 18px; } .match-results .cover-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:900px) { .book-list.cover-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .match-results .cover-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:800px) { .site-header { min-height:54px; } .brand-mark { width:25px; height:27px; } .match-results .cover-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-@media(max-width:580px) { .book-list.cover-grid,.match-results .cover-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px 14px; } .results-controls { gap:8px; } .brand-mark { display:none; } }
+@media(max-width:580px) { .book-list.cover-grid,.match-results .cover-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px 14px; } .results-controls { gap:8px; } .brand-mark { width:22px; height:26px; font-size:22px; } }
 
 .series-heading { grid-template-columns:minmax(0,1fr) 130px 114px 170px; }
 @media(max-width:1000px) { .series-heading { grid-template-columns:minmax(0,1fr) 110px 95px 135px; } }

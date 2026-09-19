@@ -6,10 +6,13 @@
   "compatibility_date": "2026-09-18",
   "workers_dev": true,
   "preview_urls": false,
-  "routes": [],
+  "routes": [
+    { "pattern": "shelfgobl.in", "custom_domain": true }
+  ],
   "vars": {
-    "SITE_URL": "https://litrpg-hub.iamnbutler.workers.dev/",
-    "OAUTH_GITHUB_REDIRECT_URI": "https://litrpg-hub.iamnbutler.workers.dev/auth/callback/"
+    "SITE_URL": "https://shelfgobl.in/",
+    "LEGACY_SITE_URL": "https://litrpg-hub.iamnbutler.workers.dev/",
+    "OAUTH_GITHUB_REDIRECT_URI": "https://shelfgobl.in/auth/callback/"
   },
   "d1_databases": [
     {

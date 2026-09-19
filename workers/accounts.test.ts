@@ -120,3 +120,122 @@ describe('GitHub OAuth', () => {
     expect(rejected.headers.get('Location')).toBe(`${site}?auth=failed`);
   });
 });
+
+describe('canonical domain and legacy-origin migration', () => {
+  const canonicalSite = 'https://shelfgobl.in/';
+  const legacySite = 'https://litrpg-hub.iamnbutler.workers.dev/';
+  const at = (origin: string, route: string, init: RequestInit = {}) => new Request(`${origin}${route}`, {
+    ...init, headers: { Cookie: `litrpg_session=${token}`, ...init.headers }
+  });
+  beforeEach(() => {
+    env.SITE_URL = canonicalSite;
+    env.LEGACY_SITE_URL = legacySite;
+    env.OAUTH_GITHUB_REDIRECT_URI = `${canonicalSite}auth/callback/`;
+  });
+
+  it('serves root-path sessions and completes canonical OAuth without losing the existing library', async () => {
+    const saved = followSeries(emptyLibrary(), 'dungeon-crawler-carl', true);
+    db.prepare('UPDATE libraries SET library_json = ? WHERE user_id = ?').run(JSON.stringify(saved), 'github:1');
+    expect(await (await handle(at(canonicalSite, 'api/session/'), env)).json()).toMatchObject({ user: { id: 'github:1' } });
+    const begin = await handle(at(canonicalSite, 'auth/login/?returnTo=%2F%3Fview%3Dlibrary'), env);
+    const authorize = new URL(begin.headers.get('Location')!);
+    expect(authorize.searchParams.get('redirect_uri')).toBe(`${canonicalSite}auth/callback/`);
+    expect(begin.headers.get('Set-Cookie')).toContain('; Path=/; HttpOnly; SameSite=Lax;');
+    expect(begin.headers.get('Set-Cookie')).toContain('; Secure');
+    const state = authorize.searchParams.get('state')!;
+    const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ access_token: 'fake-access-token' }))
+      .mockResolvedValueOnce(Response.json({ id: 1, login: 'reader', name: 'Reader' }));
+    const completed = await handle(at(canonicalSite, `auth/callback/?code=good&state=${state}`, {
+      headers: { Cookie: `litrpg_oauth=${state}` }
+    }), env, fetcher);
+    expect(completed.headers.get('Location')).toBe(`${canonicalSite}?view=library`);
+    expect(completed.headers.get('Set-Cookie')).toContain('litrpg_session=');
+    expect(JSON.parse((db.prepare('SELECT library_json FROM libraries WHERE user_id = ?').get('github:1') as { library_json: string }).library_json)).toEqual(saved);
+  });
+
+  it('lets a valid legacy session sync its library into the shared account store', async () => {
+    const session = await handle(at(legacySite, 'api/session/'), env);
+    expect(await session.json()).toMatchObject({ user: { id: 'github:1' }, csrf: await digest(`csrf:${token}`) });
+    const saved = followSeries(emptyLibrary(), 'the-primal-hunter', true);
+    const response = await handle(at(legacySite, 'api/library/', {
+      method: 'PUT', headers: { Origin: new URL(legacySite).origin, 'X-CSRF-Token': await digest(`csrf:${token}`), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ library: saved, revision: 0 })
+    }), env);
+    expect(response.status).toBe(200);
+    expect(await (await handle(at(legacySite, 'api/library/'), env)).json()).toMatchObject({ library: saved, revision: 1 });
+    expect(await (await handle(at(canonicalSite, 'api/library/'), env)).json()).toMatchObject({ library: saved, revision: 1 });
+  });
+
+  it('requires each host own Origin and CSRF token even when both hosts are configured', async () => {
+    for (const [requestSite, origin, csrf] of [
+      [legacySite, new URL(canonicalSite).origin, await digest(`csrf:${token}`)],
+      [canonicalSite, new URL(legacySite).origin, await digest(`csrf:${token}`)],
+      [legacySite, 'https://evil.example', await digest(`csrf:${token}`)],
+      [legacySite, new URL(legacySite).origin, '']
+    ]) {
+      const response = await handle(at(requestSite, 'api/library/', {
+        method: 'PUT', headers: { Origin: origin, 'X-CSRF-Token': csrf, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ library: emptyLibrary(), revision: 0 })
+      }), env);
+      expect(response.status).toBe(403);
+    }
+    expect((await handle(new Request(`${legacySite}api/library/`), env)).status).toBe(401);
+  });
+
+  it('logs out an existing legacy session and clears the cookie at the legacy path', async () => {
+    env.LEGACY_SITE_URL = `${legacySite}old/`;
+    const response = await handle(at(env.LEGACY_SITE_URL, 'auth/logout/', {
+      method: 'POST', headers: { Origin: new URL(legacySite).origin, 'X-CSRF-Token': await digest(`csrf:${token}`) }
+    }), env);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Set-Cookie')).toContain('litrpg_session=; Path=/old/;');
+    expect(response.headers.get('Set-Cookie')).toContain('Max-Age=0');
+    expect((await handle(at(env.LEGACY_SITE_URL, 'api/library/'), env)).status).toBe(401);
+  });
+
+  it('redirects legacy sign-in to canonical sign-in with only a safe app return path', async () => {
+    for (const [input, expected] of [
+      ['/?view=library', '/?view=library'],
+      ['/?view=series&series=dungeon-crawler-carl', '/?view=series&series=dungeon-crawler-carl'],
+      ['//evil.example/steal', '/'],
+      ['/auth/callback/?code=bad', '/'],
+      ['/\\evil.example', '/']
+    ]) {
+      const response = await handle(at(legacySite, `auth/login/?returnTo=${encodeURIComponent(input)}`), env);
+      const target = new URL(response.headers.get('Location')!);
+      expect(response.status).toBe(303);
+      expect(target.origin).toBe(new URL(canonicalSite).origin);
+      expect(target.pathname).toBe('/auth/login/');
+      expect(target.searchParams.get('returnTo')).toBe(expected);
+      expect(response.headers.get('Set-Cookie')).toBeNull();
+    }
+    expect(db.prepare('SELECT COUNT(*) AS count FROM oauth_states').get()).toEqual({ count: 0 });
+  });
+
+  it('restarts a legacy callback at the canonical site without exchanging its code', async () => {
+    const fetcher = vi.fn();
+    const response = await handle(at(legacySite, 'auth/callback/?code=old&state=old'), env, fetcher);
+    expect(response.headers.get('Location')).toBe(`${canonicalSite}?auth=failed`);
+    expect(response.headers.get('Set-Cookie')).toContain('litrpg_oauth=; Path=/;');
+    expect(response.headers.get('Set-Cookie')).toContain('Max-Age=0');
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it('accepts only the exact configured legacy origin and preserves strict behavior when absent', async () => {
+    for (const origin of ['https://evil.example/', 'https://litrpg-hub.iamnbutler.workers.dev.evil.example/', 'http://litrpg-hub.iamnbutler.workers.dev/']) {
+      expect((await handle(at(origin, 'api/session/'), env)).status).toBe(404);
+    }
+    delete env.LEGACY_SITE_URL;
+    expect((await handle(at(legacySite, 'api/session/'), env)).status).toBe(404);
+    expect((await handle(at(canonicalSite, 'api/session/'), env)).status).toBe(200);
+  });
+
+  it('continues serving legacy assets so browser-only libraries can still be exported', async () => {
+    const assets = vi.fn().mockResolvedValue(new Response('legacy app'));
+    env.ASSETS = { fetch: assets } as unknown as Fetcher;
+    const response = await handle(at(legacySite, ''), env);
+    expect(await response.text()).toBe('legacy app');
+    expect(response.headers.get('Location')).toBeNull();
+    expect(assets).toHaveBeenCalledTimes(1);
+  });
+});
