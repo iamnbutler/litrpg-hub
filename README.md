@@ -2,6 +2,8 @@
 
 An audiobook catalog for LitRPG and progression fantasy. Follow series, track the books you have read, find similar series, and check audio releases. Forked from [LitRPG Chart](https://github.com/iamnbutler/litrpg-chart).
 
+[Open LitRPG Hub](https://nate.rip/litrpg-hub/) · [Catalog inspector](https://nate.rip/litrpg-hub/inspector/)
+
 ## Run the app
 
 Node 22.9+ and npm. The committed JSON snapshot lets a fresh checkout run without a database or API keys.
@@ -17,7 +19,7 @@ npm run build
 
 The interface is a compact cover grid with search, optional list layout, genres, content preferences, series details, and release views. My library contains followed series. Reading progress and personal ratings belong to works, with edition aliases preserving older saved IDs. Mark all as read applies to released audio; future releases and unknown dates are not silently marked read. The original browser shelf is retained when migrating to the series library. Export a library backup to move it between browsers; there are no shared accounts yet.
 
-Series links use `?view=series&series=dungeon-crawler-carl`; individual editions use `?book=ASIN`. The static SvelteKit build makes no model calls or source requests. `BASE_PATH=/litrpg-hub` builds for a GitHub Pages subdirectory. Deployment is manual.
+Series links use `?view=series&series=dungeon-crawler-carl`; individual editions use `?book=ASIN`. The static SvelteKit build makes no model calls or source requests. `BASE_PATH=/litrpg-hub` builds for a GitHub Pages subdirectory. The Pages deployment workflow can be dispatched manually; the catalog worker also dispatches it after publishing a refreshed snapshot.
 
 ## Build the catalog
 
@@ -113,7 +115,7 @@ The harem preference also checks publisher disclosures elsewhere in the same ser
 
 ## Reader feedback
 
-Reader evidence has its own provenance, source IDs, spoiler flags and distinct-voice digests. Raw comments stay in the private database. Publisher facts, reader opinions and content verdicts remain separate. Aggregate context requires several independent substantive voices and must retain uncertainty and disagreement. A handful of storefront testimonials does not qualify; the first Soundbooth Theater sample was too small and produced no reader consensus. Public Hardcover reviews use its authenticated API, exact title/author matching, privacy filtering, a bounded sample, and thirty-day snapshots. Book-level reviews can cover any format and are not presented as confirmed listener votes. Jev extracts cautious traits; OpenAI writes short original observations with a verbatim-overlap guard. Sample counts, sources and disagreement accompany those observations; model confidence is never a reader-agreement percentage.
+Reader evidence has its own provenance, source IDs, spoiler flags and distinct-voice digests. Raw comments stay in the private database. Publisher facts, reader opinions and content verdicts remain separate. Aggregate context requires several independent substantive voices and must retain uncertainty and disagreement. A handful of storefront testimonials does not qualify; the first Soundbooth Theater sample was too small and produced no reader consensus. Public Hardcover reviews use its authenticated API, exact title/author matching, privacy filtering, a bounded sample, and thirty-day snapshots. Book-level reviews can cover any format and are not presented as confirmed listener votes. Jev extracts cautious traits; OpenAI writes short original observations with a verbatim-overlap guard. The UI presents reviewed Impressions and Critiques bullets, with sample size visible and methodology/source links behind an accessible information control. The split is bound to both the evidence hash and the exact published prose; a changed observation falls back to prose until reviewed again. A sample need not have equally sized positive and negative columns. Model confidence is never a reader-agreement percentage.
 
 Eligibility and displayed counts use the actual deduplicated, spoiler-filtered sample sent for inference. Explicit spoiler markup excludes a comment even when the source API labels it spoiler-free; its raw evidence remains preserved privately. Traits and observations have separate durable jobs scoped to works or series. Paid prose responses are retained before validation, so a rejected answer can be reviewed without purchasing it again. Stored observations are checked against the current validation policy on every export. A [reviewed correction](scripts/backend/config/reader-observation-corrections.json) must match the exact entity, inference receipt, evidence hash, model, rubric and source URLs; the original answer remains intact. Without per-aspect measurements, prose cannot claim that most or many readers share a particular view. Reader observations currently provide context rather than changing recommendation rank.
 
@@ -127,6 +129,33 @@ npm run pipeline:readers -- corrections
 ```
 
 Use the ignored `HARDCOVER_API_TOKEN` setting for API acquisition. A cached repeat makes zero HTTP requests. `--force` intentionally reacquires the sample; changed evidence invalidates its previous aggregate.
+
+## Catalog inspector
+
+The separate [inspector](https://nate.rip/litrpg-hub/inspector/) is a read-only view of **all canonical works**, including volumes without a confirmed audiobook. It highlights missing data, stale checks and records needing review, with series search and a per-book evidence matrix. It consumes `static/data/health.json`; refreshing the page reloads that published snapshot and does not start a crawler.
+
+```sh
+npm run pipeline:health
+```
+
+The health exporter opens SQLite read-only and makes no network or model calls. Data completeness counts usable retained fields. Evidence quality counts current verification and editorial review. Both scores expose their equally weighted checks; neither rates the book or proves that an unknown final volume has been found. A cover URL is separate from checksum-verified local image bytes, source length is separate from a reviewed synopsis, and a minimum reader sample is separate from consensus. Current cached Jev assessments contribute evidence without another model purchase. Raw comments, source documents, model answers and local asset paths are excluded.
+
+## Recurring refresh and deployment
+
+The public repository's `catalog-refresh.yml` workflow runs at **08:17 UTC daily**, away from the hourly boundary. Both a workflow gate and the worker reject runs during **22:00–02:00 UTC**, including delayed or manual invocations. The worker also reserves time to finish before that window. CI and Pages use standard public-repository runners.
+
+Configure these encrypted repository secrets:
+
+- `CATALOG_DATA_TOKEN`: a dedicated fine-grained GitHub token with Contents read/write access to the **private** `iamnbutler/litrpg-hub-data` repository. The workflow's `GITHUB_TOKEN` handles the public app repository only.
+- `OPENAI_API_KEY` and `TYPESAFE_API_KEY`: offline enrichment credentials.
+
+Each run restores the latest private archive, verifies its checksum and complete member layout before extraction, checks the restored snapshot, and proves private release write access before doing paid work. Limits across selected series are 25 source jobs, 25 exact-audio jobs, 10 extraction jobs and 10 Jev assessments. Global discovery, reader acquisition, cover inference and automatic review approval are excluded. A manual run defaults to `no_enrich=true` for an initial verification without model calls.
+
+Partial work is checkpointed to a new private release even if work or public export fails. Only after that checkpoint succeeds may the worker commit the allowed public JSON files and dispatch Pages. Raw job output is captured privately; public logs contain bounded counts and sanitized failure codes. No private database or reader evidence is uploaded as an Actions artifact. Runner termination or loss of private-repository access can still prevent the final checkpoint; inspect failed runs before retrying paid work. The public build always uses committed JSON and never fetches private data.
+
+## Reader sign-in configuration
+
+The GitHub OAuth application is for reader sign-in and is separate from the catalog worker credential. Local configuration uses `OAUTH_GITHUB_CLIENT_ID`, `OAUTH_GITHUB_CLIENT_SECRET` and `OAUTH_GITHUB_REDIRECT_URI`. The planned callback is `https://nate.rip/litrpg-hub/auth/callback/`. The credentials are configured; the sign-in handler and account synchronization are not implemented yet. A client secret belongs in a server-side exchange, never in the Pages bundle. Until that integration lands, the library remains local to the browser.
 
 ## Keep the catalog safe
 

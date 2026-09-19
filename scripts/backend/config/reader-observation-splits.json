@@ -1,0 +1,291 @@
+[
+  {
+    "entityType": "work",
+    "entityId": "work-dungeon-crawler-carl-1",
+    "inputHash": "1f5f2ee4442fa4594fad53f58b3eb7a952c9ee529d61d190c65bfd1ae30c4bdc",
+    "textHash": "9e4c4a944d3a542b8281b0b70bcaf2c71caf7194ad2e7c3f9797231ce0dec242",
+    "impressions": [
+      "Carl and Princess Donut's chemistry",
+      "The audiobook performance",
+      "Humour landed for part of the sample"
+    ],
+    "critiques": [
+      "Crude humour put other readers off",
+      "One reader quit over the game-mechanics focus"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.375Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Humour appears on both sides because the observation reports enthusiasm and distaste for the same thing. Audio bullet allowed: the observation names the audiobook performance."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-cradle-1",
+    "inputHash": "09ae217a01a221b687143cdab1c04d964d1365d01ae9a69578101a4445566f59",
+    "textHash": "08d7373718d81883f7720a428c769277d029864949369a864e1fdb3ce2f71a7d",
+    "impressions": [
+      "The underdog premise",
+      "The magic system",
+      "Brisk pacing"
+    ],
+    "critiques": [
+      "A slow opening",
+      "Confusing magical concepts",
+      "Reservations about character depth"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Pacing sits on both sides: the observation records brisk pacing and a slow opening together. Stated as brisk pacing without a temporal relation, which the observation does not give."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-he-who-fights-with-monsters-1",
+    "inputHash": "8385e911e7f1a317bfc8aa82014caf6b71ab2bd4cd6a6b3af58d2b2a65e44df3",
+    "textHash": "4466654a0fc7b04aac1cb3407193fa418a020fea02c502e3b60ffd9ba9d07caf",
+    "impressions": [
+      "Jason read as witty and enjoyable",
+      "The worldbuilding"
+    ],
+    "critiques": [
+      "Jason also read as chatty and arrogant",
+      "Length and repetition",
+      "Some readers abandoned it"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "The named contradiction. Jason appears on both sides verbatim to the observation, not resolved to one."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-arcane-ascension-1",
+    "inputHash": "01f2302710fd39a86565324fb0d7290b688f1bbe7bb99d6f6e6d65bfa1a7fd2a",
+    "textHash": "338b82de8b226e9f9553c1dc0aac261483e844f053bb5f0503c518043cd80a6e",
+    "impressions": [
+      "Detailed magic rules",
+      "The school setting"
+    ],
+    "critiques": [
+      "Too much exposition",
+      "Weak characterisation",
+      "An opening that takes time to engage"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "No praise invented to match three critiques; the observation offers exactly two."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-beware-of-chicken-1",
+    "inputHash": "b7b2bb2427e2dbaf8219868c5b04eb8d8f486e1fd9b88a136c567f910a5b8a54",
+    "textHash": "72c633d3ec6c79ab31db5f50eaa0e72d1cdc53aa41617e144e09697da5ef3a45",
+    "impressions": [
+      "The comforting farming story",
+      "Animal viewpoints",
+      "Light humour"
+    ],
+    "critiques": [
+      "Everyday-life focus felt slow",
+      "A quieter second half",
+      "Uneven flow"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "The everyday-life emphasis is both the draw and the complaint, so it appears on both sides."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-primal-hunter-1",
+    "inputHash": "51686f8904d430a940ee8dcab35979e0f052d65e065b943e7daa7c328b25d5d9",
+    "textHash": "2581cf4831e7ecdaf3a1ca5861674147b6968b7d5d35e3b49b0d6f2ddbcfb3fb",
+    "impressions": [
+      "Fun, entertaining progression",
+      "The humour",
+      "The narration"
+    ],
+    "critiques": [
+      "Repetitive status updates",
+      "Flat characters",
+      "Divided views on pacing"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Audio bullet allowed: the observation states narration was praised."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-awaken-online-1",
+    "inputHash": "4bab4812766e11544c2dc529ea992cd1f24d24733dad454b9b58fa31ccbfe411",
+    "textHash": "bc90785d9d8597a8d09a8a807143291e5f6c64e7074f2dc71f5dce499caa87e2",
+    "impressions": [
+      "The virtual-world premise",
+      "The chance to root for a villain",
+      "Kept readers up late"
+    ],
+    "critiques": [
+      "Predictable victories",
+      "Repetitive prose",
+      "The real-world school drama"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Both sides full because the observation supplies three of each."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-perfect-run-1",
+    "inputHash": "84c43f155ab61cd9b39aeca3910b7c1a89fc064e7af30821f62d75b599f3e939",
+    "textHash": "f35f8476701d6f7bd0aae68c8a986e56248782eef8adbacc20afae40a7c025e1",
+    "impressions": [
+      "The time-loop premise",
+      "Detailed city and gang dynamics",
+      "Wisecracks amused part of the sample"
+    ],
+    "critiques": [
+      "The same wisecracks irritated others",
+      "One reader abandoned it"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Wisecracks on both sides: the observation reports enjoyment and irritation at once. Abandonment stated without an audio word: the observation says \"abandoned listen\", which is not in the audio vocabulary, so claiming a listener would have asserted more than it does."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-land-1",
+    "inputHash": "c04446d529e6f9cac5092e16dd5c7f1ae155d3809a8a39cd1a90eea3fbae0f97",
+    "textHash": "2ecb745d41a32a6f5ec0d79e36774f1291bceb69ab417faa16a61bb60f5a1857",
+    "impressions": [
+      "Interest in how the characters develop"
+    ],
+    "critiques": [
+      "Repetitive stat passages",
+      "Slow pacing and uneven writing",
+      "Frustration with the protagonist and cast"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Deliberately lopsided. The observation is mostly criticism and the character reaction splits, so it appears on both sides."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-mark-of-the-fool-1",
+    "inputHash": "9e57114bc7127f8ed269e2d2faf4991dca00a0fcb254cdb4e504439083485af2",
+    "textHash": "a99d527003a87a582ea496a797eb6a042cb02efa7b4ddebb9e23d4e2c3300609",
+    "impressions": [
+      "The magic system",
+      "The school setting",
+      "Quieter school life appealed to some"
+    ],
+    "critiques": [
+      "Momentum drops after the opening",
+      "Downtime felt slow or padded"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Quiet downtime on both sides: enjoyed by some comments, criticised by others."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-defiance-of-the-fall-1",
+    "inputHash": "ccbf73040473d45507f68bf8cb0440805ca397adc56fdce4fb807fb1d0f45a2d",
+    "textHash": "8524f90992bb73c1854548121ea6e6a2d729ef145505ac756a3501134630d29d",
+    "impressions": [
+      "The progression",
+      "The worldbuilding",
+      "One reader found the ending stronger"
+    ],
+    "critiques": [
+      "Long solitary stretches",
+      "A familiar System",
+      "Flat characterisation"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "The wish for more dialogue is folded into solitary stretches rather than dropped."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-path-of-ascension-1",
+    "inputHash": "23e64f5439a317e5910a359f37d8a54bb04f4015ad36c20ae879cd7bd22ff3e2",
+    "textHash": "db1b87bb9c4b630f54513640f475b83acd397db1577198c5b28fbe47831eaf36",
+    "impressions": [
+      "A comforting cultivation story",
+      "Familiar tropes handled appealingly"
+    ],
+    "critiques": [
+      "Convenient advantages for the protagonist",
+      "Inconsistent characterisation",
+      "Prose needing tighter editing"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Two impressions, not three: the observation supports no more."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-ripple-system-1",
+    "inputHash": "c3623bd581bad495b67c412bc5f95b3217aa86ac303ea2dea7fbba6ff47709b3",
+    "textHash": "ff7dff7662042ce9bebc9871c58cc938e4ab6ef8e214f34474bf8431460f503a",
+    "impressions": [
+      "The MMO mechanics",
+      "Comic side characters",
+      "Forgiving death penalties"
+    ],
+    "critiques": [
+      "Frustration with the opening cast",
+      "Virtual combat read as low-stakes"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Low-stakes combat and forgiving death penalties are the same design read two ways."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-completionist-chronicles-1",
+    "inputHash": "a62496685e102f70c26596d9ce1d668ab9ff26c1c44dcb77495f2358e1ff0afd",
+    "textHash": "2a26aee6988b4e1b5affc07b34cec8d48d66a211dba79cf61dffaa10fa5554de",
+    "impressions": [
+      "The ritualist class and game mechanics",
+      "Read as a satisfying standalone",
+      "Characterisation drew praise"
+    ],
+    "critiques": [
+      "Characterisation also drew criticism"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Characterisation on both sides: the observation says it drew praise and criticism together. The standalone point is attributed as a reading, not asserted as a property of the book."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-ten-realms-1",
+    "inputHash": "ed5954d8955bc75ce40b664a01befe051ebcc43e681d15973091a66a29394a54",
+    "textHash": "041e85bb470f9a8322e7d31f6d2e0e9073821507b5f358a7b9716141ec123ebe",
+    "impressions": [
+      "An engaging story with compelling characters",
+      "Strong worldbuilding",
+      "The army-vet perspective and chemistry"
+    ],
+    "critiques": [
+      "Distracting grammar issues",
+      "Divided views on writing quality",
+      "Questions about plot coherence"
+    ],
+    "reviewedAt": "2026-09-19T14:34:33.376Z",
+    "reviewedBy": "Codex editorial review",
+    "validatorVersion": "reader-split-v1",
+    "note": "Writing quality is contested rather than agreed, so it is stated as divided."
+  }
+]

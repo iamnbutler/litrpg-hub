@@ -20,6 +20,7 @@ import { saveInference } from './inference.js';
 import { PaidResponseStorageError, ReviewError } from './types.js';
 import { accountFor, normalizeUsage, paidJev, type PaidAccount } from './paid-jev.js';
 import { loadCorrections, resolveCorrection, type ReaderCorrection } from './reader-corrections.js';
+import { loadSplits, resolveSplit, type ReaderSplit } from './reader-split.js';
 
 /** Refuse before spending if the receipt cannot commit independently; stop the worker
  * because later jobs on the same database would have the same storage problem. */
@@ -284,7 +285,7 @@ export type ReaderContext = SharedReaderContext & { observation?: string | null 
  * current evidence and the current rubric first, so a stale aggregate stops being emitted
  * rather than describing a corpus that has since changed.
  */
-export function readerContext(db: Database.Database, entityType: 'series' | 'work', entityId: string, options: { verify?: boolean; corrections?: ReaderCorrection[] } = {}): ReaderContext | null {
+export function readerContext(db: Database.Database, entityType: 'series' | 'work', entityId: string, options: { verify?: boolean; corrections?: ReaderCorrection[]; splits?: ReaderSplit[] } = {}): ReaderContext | null {
   const rows = readerEvidenceFor(db, entityType, entityId);
   const summary = summarizeReaderEvidence(entityId, rows);
   if (!summary.samples) return null;
@@ -308,10 +309,17 @@ export function readerContext(db: Database.Database, entityType: 'series' | 'wor
   }
   const sources = [...new Map(rows.map(r => [r.source_name, { name: r.source_name, url: r.source_url }])).values()]
     .sort((a, b) => a.name.localeCompare(b.name));
+  // One status read gives both the published prose and the hash a reviewed split must match.
+  const published = observationStatus(db, entityType, entityId, rows, { corrections: options.corrections });
+  const split = published.observation
+    ? resolveSplit(options.splits ?? loadSplits(), { entityType, entityId, inputHash: published.inputHash, observation: published.observation })
+    : { status: 'none' as const };
   return { entity: entityId, voices: summary.voices, substantiveVoices: summary.substantiveVoices,
     samples: summary.samples, meanRating: summary.meanRating, span: summary.span,
     sampling: 'bounded-public-review-sample', sources, consensus, traits,
-    observation: storedObservation(db, entityType, entityId, rows, { corrections: options.corrections }) };
+    observation: published.observation,
+    // Both sides or neither: a stale or refused split leaves the observation standing alone.
+    ...(split.status === 'applied' ? { impressions: split.split.impressions, critiques: split.split.critiques } : {}) };
 }
 
 
