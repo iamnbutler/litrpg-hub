@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-19T22:52:06.316Z",
+  "generatedAt": "2026-09-19T23:39:40.194Z",
   "definitions": {
     "completeness": "Data presence, not bibliography completeness: equal weight for source-description, original-summary, extracted-metadata, jev-assessment, audio-edition, audio-date, narrator, runtime, cover-asset, reader-sample. Stale or unverified retained values can earn presence credit; corrupt unusable values cannot.",
     "evidenceQuality": "Current evidence/review checks, never a rating of a book: equal weight for source-description, reviewed-metadata, audio-verified, audio-date, cover-observation, reader-adequacy, reader-traits, reader-observation, source-freshness. Only present/current checks earn credit. No model confidence is converted into a quality score.",
@@ -21,11 +21,11 @@
     "works": 397,
     "confirmedAudioWorks": 382,
     "verifiedAudioDates": 379,
-    "coverAssets": 62,
-    "reviewedMetadata": 66,
-    "adequateReaderSamples": 25,
-    "meanCompleteness": 80,
-    "meanEvidenceQuality": 47
+    "coverAssets": 74,
+    "reviewedMetadata": 74,
+    "adequateReaderSamples": 27,
+    "meanCompleteness": 81,
+    "meanEvidenceQuality": 48
   },
   "series": [
     {
@@ -6102,10 +6102,10 @@
         "explanation": "133/173 equally weighted checks across all 17 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 48,
-        "earned": 74,
+        "percent": 47,
+        "earned": 73,
         "possible": 155,
-        "explanation": "74/155 equally weighted checks across all 17 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "73/155 equally weighted checks across all 17 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -6273,7 +6273,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/17 works are present/current; 16 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/17 works are present/current; 16 missing, 1 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -6409,6 +6409,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 16/17 works are missing."
+        },
+        {
+          "code": "reader-observation:unknown",
+          "status": "unknown",
+          "message": "Publishable reader context: 1/17 works are unknown."
         },
         {
           "code": "bibliography",
@@ -7550,16 +7555,16 @@
       "knownWorks": 13,
       "confirmedAudioWorks": 13,
       "completeness": {
-        "percent": 80,
-        "earned": 106,
+        "percent": 93,
+        "earned": 124,
         "possible": 133,
-        "explanation": "106/133 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
+        "explanation": "124/133 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 51,
-        "earned": 61,
+        "percent": 71,
+        "earned": 85,
         "possible": 119,
-        "explanation": "61/119 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "85/119 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -7597,7 +7602,7 @@
           "label": "Reviewed metadata",
           "status": "missing",
           "available": true,
-          "explanation": "4/13 works are present/current; 9 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "12/13 works are present/current; 1 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7675,9 +7680,9 @@
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
+          "status": "present",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "13/13 works are present/current; 0 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7685,9 +7690,9 @@
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
+          "status": "present",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "13/13 works are present/current; 0 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7697,7 +7702,7 @@
           "label": "Usable reader comments",
           "status": "missing",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "7/13 works are present/current; 6 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7707,7 +7712,7 @@
           "label": "Reader sample adequacy",
           "status": "missing",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "3/13 works are present/current; 6 missing, 4 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7717,7 +7722,7 @@
           "label": "Current reader traits",
           "status": "missing",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "3/13 works are present/current; 10 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7727,7 +7732,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "1/13 works are present/current; 10 missing, 0 unknown, 2 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7802,7 +7807,7 @@
         {
           "code": "reviewed-metadata:missing",
           "status": "missing",
-          "message": "Reviewed metadata: 9/13 works are missing."
+          "message": "Reviewed metadata: 1/13 works are missing."
         },
         {
           "code": "jev-assessment:missing",
@@ -7810,34 +7815,34 @@
           "message": "Jev metadata assessment: 1/13 works are missing."
         },
         {
-          "code": "cover-asset:missing",
-          "status": "missing",
-          "message": "Cached cover asset: 12/13 works are missing."
-        },
-        {
-          "code": "cover-observation:missing",
-          "status": "missing",
-          "message": "Cover observation: 12/13 works are missing."
-        },
-        {
           "code": "reader-sample:missing",
           "status": "missing",
-          "message": "Usable reader comments: 12/13 works are missing."
+          "message": "Usable reader comments: 6/13 works are missing."
         },
         {
           "code": "reader-adequacy:missing",
           "status": "missing",
-          "message": "Reader sample adequacy: 12/13 works are missing."
+          "message": "Reader sample adequacy: 6/13 works are missing."
+        },
+        {
+          "code": "reader-adequacy:unknown",
+          "status": "unknown",
+          "message": "Reader sample adequacy: 4/13 works are unknown."
         },
         {
           "code": "reader-traits:missing",
           "status": "missing",
-          "message": "Current reader traits: 12/13 works are missing."
+          "message": "Current reader traits: 10/13 works are missing."
         },
         {
           "code": "reader-observation:missing",
           "status": "missing",
-          "message": "Publishable reader context: 12/13 works are missing."
+          "message": "Publishable reader context: 10/13 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 2/13 works are stale."
         }
       ],
       "missingVolumes": [],
@@ -17054,9 +17059,9 @@
       },
       "evidenceQuality": {
         "percent": 45,
-        "earned": 50,
+        "earned": 49,
         "possible": 110,
-        "explanation": "50/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "49/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -17224,7 +17229,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/12 works are present/current; 11 missing, 1 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -17330,6 +17335,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 11/12 works are missing."
+        },
+        {
+          "code": "reader-observation:unknown",
+          "status": "unknown",
+          "message": "Publishable reader context: 1/12 works are unknown."
         },
         {
           "code": "source-freshness:unknown",
@@ -18477,10 +18487,10 @@
         "explanation": "52/73 equally weighted checks across all 7 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 38,
-        "earned": 25,
+        "percent": 37,
+        "earned": 24,
         "possible": 65,
-        "explanation": "25/65 equally weighted checks across all 7 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "24/65 equally weighted checks across all 7 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -18648,7 +18658,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/7 works are present/current; 6 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/7 works are present/current; 6 missing, 1 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -18789,6 +18799,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 6/7 works are missing."
+        },
+        {
+          "code": "reader-observation:unknown",
+          "status": "unknown",
+          "message": "Publishable reader context: 1/7 works are unknown."
         },
         {
           "code": "source-freshness:unknown",
@@ -28925,7 +28940,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/sufficiently-advanced-magic",
           "observedAt": "2026-09-19T04:33:35.508Z",
           "dueAt": null
@@ -30657,7 +30672,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/awaken-online-catharsis-2016",
           "observedAt": "2026-09-19T04:33:47.478Z",
           "dueAt": null
@@ -43356,7 +43371,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/beware-of-chicken",
           "observedAt": "2026-09-19T03:50:10.289Z",
           "dueAt": null
@@ -48992,7 +49007,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/unsouled",
           "observedAt": "2026-09-19T03:50:02.438Z",
           "dueAt": null
@@ -53197,10 +53212,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -53366,9 +53381,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "unknown",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context has no supported finding to show: review is empty, stale, refused, or the selected sample is inadequate. Retained prose alone does not fill this gap.",
           "sourceUrl": "https://hardcover.app/books/defiance-of-the-fall",
           "observedAt": "2026-09-19T03:35:19.519Z",
           "dueAt": null
@@ -53384,7 +53399,13 @@
           "dueAt": "2026-12-18T02:21:03.671Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "unknown",
+          "message": "The public reader context has no supported finding to show: review is empty, stale, refused, or the selected sample is inadequate. Retained prose alone does not fill this gap."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -53410,7 +53431,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "withheld",
         "sourceUrls": [
           "https://hardcover.app/books/defiance-of-the-fall"
         ]
@@ -61796,7 +61817,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/dungeon-crawler-carl",
           "observedAt": "2026-09-19T03:35:11.615Z",
           "dueAt": null
@@ -64087,7 +64108,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-2021",
           "observedAt": "2026-09-19T03:50:06.352Z",
           "dueAt": null
@@ -64178,16 +64199,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 56,
-        "earned": 5,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -64296,68 +64317,68 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81Tr90BXt-L-3.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51GSxj-rhzL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81Tr90BXt-L-3.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51GSxj-rhzL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:28:54.205Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81Tr90BXt-L-3.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51GSxj-rhzL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:28:54.205Z",
+          "dueAt": "2026-10-19T23:28:54.205Z"
         },
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "5 usable comments are selected from 5 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-2",
+          "observedAt": "2026-09-19T23:29:23.392Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "5/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-2",
+          "observedAt": "2026-09-19T23:29:23.392Z",
           "dueAt": null
         },
         {
           "id": "reader-traits",
           "label": "Current reader traits",
-          "status": "missing",
-          "available": false,
-          "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "All four reader-trait receipts match the exact selected sample and current rubric; an unknown trait value is a valid result.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-2",
+          "observedAt": "2026-09-19T23:29:27.456Z",
           "dueAt": null
         },
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "missing",
-          "available": false,
-          "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "stale",
+          "available": true,
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-2",
+          "observedAt": "2026-09-19T23:29:23.392Z",
           "dueAt": null
         },
         {
@@ -64373,34 +64394,9 @@
       ],
       "issues": [
         {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
-          "code": "reader-traits",
-          "status": "missing",
-          "message": "No current set of reader-trait receipts is retained."
-        },
-        {
           "code": "reader-observation",
-          "status": "missing",
-          "message": "No retained reader observation is available."
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
         }
       ],
       "flags": {
@@ -64411,10 +64407,10 @@
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "coverAsset": true,
+        "coverReviewed": true,
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -64423,21 +64419,23 @@
         "releaseDate": "2021-05-18"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 5,
+        "selectedCount": 5,
+        "eligible": true,
         "minimum": 5,
-        "currentTraits": false,
+        "currentTraits": true,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/he-who-fights-with-monsters-2"
+        ]
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81Tr90BXt-L-3.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51GSxj-rhzL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 36312,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:28:54.205Z"
       },
       "sources": [
         {
@@ -64475,16 +64473,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 56,
-        "earned": 5,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -64593,29 +64591,29 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81aERlmfwlL-5.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/5198zmGSkrL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81aERlmfwlL-5.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/5198zmGSkrL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:28:59.334Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81aERlmfwlL-5.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/5198zmGSkrL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:28:59.334Z",
+          "dueAt": "2026-10-19T23:28:59.334Z"
         },
         {
           "id": "reader-sample",
@@ -64670,16 +64668,6 @@
       ],
       "issues": [
         {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
           "code": "reader-sample",
           "status": "missing",
           "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
@@ -64708,8 +64696,8 @@
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
+        "coverAsset": true,
+        "coverReviewed": true,
         "readerSample": false,
         "readerAdequate": false
       },
@@ -64729,12 +64717,12 @@
         "sourceUrls": []
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81aERlmfwlL-5.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/5198zmGSkrL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 44731,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:28:59.334Z"
       },
       "sources": [
         {
@@ -64772,16 +64760,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 56,
-        "earned": 5,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -64890,29 +64878,29 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/813oW6WurNL.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51neQMPY-eL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/813oW6WurNL.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51neQMPY-eL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:03.615Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/813oW6WurNL.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51neQMPY-eL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:03.615Z",
+          "dueAt": "2026-10-19T23:29:03.615Z"
         },
         {
           "id": "reader-sample",
@@ -64967,16 +64955,6 @@
       ],
       "issues": [
         {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
           "code": "reader-sample",
           "status": "missing",
           "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
@@ -65005,8 +64983,8 @@
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
+        "coverAsset": true,
+        "coverReviewed": true,
         "readerSample": false,
         "readerAdequate": false
       },
@@ -65026,12 +65004,12 @@
         "sourceUrls": []
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/813oW6WurNL.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51neQMPY-eL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 41545,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:29:03.615Z"
       },
       "sources": [
         {
@@ -65069,16 +65047,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -65096,9 +65074,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-5/",
-          "observedAt": "2026-09-19T02:44:17.267Z",
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -65106,7 +65084,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-5/",
           "observedAt": "2026-09-19T02:44:17.267Z",
           "dueAt": null
@@ -65114,11 +65092,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-5/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -65187,48 +65165,48 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81z1eIXr6AL-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51VEDGmWe2L._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81z1eIXr6AL-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51VEDGmWe2L._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:08.256Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81z1eIXr6AL-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51VEDGmWe2L._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:08.256Z",
+          "dueAt": "2026-10-19T23:29:08.256Z"
         },
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "2 usable comments are selected from 2 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-5-2022",
+          "observedAt": "2026-09-19T23:31:39.909Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
+          "status": "unknown",
           "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "explanation": "2/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-5-2022",
+          "observedAt": "2026-09-19T23:31:39.909Z",
           "dueAt": null
         },
         {
@@ -65237,7 +65215,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-5-2022",
           "observedAt": null,
           "dueAt": null
         },
@@ -65247,8 +65225,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-5-2022",
+          "observedAt": "2026-09-19T23:31:39.909Z",
           "dueAt": null
         },
         {
@@ -65264,29 +65242,9 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
           "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
+          "status": "unknown",
+          "message": "2/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -65303,13 +65261,13 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
-        "readerSample": false,
+        "coverAsset": true,
+        "coverReviewed": true,
+        "readerSample": true,
         "readerAdequate": false
       },
       "audio": {
@@ -65319,21 +65277,23 @@
         "releaseDate": "2022-04-05"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
+        "retainedCount": 2,
+        "selectedCount": 2,
         "eligible": false,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/he-who-fights-with-monsters-5-2022"
+        ]
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81z1eIXr6AL-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51VEDGmWe2L._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 38152,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:29:08.256Z"
       },
       "sources": [
         {
@@ -65371,16 +65331,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -65398,9 +65358,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-6/",
-          "observedAt": "2026-09-19T02:44:11.732Z",
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -65408,7 +65368,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-6/",
           "observedAt": "2026-09-19T02:44:11.732Z",
           "dueAt": null
@@ -65416,11 +65376,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-6/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -65489,29 +65449,29 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71PLYCMOdQL-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51CnE-ehS4L._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71PLYCMOdQL-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51CnE-ehS4L._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:12.530Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71PLYCMOdQL-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51CnE-ehS4L._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:12.530Z",
+          "dueAt": "2026-10-19T23:29:12.530Z"
         },
         {
           "id": "reader-sample",
@@ -65566,21 +65526,6 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
           "code": "reader-sample",
           "status": "missing",
           "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
@@ -65605,12 +65550,12 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
+        "coverAsset": true,
+        "coverReviewed": true,
         "readerSample": false,
         "readerAdequate": false
       },
@@ -65630,12 +65575,12 @@
         "sourceUrls": []
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71PLYCMOdQL-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51CnE-ehS4L._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 41123,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:29:12.530Z"
       },
       "sources": [
         {
@@ -65673,16 +65618,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -65700,9 +65645,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-7/",
-          "observedAt": "2026-09-19T02:44:30.188Z",
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -65710,7 +65655,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-7/",
           "observedAt": "2026-09-19T02:44:30.188Z",
           "dueAt": null
@@ -65718,11 +65663,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-7/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -65791,68 +65736,68 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81nAOMA5RRL-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/517RzWHDDDL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81nAOMA5RRL-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/517RzWHDDDL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:17.271Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81nAOMA5RRL-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/517RzWHDDDL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:29:17.271Z",
+          "dueAt": "2026-10-19T23:29:17.271Z"
         },
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "6 usable comments are selected from 6 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-7",
+          "observedAt": "2026-09-19T23:31:47.924Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "6/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-7",
+          "observedAt": "2026-09-19T23:31:47.924Z",
           "dueAt": null
         },
         {
           "id": "reader-traits",
           "label": "Current reader traits",
-          "status": "missing",
-          "available": false,
-          "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "All four reader-trait receipts match the exact selected sample and current rubric; an unknown trait value is a valid result.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-7",
+          "observedAt": "2026-09-19T23:31:47.945Z",
           "dueAt": null
         },
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "missing",
-          "available": false,
-          "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "stale",
+          "available": true,
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-7",
+          "observedAt": "2026-09-19T23:31:47.924Z",
           "dueAt": null
         },
         {
@@ -65868,53 +65813,23 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
-          "code": "reader-traits",
-          "status": "missing",
-          "message": "No current set of reader-trait receipts is retained."
-        },
-        {
           "code": "reader-observation",
-          "status": "missing",
-          "message": "No retained reader observation is available."
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
         }
       ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "coverAsset": true,
+        "coverReviewed": true,
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 3,
@@ -65923,21 +65838,23 @@
         "releaseDate": "2022-09-13"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 6,
+        "selectedCount": 6,
+        "eligible": true,
         "minimum": 5,
-        "currentTraits": false,
+        "currentTraits": true,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/he-who-fights-with-monsters-7"
+        ]
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/81nAOMA5RRL-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/517RzWHDDDL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 47889,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:29:17.271Z"
       },
       "sources": [
         {
@@ -65975,16 +65892,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -66002,9 +65919,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-8/",
-          "observedAt": "2026-09-19T02:44:22.618Z",
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -66012,7 +65929,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-8/",
           "observedAt": "2026-09-19T02:44:22.618Z",
           "dueAt": null
@@ -66020,11 +65937,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-8/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:31:12.624Z",
           "dueAt": null
         },
         {
@@ -66093,29 +66010,29 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/8167dnEyagL-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51CFHLwfXhL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/8167dnEyagL-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51CFHLwfXhL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:15.821Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/8167dnEyagL-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51CFHLwfXhL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:15.821Z",
+          "dueAt": "2026-10-19T23:31:15.821Z"
         },
         {
           "id": "reader-sample",
@@ -66170,21 +66087,6 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
           "code": "reader-sample",
           "status": "missing",
           "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
@@ -66209,12 +66111,12 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
+        "coverAsset": true,
+        "coverReviewed": true,
         "readerSample": false,
         "readerAdequate": false
       },
@@ -66234,12 +66136,12 @@
         "sourceUrls": []
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/8167dnEyagL-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51CFHLwfXhL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 39306,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:31:15.821Z"
       },
       "sources": [
         {
@@ -66277,16 +66179,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -66304,9 +66206,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-9/",
-          "observedAt": "2026-09-19T02:44:34.873Z",
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -66314,7 +66216,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-9/",
           "observedAt": "2026-09-19T02:44:34.873Z",
           "dueAt": null
@@ -66322,11 +66224,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-9/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -66395,29 +66297,29 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71Y5GJsuUKL-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51ieNDb4tGL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71Y5GJsuUKL-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51ieNDb4tGL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:20.256Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71Y5GJsuUKL-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51ieNDb4tGL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:20.256Z",
+          "dueAt": "2026-10-19T23:31:20.256Z"
         },
         {
           "id": "reader-sample",
@@ -66472,21 +66374,6 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
           "code": "reader-sample",
           "status": "missing",
           "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
@@ -66511,12 +66398,12 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
+        "coverAsset": true,
+        "coverReviewed": true,
         "readerSample": false,
         "readerAdequate": false
       },
@@ -66536,12 +66423,12 @@
         "sourceUrls": []
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/04/71Y5GJsuUKL-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51ieNDb4tGL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 34942,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:31:20.256Z"
       },
       "sources": [
         {
@@ -66579,16 +66466,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -66606,9 +66493,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-10/",
-          "observedAt": "2026-09-19T02:44:38.202Z",
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -66616,7 +66503,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-10/",
           "observedAt": "2026-09-19T02:44:38.202Z",
           "dueAt": null
@@ -66624,11 +66511,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-10/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -66697,48 +66584,48 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81I4wKtVyUL._SL1500_-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51kEPI5OYuL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81I4wKtVyUL._SL1500_-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51kEPI5OYuL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:24.377Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81I4wKtVyUL._SL1500_-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51kEPI5OYuL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:24.377Z",
+          "dueAt": "2026-10-19T23:31:24.377Z"
         },
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "2 usable comments are selected from 3 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-10",
+          "observedAt": "2026-09-19T23:34:48.316Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
+          "status": "unknown",
           "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "explanation": "2/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-10",
+          "observedAt": "2026-09-19T23:34:48.316Z",
           "dueAt": null
         },
         {
@@ -66747,7 +66634,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-10",
           "observedAt": null,
           "dueAt": null
         },
@@ -66757,8 +66644,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-10",
+          "observedAt": "2026-09-19T23:34:48.316Z",
           "dueAt": null
         },
         {
@@ -66774,29 +66661,9 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
           "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
+          "status": "unknown",
+          "message": "2/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -66813,13 +66680,13 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
-        "readerSample": false,
+        "coverAsset": true,
+        "coverReviewed": true,
+        "readerSample": true,
         "readerAdequate": false
       },
       "audio": {
@@ -66829,21 +66696,23 @@
         "releaseDate": "2023-11-28"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
+        "retainedCount": 3,
+        "selectedCount": 2,
         "eligible": false,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/he-who-fights-with-monsters-10"
+        ]
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81I4wKtVyUL._SL1500_-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51kEPI5OYuL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 40687,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:31:24.377Z"
       },
       "sources": [
         {
@@ -66881,16 +66750,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -66908,9 +66777,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-11/",
-          "observedAt": "2026-09-19T02:44:42.064Z",
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -66918,7 +66787,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-11/",
           "observedAt": "2026-09-19T02:44:42.064Z",
           "dueAt": null
@@ -66926,11 +66795,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-11/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -66999,48 +66868,48 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81HdfEon1L._SL1500_-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51y56vBbzqL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81HdfEon1L._SL1500_-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51y56vBbzqL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:28.251Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81HdfEon1L._SL1500_-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/51y56vBbzqL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:28.251Z",
+          "dueAt": "2026-10-19T23:31:28.251Z"
         },
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "3 usable comments are selected from 3 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-11",
+          "observedAt": "2026-09-19T23:34:52.300Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
+          "status": "unknown",
           "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "explanation": "3/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-11",
+          "observedAt": "2026-09-19T23:34:52.300Z",
           "dueAt": null
         },
         {
@@ -67049,7 +66918,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-11",
           "observedAt": null,
           "dueAt": null
         },
@@ -67059,8 +66928,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-11",
+          "observedAt": "2026-09-19T23:34:52.300Z",
           "dueAt": null
         },
         {
@@ -67076,29 +66945,9 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
           "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
+          "status": "unknown",
+          "message": "3/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -67115,13 +66964,13 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
-        "readerSample": false,
+        "coverAsset": true,
+        "coverReviewed": true,
+        "readerSample": true,
         "readerAdequate": false
       },
       "audio": {
@@ -67131,21 +66980,23 @@
         "releaseDate": "2024-07-23"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
+        "retainedCount": 3,
+        "selectedCount": 3,
         "eligible": false,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/he-who-fights-with-monsters-11"
+        ]
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2025/10/81HdfEon1L._SL1500_-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/51y56vBbzqL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 48748,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:31:28.251Z"
       },
       "sources": [
         {
@@ -67183,16 +67034,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -67210,9 +67061,9 @@
           "label": "Original summary",
           "status": "present",
           "available": true,
-          "explanation": "A validated original synopsis is retained for the current source and extraction settings; factual editorial review is separate.",
+          "explanation": "An original synopsis is retained in a source-bound editorial review.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-12/",
-          "observedAt": "2026-09-19T02:44:46.306Z",
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -67220,7 +67071,7 @@
           "label": "Extracted metadata",
           "status": "present",
           "available": true,
-          "explanation": "The current source has a validated extraction receipt. Extracted features remain candidates until editorial review.",
+          "explanation": "An immutable extraction supports the current editorial review. A model-only change does not require another purchase.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-12/",
           "observedAt": "2026-09-19T02:44:46.306Z",
           "dueAt": null
@@ -67228,11 +67079,11 @@
         {
           "id": "reviewed-metadata",
           "label": "Reviewed metadata",
-          "status": "missing",
-          "available": false,
-          "explanation": "No source-bound editorial review is retained; automatic tags are not reviewed facts.",
+          "status": "present",
+          "available": true,
+          "explanation": "An editorial review binds the exact evidence, contributing URLs, taxonomy, and immutable extraction receipt. An empty approved feature list is valid.",
           "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-12/",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:39:23.860Z",
           "dueAt": null
         },
         {
@@ -67301,48 +67152,48 @@
           "status": "present",
           "available": true,
           "explanation": "A public image URL is retained; this alone is not a downloaded cover asset.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/01/81gwPQXKg2L._SL1500_-1.jpg",
+          "sourceUrl": "https://m.media-amazon.com/images/I/514RAoV-CrL._SL500_.jpg",
           "observedAt": null,
           "dueAt": null
         },
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/01/81gwPQXKg2L._SL1500_-1.jpg",
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/514RAoV-CrL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:32.358Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
-          "sourceUrl": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/01/81gwPQXKg2L._SL1500_-1.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
+          "sourceUrl": "https://m.media-amazon.com/images/I/514RAoV-CrL._SL500_.jpg",
+          "observedAt": "2026-09-19T23:31:32.358Z",
+          "dueAt": "2026-10-19T23:31:32.358Z"
         },
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "3 usable comments are selected from 3 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-12",
+          "observedAt": "2026-09-19T23:34:56.307Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
+          "status": "unknown",
           "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "explanation": "3/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-12",
+          "observedAt": "2026-09-19T23:34:56.307Z",
           "dueAt": null
         },
         {
@@ -67351,7 +67202,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-12",
           "observedAt": null,
           "dueAt": null
         },
@@ -67361,8 +67212,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-12",
+          "observedAt": "2026-09-19T23:34:56.307Z",
           "dueAt": null
         },
         {
@@ -67378,29 +67229,9 @@
       ],
       "issues": [
         {
-          "code": "reviewed-metadata",
-          "status": "missing",
-          "message": "No source-bound editorial review is retained; automatic tags are not reviewed facts."
-        },
-        {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
           "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
+          "status": "unknown",
+          "message": "3/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -67417,13 +67248,13 @@
         "sourceDescription": true,
         "summary": true,
         "metadataExtracted": true,
-        "metadataReviewed": false,
+        "metadataReviewed": true,
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
-        "readerSample": false,
+        "coverAsset": true,
+        "coverReviewed": true,
+        "readerSample": true,
         "readerAdequate": false
       },
       "audio": {
@@ -67433,21 +67264,23 @@
         "releaseDate": "2025-05-20"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
+        "retainedCount": 3,
+        "selectedCount": 3,
         "eligible": false,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/he-who-fights-with-monsters-12"
+        ]
       },
       "cover": {
-        "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/01/81gwPQXKg2L._SL1500_-1.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "url": "https://m.media-amazon.com/images/I/514RAoV-CrL._SL500_.jpg",
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 40548,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:31:32.358Z"
       },
       "sources": [
         {
@@ -67484,16 +67317,16 @@
       ],
       "publicationStatus": "announced",
       "completeness": {
-        "percent": 50,
-        "earned": 5,
+        "percent": 60,
+        "earned": 6,
         "possible": 10,
-        "explanation": "5/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "6/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 33,
-        "earned": 3,
+        "percent": 44,
+        "earned": 4,
         "possible": 9,
-        "explanation": "3/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -67609,22 +67442,22 @@
         {
           "id": "cover-asset",
           "label": "Cached cover asset",
-          "status": "missing",
-          "available": false,
-          "explanation": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap.",
+          "status": "present",
+          "available": true,
+          "explanation": "The currently associated cover has local JPEG, PNG, or WebP bytes with a matching SHA-256 checksum and image header. This is file evidence, not a visual book-identity judgement.",
           "sourceUrl": "https://assets.podiumentertainment.com/medium/direct_cover_art/9798347009046.jpg",
-          "observedAt": null,
+          "observedAt": "2026-09-19T23:34:39.499Z",
           "dueAt": null
         },
         {
           "id": "cover-observation",
           "label": "Cover observation",
-          "status": "missing",
-          "available": false,
-          "explanation": "No validated observation is bound to the current cached cover bytes.",
+          "status": "present",
+          "available": true,
+          "explanation": "A validated current-rubric observation is bound to these exact cached image bytes.",
           "sourceUrl": "https://assets.podiumentertainment.com/medium/direct_cover_art/9798347009046.jpg",
-          "observedAt": null,
-          "dueAt": null
+          "observedAt": "2026-09-19T23:34:39.499Z",
+          "dueAt": "2026-10-19T23:34:39.499Z"
         },
         {
           "id": "reader-sample",
@@ -67704,16 +67537,6 @@
           "message": "No structured Jev metadata assessment is retained."
         },
         {
-          "code": "cover-asset",
-          "status": "missing",
-          "message": "No checksum-verified image file is cached for the currently associated cover. A URL or an old different image does not fill this gap."
-        },
-        {
-          "code": "cover-observation",
-          "status": "missing",
-          "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
           "code": "reader-sample",
           "status": "missing",
           "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
@@ -67742,8 +67565,8 @@
         "audiobook": true,
         "audioVerified": true,
         "audioDateVerified": true,
-        "coverAsset": false,
-        "coverReviewed": false,
+        "coverAsset": true,
+        "coverReviewed": true,
         "readerSample": false,
         "readerAdequate": false
       },
@@ -67764,11 +67587,11 @@
       },
       "cover": {
         "url": "https://assets.podiumentertainment.com/medium/direct_cover_art/9798347009046.jpg",
-        "cached": false,
-        "hashVerified": false,
-        "bytes": null,
-        "observationCurrent": false,
-        "checkedAt": null
+        "cached": true,
+        "hashVerified": true,
+        "bytes": 50808,
+        "observationCurrent": true,
+        "checkedAt": "2026-09-19T23:34:39.499Z"
       },
       "sources": [
         {
@@ -70571,7 +70394,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/mark-of-the-fool",
           "observedAt": "2026-09-19T03:50:24.310Z",
           "dueAt": null
@@ -90197,7 +90020,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/completionist-chronicles-ritualist",
           "observedAt": "2026-09-19T04:33:43.490Z",
           "dueAt": null
@@ -103096,7 +102919,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-land-founding",
           "observedAt": "2026-09-19T05:43:05.124Z",
           "dueAt": null
@@ -111350,10 +111173,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -111519,9 +111342,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "unknown",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context has no supported finding to show: review is empty, stale, refused, or the selected sample is inadequate. Retained prose alone does not fill this gap.",
           "sourceUrl": "https://hardcover.app/books/the-path-of-ascension",
           "observedAt": "2026-09-19T03:50:16.303Z",
           "dueAt": null
@@ -111537,7 +111360,13 @@
           "dueAt": "2026-12-18T02:23:49.608Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "unknown",
+          "message": "The public reader context has no supported finding to show: review is empty, stale, refused, or the selected sample is inadequate. Retained prose alone does not fill this gap."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -111563,7 +111392,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "withheld",
         "sourceUrls": [
           "https://hardcover.app/books/the-path-of-ascension"
         ]
@@ -115053,7 +114882,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-perfect-run",
           "observedAt": "2026-09-19T03:50:32.334Z",
           "dueAt": null
@@ -115902,7 +115731,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-primal-hunter",
           "observedAt": "2026-09-19T03:35:15.538Z",
           "dueAt": null
@@ -115944,7 +115773,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "published",
+        "observation": "corrected",
         "sourceUrls": [
           "https://hardcover.app/books/the-primal-hunter"
         ]
@@ -120435,10 +120264,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 89,
-        "earned": 8,
+        "percent": 78,
+        "earned": 7,
         "possible": 9,
-        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "7/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -120604,9 +120433,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "unknown",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context has no supported finding to show: review is empty, stale, refused, or the selected sample is inadequate. Retained prose alone does not fill this gap.",
           "sourceUrl": "https://hardcover.app/books/shadeslinger",
           "observedAt": "2026-09-19T04:11:16.623Z",
           "dueAt": null
@@ -120623,6 +120452,11 @@
         }
       ],
       "issues": [
+        {
+          "code": "reader-observation",
+          "status": "unknown",
+          "message": "The public reader context has no supported finding to show: review is empty, stale, refused, or the selected sample is inadequate. Retained prose alone does not fill this gap."
+        },
         {
           "code": "source-freshness",
           "status": "unknown",
@@ -120654,7 +120488,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "withheld",
         "sourceUrls": [
           "https://hardcover.app/books/shadeslinger"
         ]
@@ -122753,7 +122587,7 @@
           "label": "Publishable reader context",
           "status": "present",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "The public reader context contains current reviewed findings with independent support in the selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-two-week-curse",
           "observedAt": "2026-09-19T04:34:01.501Z",
           "dueAt": null
@@ -122795,7 +122629,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "published",
+        "observation": "corrected",
         "sourceUrls": [
           "https://hardcover.app/books/the-two-week-curse"
         ]

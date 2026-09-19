@@ -12,7 +12,7 @@ on:
         required: true
         default: verify
       no_enrich:
-        description: 'Skip paid extraction and assessment during refresh'
+        description: 'Skip paid metadata, cover and reader enrichment during refresh'
         type: boolean
         required: true
         default: true
@@ -157,6 +157,7 @@ jobs:
           CATALOG_DATA_TOKEN: ${{ secrets.CATALOG_DATA_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          HARDCOVER_API_TOKEN: ${{ secrets.HARDCOVER_API_TOKEN }}
           CATALOG_OPENAI_MODEL: gpt-5.6-terra
           JEV_MODEL: jev-latest
           COVER_MODEL: gpt-4.1-mini

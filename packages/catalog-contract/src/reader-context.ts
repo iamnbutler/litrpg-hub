@@ -12,9 +12,9 @@ export interface ReaderContext {
   consensus: 'consistent' | 'mixed' | 'insufficient' | null;
   /** Short original observation grounded in this bounded sample, not a publisher fact. */
   observation?: string | null;
-  /** A reviewed reading of `observation`, split into what the sample liked and disliked.
-   *  Present together or not at all. A disagreement appears on BOTH sides, and neither side
-   *  is padded to match the other, so an empty side means the sample simply had none. */
+  /** Reviewed recurring themes from the full selected reviews. Present together or not at
+   *  all; either side may be empty when no theme has sufficient independent support.
+   *  Private evidence bindings and support IDs are never part of this public contract. */
   impressions?: string[];
   critiques?: string[];
   /** Confidence describes a model assessment, never a fraction of readers agreeing. */

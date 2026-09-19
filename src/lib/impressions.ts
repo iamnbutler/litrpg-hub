@@ -102,9 +102,8 @@ export function readerImpressions(context: ReaderContext | undefined | null): Im
 	// it better, so the flattened labels only appear when neither exists.
 	const shown = observation || hasSplit ? [] : traits;
 	if (!observation && !hasSplit && !shown.length) return null;
-	// The split is a reviewed reading OF the observation, so showing both would print the same
-	// finding twice, once as a paragraph and once as bullets. The columns replace the prose;
-	// the paragraph is what we fall back to when no approved split exists.
+	// Reviewed recurring themes replace the legacy observation. Older snapshots may carry
+	// only a paragraph; the current producer publishes findings only after theme review.
 	const lead = hasSplit ? null : observation;
 
 	const span = Array.isArray(context.span) && context.span.length === 2 && context.span.every((d) => typeof d === 'string')
