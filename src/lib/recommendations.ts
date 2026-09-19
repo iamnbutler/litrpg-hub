@@ -1,9 +1,10 @@
 import {
-	bookPopularity, collapsePlaceholderDuplicates, defaultFilters, passesFilters, recommend,
+	bookPopularity, collapsePlaceholderDuplicates, defaultFilters, recommend,
 	type CatalogBook, type ReaderFilters, type Recommendation, type TasteWeights
 } from './catalog.js';
 import { workHasAudio, workIndex, type CatalogSeries, type CatalogWork } from './series.js';
 import { explicitEditionKind, hasExplicitLaterVolume } from './edition.js';
+import { buildSeriesContentIndex, passesDiscoveryFilters, type SeriesContentIndex } from './series-content.js';
 
 export interface SeriesEntry {
 	/** The original, complete series. Eligibility never changes reading progress. */
@@ -15,6 +16,7 @@ export interface SeriesEntry {
 export interface SeriesEntryOptions {
 	filters?: ReaderFilters;
 	includeUnclassified?: boolean;
+	seriesContent?: SeriesContentIndex;
 }
 export interface SeriesRecommendation extends SeriesEntry {
 	score: number;
@@ -46,8 +48,9 @@ export function seriesEntry(series: CatalogSeries, books: ReadonlyMap<string, Ca
 				(numbered || !hasExplicitLaterVolume(book)) ? [book] : [];
 		});
 	// A thin backfill alias must not bypass a flag on its substantive counterpart.
+	const context = options.seriesContent ?? buildSeriesContentIndex([series], books);
 	const eligible = collapsePlaceholderDuplicates(editions).filter(book =>
-		(options.includeUnclassified || book.scope === 'indexed') && passesFilters(book, options.filters ?? defaultFilters));
+		(options.includeUnclassified || book.scope === 'indexed') && passesDiscoveryFilters(book, options.filters ?? defaultFilters, context));
 	const book = eligible.find(book => book.id === work.bookId) ?? eligible.sort((a, b) =>
 		bookPopularity(b) - bookPopularity(a) || Number(!a.coverUrl) - Number(!b.coverUrl) || a.id.localeCompare(b.id))[0];
 	return book ? { series, work, book } : null;
@@ -56,9 +59,10 @@ export function seriesEntry(series: CatalogSeries, books: ReadonlyMap<string, Ca
 /** One eligible entry per canonical series, before ranking or applying a result limit. */
 export function eligibleSeriesEntries(series: readonly CatalogSeries[], books: ReadonlyMap<string, CatalogBook>, options: SeriesEntryOptions = {}): SeriesEntry[] {
 	const entries = new Map<string, SeriesEntry>();
+	const withContext = { ...options, seriesContent: options.seriesContent ?? buildSeriesContentIndex(series, books) };
 	for (const candidate of series) {
 		if (entries.has(candidate.id)) continue;
-		const entry = seriesEntry(candidate, books, options);
+		const entry = seriesEntry(candidate, books, withContext);
 		if (entry) entries.set(candidate.id, entry);
 	}
 	return [...entries.values()];

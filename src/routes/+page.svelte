@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
-	import { collapsePlaceholderDuplicates, defaultFilters, displayDate, genreLabels, passesFilters, searchBooks, tasteLabels, type Catalog, type CatalogBook, type ReaderFilters, type Taste, type TasteWeights } from '$lib/catalog';
+	import { collapsePlaceholderDuplicates, defaultFilters, displayDate, genreLabels, searchBooks, tasteLabels, type Catalog, type CatalogBook, type ReaderFilters, type Taste, type TasteWeights } from '$lib/catalog';
+	import { buildSeriesContentIndex, passesDiscoveryFilters } from '$lib/series-content';
 	import {
 		emptyLibrary, followSeries, isFollowing, libraryExport, markSeriesRead, mergeLibraries, migrateLibrary, parseFilters,
 		markReadThrough, parseLibrary, parseLibraryExport, parseSeriesLibrary, seriesProgress, setWorkRating, setWorkStatus, shelfLabels,
@@ -55,11 +56,12 @@
 	// no series name, and they would otherwise render as blank cards everywhere downstream.
 	const allSeries = $derived(catalog ? seriesFor(catalog).map((s) => (s.title?.trim() ? s : { ...s, title: seriesTitle(s, bookIndex) })) : []);
 	const works = $derived(workIndex(allSeries, books));
-	const catalogBooks = $derived(collapsePlaceholderDuplicates(books).filter((b) => (includeUnclassified || b.scope === 'indexed') && passesFilters(b, filters)));
+	const seriesContent = $derived(buildSeriesContentIndex(allSeries, bookIndex));
+	const catalogBooks = $derived(collapsePlaceholderDuplicates(books).filter((b) => (includeUnclassified || b.scope === 'indexed') && passesDiscoveryFilters(b, filters, seriesContent)));
 	/** Discovery eligibility resolves volume 1 BEFORE applying preferences, so a later unflagged
 	 * volume can never pull a series with a blocked first book into the grid. Each entry carries
 	 * the exact book that passed, and that is the book rendered. */
-	const entries = $derived(eligibleSeriesEntries(allSeries, bookIndex, { filters, includeUnclassified }));
+	const entries = $derived(eligibleSeriesEntries(allSeries, bookIndex, { filters, includeUnclassified, seriesContent }));
 	const entryBySeries = $derived(new Map(entries.map((e) => [e.series.id, e])));
 	const browsable = $derived(entries.map((e) => e.series));
 	const seriesById = $derived(new Map(allSeries.map((s) => [s.id, s])));
@@ -106,7 +108,7 @@
 	const seed = $derived(books.find((b) => b.id === seedId) ?? (defaultSeedSeries ? coverOf(defaultSeedSeries) : null) ?? entries[0]?.book ?? null);
 	const similarLimit = 12;
 	/** Ranked over canonical starting works, each keeping the eligible edition it was scored on. */
-	const similarSeries = $derived(seed ? recommendSeries(seed, allSeries, bookIndex, { filters, includeUnclassified, weights, limit: similarLimit }) : []);
+	const similarSeries = $derived(seed ? recommendSeries(seed, allSeries, bookIndex, { filters, includeUnclassified, seriesContent, weights, limit: similarLimit }) : []);
 
 	const releaseBooks = $derived(searchBooks(catalogBooks, query).filter((b) => {
 		// A podcast feed is not an audiobook release. Collections and full-cast editions stay.
@@ -417,7 +419,7 @@
 			<label class="checkbox-label"><input type="checkbox" checked={filters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide unclassified content</label>
 			<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include genres awaiting review</label>
 		</div>
-		<div class="preference-foot"><span>Filters decide which series are listed, never which books count toward your progress. {coverCoverage.toLocaleString()} of {catalogBooks.length.toLocaleString()} visible editions have cover assessments.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
+		<div class="preference-foot"><span>Harem filtering includes series with a publisher disclosure on another volume. Your library and reading progress stay complete. {coverCoverage.toLocaleString()} of {catalogBooks.length.toLocaleString()} visible editions have cover assessments.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
 	</section>{/if}
 {/snippet}
 {#snippet freshness()}{#if catalog?.sourceSnapshotAt}<span class="freshness">Source snapshot: {displayDate(catalog.sourceSnapshotAt.slice(0, 10))}</span>{/if}{/snippet}

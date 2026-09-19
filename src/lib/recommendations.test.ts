@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { defaultFilters, passesFilters, recommend, type CatalogBook, type ContentSignal } from './catalog.js';
 import { eligibleSeriesEntries, recommendSeries, seriesEntry } from './recommendations.js';
 import type { CatalogSeries, CatalogWork } from './series.js';
+import { buildSeriesContentIndex, passesDiscoveryFilters } from './series-content.js';
+import { emptyLibrary, markSeriesRead, seriesProgress } from './library.js';
 
 const unknown = (): ContentSignal => ({ verdict: 'unknown', confidence: 0, source: 'unknown', note: '' });
 const content = (): CatalogBook['content'] => ({ sexualized: unknown(), explicit: unknown(), harem: unknown(), aiNarration: unknown(), aiWriting: unknown(), quality: unknown() });
@@ -25,6 +27,78 @@ function flagged(book: CatalogBook, field: keyof CatalogBook['content'] = 'harem
 	return { ...book, content: { ...book.content, [field]: { verdict: 'present', confidence: 1, source: 'publisher', note: 'Explicit source disclosure.' } } };
 }
 const seed = () => book({ id: 'SEED', seriesKey: 'seed-series', series: 'Seed Series', author: 'Seed Author' });
+
+describe('series-level harem preferences', () => {
+	it('uses a later publisher disclosure for discovery without changing any book classification or library progress', () => {
+		const first = book(), second = flagged(book({ id: 'SECOND', seriesNumber: 2 }));
+		const candidate = series([first, second]), books = index(first, second), before = structuredClone([candidate, first, second]);
+		const context = buildSeriesContentIndex([candidate], books);
+		expect(passesFilters(first, defaultFilters)).toBe(true);
+		expect(passesDiscoveryFilters(first, defaultFilters, context)).toBe(false);
+		expect(eligibleSeriesEntries([candidate], books)).toEqual([]);
+		expect(recommendSeries(seed(), [candidate], books)).toEqual([]);
+		expect(seriesEntry(candidate, books, { filters: { ...defaultFilters, hideHarem: false } })?.book).toBe(first);
+		const library = markSeriesRead(emptyLibrary(), candidate, '2026-09-19');
+		expect(seriesProgress(library, candidate, '2026-09-19T12:00:00.000Z')).toMatchObject({ read: 2, total: 2 });
+		expect([candidate, first, second]).toEqual(before);
+	});
+
+	it('keeps a book-specific absence verdict, but not an uncertain absence', () => {
+		const first = book(), second = flagged(book({ id: 'SECOND', seriesNumber: 2 }));
+		first.content.harem = { verdict: 'absent', confidence: 0.9, source: 'publisher', note: 'No harem.' };
+		const candidate = series([first, second]), books = index(first, second);
+		expect(seriesEntry(candidate, books)?.book).toBe(first);
+		first.content.harem.confidence = 0.6;
+		expect(seriesEntry(candidate, books)).toBeNull();
+	});
+
+	it('filters a collection belonging to the series without treating its label as evidence about its components', () => {
+		const first = book(), later = flagged(book({ id: 'LATER', seriesNumber: 2 }));
+		const bundle = book({ id: 'BUNDLE', title: 'Books 1–3', edition: 'collection' });
+		const candidate = series([first, later]), books = index(first, later, bundle);
+		expect(passesDiscoveryFilters(bundle, defaultFilters, buildSeriesContentIndex([candidate], books))).toBe(false);
+		const bundleOnly = buildSeriesContentIndex([series([first])], index(first, flagged(bundle)));
+		expect(bundleOnly.size).toBe(0);
+	});
+
+	it.each(['jev', 'manual', 'vision', 'unknown'] as const)('does not turn a %s harem signal into a publisher series fact', source => {
+		const first = book(), later = flagged(book({ id: 'LATER', seriesNumber: 2 }));
+		later.content.harem.source = source;
+		expect(seriesEntry(series([first, later]), index(first, later))?.book).toBe(first);
+	});
+
+	it.each(['sexualized', 'explicit', 'aiNarration', 'aiWriting', 'quality'] as const)('keeps %s evidence on its own edition', field => {
+		const first = book(), later = flagged(book({ id: 'LATER', seriesNumber: 2 }), field);
+		expect(buildSeriesContentIndex([series([first, later])], index(first, later)).size).toBe(0);
+	});
+
+	it('uses canonical edition membership across an old series key, preserving exact evidence and deduplicating works', () => {
+		const first = book(), later = flagged(book({ id: 'LATER', seriesNumber: 2 }));
+		const alternate = flagged(book({ id: 'ALT', seriesNumber: 2, seriesKey: 'old-key' }));
+		const candidate = series([first, later], { works: [work(first), work(later, { editionIds: [later.id, alternate.id] })] });
+		const context = buildSeriesContentIndex([candidate], index(first, later, alternate));
+		expect(context.get(first.id)).toEqual({ seriesId: candidate.id, supportingEditionIds: ['ALT', 'LATER'], supportingWorkIds: ['work-LATER'] });
+		expect(context.get(alternate.id)).toBe(context.get(first.id));
+	});
+
+	it('does not spread to another series by the same author or a same-named series by another author', () => {
+		const first = flagged(book()), sameAuthor = book({ id: 'OTHER', seriesKey: 'different-series' });
+		const sameTitle = book({ id: 'OTHER-AUTHOR', seriesKey: 'test-series-other-author', author: 'Other Author' });
+		const books = index(first, sameAuthor, sameTitle);
+		const entries = eligibleSeriesEntries([series([first]), series([sameAuthor]), series([sameTitle])], books);
+		expect(entries.map(e => e.book.id)).toEqual([sameAuthor.id, sameTitle.id]);
+	});
+
+	it('ignores weak publisher evidence and ambiguous edition membership', () => {
+		const first = book(), later = flagged(book({ id: 'LATER', seriesNumber: 2 }));
+		later.content.harem.confidence = 0.7;
+		const candidate = series([first, later]), books = index(first, later);
+		expect(buildSeriesContentIndex([candidate], books).size).toBe(0);
+		later.content.harem.confidence = 1;
+		const conflicting = series([later], { id: 'conflicting-series' });
+		expect(buildSeriesContentIndex([candidate, conflicting], books).size).toBe(0);
+	});
+});
 
 describe('canonical series entries for discovery', () => {
 	it('does not let Wolf King’s Lair volume 4 surface a blocked first-volume cover', () => {
@@ -51,7 +125,7 @@ describe('canonical series entries for discovery', () => {
 	});
 
 	it('finds volume 1 even when the supplied works are out of order and leaves the full series untouched', () => {
-		const first = book(), second = flagged(book({ id: 'SECOND', seriesNumber: 2 }));
+		const first = book(), second = flagged(book({ id: 'SECOND', seriesNumber: 2 }), 'sexualized');
 		const candidate = series([second, first]), before = structuredClone(candidate);
 		const entry = seriesEntry(candidate, index(first, second))!;
 		expect(entry.book).toBe(first);
