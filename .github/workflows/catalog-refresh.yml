@@ -16,6 +16,11 @@ on:
         type: boolean
         required: true
         default: true
+      allow_outside_window:
+        description: 'Explicit one-run exception to the UTC window for a manual refresh'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -85,15 +90,21 @@ jobs:
     steps:
       - name: Check the UTC run window
         id: window
+        env:
+          CATALOG_ALLOW_OUTSIDE_WINDOW: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_outside_window || false }}
         run: |
           python3 - <<'PY'
           import datetime, os
           now = datetime.datetime.now(datetime.timezone.utc)
           end = now.replace(hour=22, minute=0, second=0, microsecond=0)
-          allowed = now.hour >= 2 and now + datetime.timedelta(minutes=27) <= end
+          manual_exception = os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch' and os.environ.get('CATALOG_ALLOW_OUTSIDE_WINDOW') == 'true'
+          allowed = manual_exception or (now.hour >= 2 and now + datetime.timedelta(minutes=27) <= end)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('allowed=' + str(allowed).lower() + '\n')
-          print('Catalog refresh may run with its checkpoint reserve.' if allowed else 'Catalog refresh skipped: outside the permitted UTC window or too close to 22:00 UTC.')
+          if manual_exception:
+              print('Explicit one-run UTC exception for this manual refresh. Work and checkpoint time limits still apply.')
+          else:
+              print('Catalog refresh may run with its checkpoint reserve.' if allowed else 'Catalog refresh skipped: outside the permitted UTC window or too close to 22:00 UTC.')
           PY
 
       - name: Check out the public app
@@ -150,3 +161,4 @@ jobs:
           JEV_MODEL: jev-latest
           COVER_MODEL: gpt-4.1-mini
           CATALOG_NO_ENRICH: ${{ github.event_name == 'workflow_dispatch' && inputs.no_enrich || false }}
+          CATALOG_ALLOW_OUTSIDE_WINDOW: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_outside_window || false }}

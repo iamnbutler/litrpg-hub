@@ -80,6 +80,10 @@ It schedules a bounded refresh at **08:17 UTC daily**. Both the workflow and wor
 skip **22:00–02:00 UTC**, including delayed and manual starts, and reserve time for
 a private checkpoint before 22:00.
 
+An explicitly requested one-off manual refresh can opt into `allow_outside_window`.
+It defaults to false, applies only to that dispatch, and is ignored for scheduled
+runs. The worker's work and checkpoint time limits remain in force.
+
 `CATALOG_DATA_TOKEN` is provisioned as an encrypted secret in this public
 repository: a dedicated fine-grained token scoped to Contents read/write for
 **only** `iamnbutler/shelfgoblin-data`, expiring **December 18, 2026**. Rotate it
