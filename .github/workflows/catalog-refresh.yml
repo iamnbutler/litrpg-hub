@@ -37,7 +37,8 @@ jobs:
           import datetime, os
           now = datetime.datetime.now(datetime.timezone.utc)
           end = now.replace(hour=22, minute=0, second=0, microsecond=0)
-          allowed = now.hour >= 2 and now + datetime.timedelta(minutes=27) <= end
+          # Verification has a 15-minute job timeout; it needs no refresh/checkpoint reserve.
+          allowed = now.hour >= 2 and now + datetime.timedelta(minutes=15) <= end
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('allowed=' + str(allowed).lower() + '\n')
           print('Producer verification may run.' if allowed else 'Producer verification skipped: outside the permitted UTC window or too close to 22:00 UTC.')

@@ -80,12 +80,13 @@ It schedules a bounded refresh at **08:17 UTC daily**. Both the workflow and wor
 skip **22:00–02:00 UTC**, including delayed and manual starts, and reserve time for
 a private checkpoint before 22:00.
 
-**Setup prerequisite:** `CATALOG_DATA_TOKEN` has not yet been provisioned. Add it as
-an encrypted secret in this public repository: a dedicated fine-grained token
-scoped to Contents read/write for **only** `iamnbutler/shelfgoblin-data`. Reader
-OAuth credentials do not grant that access. The workflow's `GITHUB_TOKEN` writes
-only to this public repository. Paid refreshes also require encrypted
-`OPENAI_API_KEY` and `TYPESAFE_API_KEY` secrets.
+`CATALOG_DATA_TOKEN` is provisioned as an encrypted secret in this public
+repository: a dedicated fine-grained token scoped to Contents read/write for
+**only** `iamnbutler/shelfgoblin-data`, expiring **December 18, 2026**. Rotate it
+before expiry. The workflow's `GITHUB_TOKEN` writes only to this public repository.
+Paid refreshes use the configured encrypted `OPENAI_API_KEY` and
+`TYPESAFE_API_KEY` secrets. The verification-only job reserves its 15-minute
+timeout; full refreshes reserve 27 minutes for work and checkpointing.
 
 Manual dispatch defaults to `task=verify`, which installs, type-checks, and tests
 the private producer without model credentials. Use `task=refresh` for catalog
