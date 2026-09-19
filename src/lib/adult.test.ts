@@ -54,3 +54,20 @@ describe('the adult gate', () => {
     expect(parseAdultConsent('yes', at)).toEqual(noConsent());
   });
 });
+
+// The product rule: a reader who has set no date of birth, or one under 18, must never learn
+// from the app that adult content exists in it. These assert the data layer cannot leak it;
+// the UI enforces the matching rule by rendering the section only when verifiedAdult.
+describe('discretion before a date of birth is set', () => {
+  it('reports a locked gate identically for no claim and for a minor', () => {
+    const none = parseAdultConsent(null, at);
+    const minor = parseAdultConsent({ birthDate: '2015-01-01', attestedAt: at, allowAdult: true }, at);
+    expect(adultUnlocked(none, at)).toBe(adultUnlocked(minor, at));
+    expect(applyAdultGate(open, adultUnlocked(none, at))).toEqual(applyAdultGate(open, adultUnlocked(minor, at)));
+  });
+  it('hides the same signals whether or not the reader has ever been asked', () => {
+    const locked = applyAdultGate(open, false);
+    expect(locked.hideSexualized).toBe(true);
+    expect(locked.hideExplicit).toBe(true);
+  });
+});
