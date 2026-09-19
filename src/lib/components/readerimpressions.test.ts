@@ -106,14 +106,14 @@ describe('trait precedence', () => {
 describe('methodology control', () => {
 	it('keeps the sample size visible without interaction', () => {
 		const head = html(SPLIT).split('info-panel')[0];
-		expect(head).toContain('24 sampled public reviews');
+		expect(head).toContain('From 24 reader reviews');
 	});
 
 	it('ships the methodology in the markup so it survives with scripting off', () => {
 		// Collapsed with CSS, not removed: server-rendered output must carry the record.
 		const out = text(SPLIT);
-		expect(out).toContain('readers rather than confirmed listeners');
-		expect(out).toContain('not a rating and not a tally of everyone');
+		expect(out).toContain('in print or ebook rather than listening');
+		expect(out).toContain('not a rating, and not every reader');
 		expect(html(SPLIT)).toContain('https://hardcover.app/books/x');
 	});
 
@@ -126,7 +126,7 @@ describe('methodology control', () => {
 	});
 
 	it('gives the trigger a name that is not the bare glyph', () => {
-		expect(text(SPLIT)).toContain('About this sample');
+		expect(text(SPLIT)).toContain('Where this comes from');
 	});
 });
 

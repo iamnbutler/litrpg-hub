@@ -201,13 +201,13 @@ describe('up to date on released audiobooks', () => {
 		expect(seriesGaps(withEbook)).toEqual([]);
 		expect(seriesProgress(library, withEbook, NOW)).toMatchObject({ caughtUp: true, total: 3, undated: 0 });
 	});
-	it('will not claim up to date while a volume is missing from the catalog', () => {
+	it('will not claim up to date while a volume is missing from this list', () => {
 		const series = only(groupSeries([...volume(1, 'One', '2021-01-01'), ...volume(3, 'Three', '2023-01-01')]));
 		const library = markSeriesRead(emptyLibrary(), series, TODAY);
 		const progress = seriesProgress(library, series, NOW);
 		// The reader has finished everything we hold, so they are not "behind" either.
 		expect(progress).toMatchObject({ read: 2, total: 2, caughtUp: false, gaps: [2], state: 'caught-up-partial' });
-		expect(progress.unresolved).toContain('Book 2 is missing from the catalog');
+		expect(progress.unresolved).toContain('Book 2 is missing from this list');
 	});
 	it('will not claim up to date while an audiobook has no known release date', () => {
 		const series = only(groupSeries([...volume(1, 'One', '2021-01-01'), ...volume(2, 'Two', null)]));
@@ -233,7 +233,7 @@ describe('up to date on released audiobooks', () => {
 		// failed to number, so we stop short of claiming currency.
 		const progress = seriesProgress(library, series, NOW);
 		expect(progress).toMatchObject({ caughtUp: false, total: 1, state: 'caught-up-partial', side: { read: 0, total: 1 } });
-		expect(progress.unresolved).toContain('1 unnumbered entry is unread');
+		expect(progress.unresolved).toContain('1 side entry is unread');
 		// A reviewed manifest scopes the series to its numbered mainline, so a side story is
 		// out of scope and cannot hold back currency.
 		expect(seriesProgress(library, covered(series), NOW)).toMatchObject({ caughtUp: true, state: 'caught-up' });
@@ -558,7 +558,7 @@ describe('history preservation regressions from real catalog shapes', () => {
 
 		const progress = seriesProgress(migrated, az, NOW);
 		expect(progress).toMatchObject({ read: 1, total: 2, caughtUp: false, state: 'in-progress' });
-		expect(progress.unresolved).toContain('Book 2, 3, 4, 5 are missing from the catalog');
+		expect(progress.unresolved).toContain('Book 2, 3, 4, 5 are missing from this list');
 
 		// Root later seeds the series: new id, new work ids, old id kept as an alias.
 		const seeded: CatalogSeries = { ...az, id: 'azarinth-healer-canonical', aliases: [az.id], works: az.works.map((w) => ({ ...w, id: `work-az-${w.number}`, verified: true })) };
@@ -571,7 +571,7 @@ describe('history preservation regressions from real catalog shapes', () => {
 		const ao: CatalogSeries = { ...only(groupSeries([...volume(1, 'Awaken Online: Catharsis', '2017-01-01')])), status: 'ongoing', curated: true };
 		const progress = seriesProgress(markSeriesRead(emptyLibrary(), ao, NOW), ao, NOW);
 		expect(progress).toMatchObject({ read: 1, total: 1, caughtUp: false, state: 'caught-up-partial', sourceComplete: false });
-		expect(progress.unresolved).toEqual(['we can’t confirm this series’ audiobook list is complete']);
+		expect(progress.unresolved).toEqual(['This list may be incomplete']);
 	});
 });
 
@@ -636,7 +636,7 @@ describe('story completion is not audio completion', () => {
 		const storyDone: CatalogSeries = { ...series, status: 'complete' };
 		const progress = seriesProgress(markSeriesRead(emptyLibrary(), storyDone, NOW), storyDone, NOW);
 		expect(progress).toMatchObject({ read: 2, caughtUp: false, state: 'caught-up-partial', sourceComplete: false });
-		expect(progress.unresolved).toEqual(['we can’t confirm this series’ audiobook list is complete']);
+		expect(progress.unresolved).toEqual(['This list may be incomplete']);
 	});
 	it('claims currency once audio coverage is asserted, even while the story is ongoing', () => {
 		const audioDone: CatalogSeries = covered({ ...series, status: 'ongoing' });
@@ -649,7 +649,7 @@ describe('story completion is not audio completion', () => {
 		const gappy: CatalogSeries = only(groupSeries([...volume(1, 'One', '2021-01-01'), ...volume(3, 'Three', '2023-01-01')]));
 		const progress = seriesProgress(markSeriesRead(emptyLibrary(), gappy, NOW), gappy, NOW);
 		expect(progress.caughtUp).toBe(false);
-		expect(progress.unresolved).toContain('Book 2 is missing from the catalog');
+		expect(progress.unresolved).toContain('Book 2 is missing from this list');
 	});
 });
 
@@ -752,7 +752,7 @@ describe('audio coverage is re-checked, never trusted as shipped', () => {
 		const expired = covered(series(), { validUntil: '2026-09-18T06:00:00.000Z' });
 		const progress = seriesProgress(allRead(expired), expired, NOW);
 		expect(progress).toMatchObject({ caughtUp: false, sourceComplete: false, state: 'caught-up-partial' });
-		expect(progress.unresolved).toContain('we can’t confirm this series’ audiobook list is complete');
+		expect(progress.unresolved).toContain('This list may be incomplete');
 	});
 	it('refuses coverage whose window closes exactly now, since the bound is exclusive', () => {
 		const boundary = covered(series(), { validUntil: NOW });
@@ -779,11 +779,11 @@ describe('audio coverage is re-checked, never trusted as shipped', () => {
 		const notCurrent = covered(series(), { current: false });
 		expect(seriesProgress(allRead(notCurrent), notCurrent, NOW).caughtUp).toBe(false);
 	});
-	it('will not claim currency when a verified release is missing from the catalog', () => {
+	it('will not claim currency when a verified release is missing from this list', () => {
 		const s = covered(series(), { releasedWorkIds: [series().works[0].id, 'work-we-do-not-have'] });
 		const progress = seriesProgress(allRead(s), s, NOW);
 		expect(progress.caughtUp).toBe(false);
-		expect(progress.unresolved).toContain('1 verified audiobook is missing from the catalog');
+		expect(progress.unresolved).toContain('1 audiobook is missing from this list');
 	});
 	it('does not count a scheduled book as unread', () => {
 		const s = only(groupSeries([...volume(1, 'One', '2021-01-01'), ...volume(2, 'Two', '2027-01-01')]));
@@ -797,7 +797,7 @@ describe('audio coverage is re-checked, never trusted as shipped', () => {
 		const library = setWorkStatus(emptyLibrary(), narrow, s.works[0], 'read');
 		const progress = seriesProgress(library, narrow, NOW);
 		expect(progress).toMatchObject({ total: 1, read: 1, caughtUp: false });
-		expect(progress.unresolved).toContain('1 catalogued volume is not covered by the reviewed audio list');
+		expect(progress.unresolved).toContain('1 book here has not been confirmed as an audiobook');
 	});
 });
 

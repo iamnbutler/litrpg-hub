@@ -28,7 +28,7 @@ export function toContentAssessment(book: Parameters<typeof contentState>[0], co
 		const answer = response.answers[key];
 		if (answer?.type !== 'choice' || !['present','absent','unknown'].includes(answer.choice)) throw new Error(`Invalid content answer: ${key}`);
 		return { verdict: answer.choice as ContentSignal['verdict'], confidence: key === 'sexualized' ? Math.min(answer.confidence, cover.confidence) : answer.confidence,
-			source: 'jev', note: key === 'sexualized' ? `Jev assessed the listing and OpenAI cover observations. ${cover.observations.join(' ')}` : 'Jev assessed the supplied book metadata; cover art does not establish story content.' };
+			source: 'jev', note: key === 'sexualized' ? cover.observations.join(' ') : 'Cover art does not establish what happens in the story.' };
 	};
 	return { inputHash: contentAssessmentHash(book, cover), model: response.model, evaluatedAt: new Date().toISOString(),
 		sexualized: signal('sexualized'), explicit: signal('explicit'), harem: signal('harem') };

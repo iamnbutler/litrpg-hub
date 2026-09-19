@@ -28,7 +28,7 @@
 <section class="series-head">
 	<div class="series-art">{#if cover?.coverUrl && !coverFailed}<img src={cover.coverUrl} alt={`Cover of ${series.title}`} onerror={() => coverFailed = true}/>{:else}<Icon name="book" size={56}/>{/if}</div>
 	<div class="series-meta">
-		<div class="eyebrow">{series.genres.slice(0, 3).map((g) => genreLabels[g] ?? g).join(' · ') || 'Genre awaiting review'}</div>
+		{#if series.genres.length}<div class="eyebrow">{series.genres.slice(0, 3).map((g) => genreLabels[g] ?? g).join(' · ')}</div>{/if}
 		<h1>{series.title}</h1>
 		<p class="by">by {series.author}</p>
 		<p class="counts">
@@ -105,12 +105,12 @@
 {/if}
 
 <section class="work-section" aria-label="Audiobooks in this series">
-	<div class="section-head"><h2>Audiobooks</h2><span class="small-note">In reading order. Full-cast and collection editions stay under Releases.</span></div>
+	<div class="section-head"><h2>Audiobooks</h2><span class="small-note">In reading order</span></div>
 	<ul class="work-list">{#each mainline as work (work.id)}{@render workRow(work)}{/each}</ul>
 </section>
 {#if extras.length}
 	<section class="work-section" aria-label="Side entries">
-		<div class="section-head"><h2>Side entries</h2><span class="small-note">Anthologies and shorts. These never count toward being up to date.</span></div>
+		<div class="section-head"><h2>Side entries</h2><span class="small-note">Anthologies and shorts</span></div>
 		<ul class="work-list">{#each extras as work (work.id)}{@render workRow(work)}{/each}</ul>
 	</section>
 {/if}

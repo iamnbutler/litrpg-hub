@@ -4,6 +4,7 @@
 	import { base } from '$app/paths';
 	import { collapsePlaceholderDuplicates, defaultFilters, displayDate, genreLabels, searchBooks, tasteLabels, type Catalog, type CatalogBook, type ReaderFilters, type Taste, type TasteWeights } from '$lib/catalog';
 	import { buildSeriesContentIndex, passesDiscoveryFilters } from '$lib/series-content';
+	import { ADULT_AGE, adultUnlocked, applyAdultGate, isAdult, isGatedFilter, noConsent, parseAdultConsent, parseBirthDate, type AdultConsent } from '$lib/adult';
 	import {
 		emptyLibrary, followSeries, isFollowing, libraryExport, markSeriesRead, mergeLibraries, migrateLibrary, parseFilters,
 		markReadThrough, parseLibrary, parseLibraryExport, parseSeriesLibrary, seriesProgress, setWorkRating, setWorkStatus, shelfLabels,
@@ -33,7 +34,9 @@
 	let sort = $state('popular'), includeUnclassified = $state(false), visibleCount = $state(24);
 	let filters: ReaderFilters = $state({ ...defaultFilters }), filtersOpen = $state(false);
 	let library = $state<SeriesLibrary>(emptyLibrary()), storageWarning = $state('');
-	let account = $state<AccountState>({ user: null, status: 'Checking sign-in…', ready: false, needsLogin: false, canImport: false });
+	let account = $state<AccountState>({ user: null, status: 'Checking sign-in…', ready: false, needsLogin: false, canImport: false, consent: noConsent() });
+	let consent = $state<AdultConsent>(noConsent());
+	let birthInput = $state(''), editingBirthDate = $state(false), consentBusy = $state(false), consentError = $state('');
 	let accountSync: AccountSync | undefined;
 	let signingOut = $state(false);
 	let legacyShelf: Library = {}, storedLibrary: SeriesLibrary | null = null, migrated = false, unreadableRecord: string | null = null;
@@ -48,6 +51,20 @@
 	let nowIso = $state(new Date().toISOString());
 	const today = $derived(nowIso.slice(0, 10));
 
+	/** Re-derived from the stored date against the live clock, so a reader who turns 18 with the
+	 * tab open gains the option, and one whose claim no longer supports it loses it. */
+	const verifiedAdult = $derived(isAdult(consent.birthDate, nowIso));
+	const adultOn = $derived(adultUnlocked(consent, nowIso));
+	/** Every consumer reads this, never `filters`: the reader's stored preferences are a request,
+	 * and the gate decides what is actually applied. A stale localStorage value, another tab, or
+	 * an imported settings blob therefore cannot reveal sexual content on its own. */
+	const effectiveFilters = $derived(applyAdultGate(filters, adultOn));
+	const filterOptions = $derived([
+		...(adultOn ? [{ key: 'hideSexualized', label: 'Sexualized covers and marketing' }, { key: 'hideExplicit', label: 'Explicit sexual content' }] : []),
+		{ key: 'hideHarem', label: 'Harem and reverse harem' }, { key: 'hideAiNarration', label: 'AI narration' },
+		{ key: 'hideAiWriting', label: 'AI-written books' }, { key: 'hideQualityFlags', label: 'Poor-quality listings' }
+	] as { key: keyof ReaderFilters; label: string }[]);
+
 	const books = $derived(catalog?.books ?? []);
 	const bookIndex = $derived(new Map(books.map((b) => [b.id, b])));
 	/** Series structure is built from the whole catalog. Content filters decide what is shown,
@@ -60,11 +77,11 @@
 	const allSeries = $derived(catalog ? seriesFor(catalog).map((s) => (s.title?.trim() ? s : { ...s, title: seriesTitle(s, bookIndex) })) : []);
 	const works = $derived(workIndex(allSeries, books));
 	const seriesContent = $derived(buildSeriesContentIndex(allSeries, bookIndex));
-	const catalogBooks = $derived(collapsePlaceholderDuplicates(books).filter((b) => (includeUnclassified || b.scope === 'indexed') && passesDiscoveryFilters(b, filters, seriesContent)));
+	const catalogBooks = $derived(collapsePlaceholderDuplicates(books).filter((b) => (includeUnclassified || b.scope === 'indexed') && passesDiscoveryFilters(b, effectiveFilters, seriesContent)));
 	/** Discovery eligibility resolves volume 1 BEFORE applying preferences, so a later unflagged
 	 * volume can never pull a series with a blocked first book into the grid. Each entry carries
 	 * the exact book that passed, and that is the book rendered. */
-	const entries = $derived(eligibleSeriesEntries(allSeries, bookIndex, { filters, includeUnclassified, seriesContent }));
+	const entries = $derived(eligibleSeriesEntries(allSeries, bookIndex, { filters: effectiveFilters, includeUnclassified, seriesContent }));
 	const entryBySeries = $derived(new Map(entries.map((e) => [e.series.id, e])));
 	const browsable = $derived(entries.map((e) => e.series));
 	const seriesById = $derived(new Map(allSeries.map((s) => [s.id, s])));
@@ -111,7 +128,7 @@
 	const seed = $derived(books.find((b) => b.id === seedId) ?? (defaultSeedSeries ? coverOf(defaultSeedSeries) : null) ?? entries[0]?.book ?? null);
 	const similarLimit = 12;
 	/** Ranked over canonical starting works, each keeping the eligible edition it was scored on. */
-	const similarSeries = $derived(seed ? recommendSeries(seed, allSeries, bookIndex, { filters, includeUnclassified, seriesContent, weights, limit: similarLimit }) : []);
+	const similarSeries = $derived(seed ? recommendSeries(seed, allSeries, bookIndex, { filters: effectiveFilters, includeUnclassified, seriesContent, weights, limit: similarLimit }) : []);
 
 	const releaseBooks = $derived(searchBooks(catalogBooks, query).filter((b) => {
 		// A podcast feed is not an audiobook release. Collections and full-cast editions stay.
@@ -122,9 +139,8 @@
 		if (releaseMode === 'upcoming') return b.releaseDate >= today;
 		return b.releaseDate.startsWith(releaseYear) && (releaseMonth === 'all' || b.releaseDate.slice(5, 7) === releaseMonth);
 	}).sort((a, b) => (a.releaseDate ?? '').localeCompare(b.releaseDate ?? '') || a.title.localeCompare(b.title)));
-	const activePreferenceCount = $derived(Object.values(filters).filter(Boolean).length);
+	const activePreferenceCount = $derived(Object.values(effectiveFilters).filter(Boolean).length);
 	const semanticCount = $derived(similarSeries.filter((m) => m.method === 'taste').length);
-	const coverCoverage = $derived(catalogBooks.filter((b) => b.coverAssessment).length);
 	/** The direct lookup still matters: a reconciled id is deliberately absent from the work's
 	 * alias list, so `workEntry` cannot see a read saved against it. */
 	const entryOf = (book: CatalogBook) => { const hit = works.get(book.id); return (hit ? workEntry(library, hit.work) : undefined) ?? library.books[book.id]; };
@@ -230,7 +246,40 @@
 		if (!hit) return announce('Only the numbered audiobooks in a series can be rated.');
 		save(setWorkRating(library, hit.series, hit.work, rating));
 	}
-	function setFilter(key: keyof ReaderFilters, value: boolean) { filters = { ...filters, [key]: value }; visibleCount = 24; persist(storageKeys.filters, filters); }
+	function setFilter(key: keyof ReaderFilters, value: boolean) {
+		// A locked filter has no control rendered; refusing here as well means a stray call can
+		// never write a preference the reader is not entitled to.
+		if (isGatedFilter(key) && !adultOn) return;
+		filters = { ...filters, [key]: value }; visibleCount = 24; persist(storageKeys.filters, filters);
+	}
+	/** Resetting content filters deliberately leaves the age claim alone: it is an account
+	 * setting the reader made once, not a browsing preference. */
+	async function applyConsent(next: AdultConsent) {
+		if (accountSync) { consent = await accountSync.saveConsent(next); return; }
+		consent = parseAdultConsent(next, nowIso);
+		persist(storageKeys.adult, consent);
+	}
+	async function runConsent(next: AdultConsent, done: () => void) {
+		consentError = ''; consentBusy = true;
+		try { await applyConsent(next); done(); }
+		catch { consentError = 'That could not be saved. Please try again.'; }
+		finally { consentBusy = false; }
+	}
+	function confirmBirthDate() {
+		const birthDate = parseBirthDate(birthInput, new Date(nowIso));
+		if (!birthDate) { consentError = 'Enter your date of birth as a real date in the past.'; return; }
+		// Confirming an age never switches anything on. Opting in is a separate, deliberate act.
+		void runConsent({ birthDate, attestedAt: nowIso, allowAdult: false }, () => {
+			editingBirthDate = false;
+			announce(isAdult(birthDate, nowIso) ? 'Date of birth confirmed · you can now turn on 18+ content' : 'Date of birth confirmed · adult content stays hidden');
+		});
+	}
+	function setAllowAdult(value: boolean) {
+		void runConsent({ ...consent, allowAdult: value }, () => announce(value ? '18+ content is now shown' : '18+ content is hidden again'));
+	}
+	function forgetBirthDate() {
+		void runConsent(noConsent(), () => { editingBirthDate = false; birthInput = ''; announce('Date of birth removed · adult content is hidden again'); });
+	}
 	function resetFilters() { filters = { ...defaultFilters }; genre = 'all'; includeUnclassified = false; persist(storageKeys.filters, filters); }
 	/** The empty state's own action: resetFilters never touched the query, so offering only
 	 * "Reset filters" after a fruitless search did nothing visible. */
@@ -284,6 +333,12 @@
 	/** Another tab edited the library: adopt it rather than overwrite it on the next action. */
 	function syncStorage(event: StorageEvent) {
 		if (account.user) { void accountSync?.sync(); return; }
+		// Signed out, the age claim is browser-scoped, so removing a date in one tab must close
+		// the gate in the others rather than wait for a reload.
+		if (event.key === storageKeys.adult) {
+			try { consent = parseAdultConsent(JSON.parse(event.newValue ?? 'null'), nowIso); } catch { consent = noConsent(); }
+			return;
+		}
 		if (event.key !== storageKeys.library) return;
 		try {
 			const parsed = parseSeriesLibrary(JSON.parse(event.newValue ?? 'null'));
@@ -308,6 +363,8 @@
 			legacyShelf = parseLibrary(JSON.parse(localStorage.getItem(storageKeys.legacyLibrary) ?? '{}'));
 			raw = localStorage.getItem(storageKeys.library);
 			filters = parseFilters(JSON.parse(localStorage.getItem(storageKeys.filters) ?? '{}'));
+			// Guest-scoped until sign-in resolves; an account's own claim replaces it then.
+			consent = parseAdultConsent(JSON.parse(localStorage.getItem(storageKeys.adult) ?? 'null'), nowIso);
 		} catch { storageWarning = 'Your saved preferences could not be loaded. You can import a library backup.'; }
 		try { storedLibrary = parseSeriesLibrary(JSON.parse(raw ?? 'null')); } catch { storedLibrary = null; }
 		// A record we cannot read is still the reader's only copy. Never overwrite it silently.
@@ -321,8 +378,8 @@
 		void loadCatalog(controller.signal).then(async () => {
 			if (controller.signal.aborted) return;
 			try {
-				accountSync = new AccountSync(base, localStorage, (state, synced) => { account = state; if (synced) library = synced; });
-				await accountSync.start(library);
+				accountSync = new AccountSync(base, localStorage, (state, synced) => { account = state; consent = state.consent; if (synced) library = synced; });
+				await accountSync.start(library, consent);
 			} catch { account = { ...account, ready: true, status: 'Browser storage is unavailable' }; }
 		});
 		const refreshAccount = () => { if (document.visibilityState === 'visible') void accountSync?.sync(); };
@@ -431,7 +488,7 @@
 		<div class="browse-toolbar">
 			<label class="inline-field">Sort<select bind:value={sort} aria-label="Sort series"><option value="popular">Popular</option><option value="new">Latest audiobook</option><option value="volumes">Most books</option><option value="title">Title A–Z</option></select></label>
 			<select bind:value={genre} aria-label="Filter by genre" onchange={() => (visibleCount = 24)}><option value="all">All genres</option>{#each Object.entries(genreLabels) as [key, label] (key)}<option value={key}>{label}</option>{/each}</select>
-			{#if view === 'index'}<label class="checkbox-label"><input type="checkbox" checked={filters.hideSexualized} onchange={(e) => setFilter('hideSexualized', e.currentTarget.checked)}/>Hide sexualized content</label>{@render filterButton()}{/if}
+			{#if view === 'index'}{#if adultOn}<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters.hideSexualized} onchange={(e) => setFilter('hideSexualized', e.currentTarget.checked)}/>Hide sexualized content</label>{/if}{@render filterButton()}{/if}
 		</div>
 		{@render preferences()}
 		{#if list.length || !searchFallback.length}<div class="results-meta"><span>{list.length.toLocaleString()} series{query ? ` matching “${query}”` : ''}</span><div class="results-controls">{@render layoutControls()}</div></div>{/if}
@@ -460,12 +517,40 @@
 {#snippet preferences()}
 	{#if filtersOpen && view !== 'library'}<section class="preferences-panel" aria-label="Content filters">
 		<div class="preference-grid">
-			{#each [{ key: 'hideSexualized', label: 'Sexualized covers / marketing' }, { key: 'hideExplicit', label: 'Explicit sexual content' }, { key: 'hideHarem', label: 'Harem / reverse harem' }, { key: 'hideAiNarration', label: 'Disclosed AI narration' }, { key: 'hideAiWriting', label: 'Disclosed AI writing' }, { key: 'hideQualityFlags', label: 'Listing quality concerns' }] as option (option.key)}<label class="checkbox-label"><input type="checkbox" checked={filters[option.key as keyof ReaderFilters]} onchange={(e) => setFilter(option.key as keyof ReaderFilters, e.currentTarget.checked)}/>Hide {option.label.toLowerCase()}</label>{/each}
-			<label class="checkbox-label"><input type="checkbox" checked={filters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide unclassified content</label>
-			<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include genres awaiting review</label>
+			{#each filterOptions as option (option.key)}<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters[option.key]} onchange={(e) => setFilter(option.key, e.currentTarget.checked)}/>Hide {option.label.toLowerCase()}</label>{/each}
+			<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide books we’re unsure about</label>
+			<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include books without a genre</label>
 		</div>
-		<div class="preference-foot"><span>Harem filtering includes series with a publisher disclosure on another volume. Your library and reading progress stay complete. {coverCoverage.toLocaleString()} of {catalogBooks.length.toLocaleString()} visible editions have cover assessments.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
+		{@render adultSettings()}
+		<div class="preference-foot"><span>Filters change what you see here. Your library and reading progress stay complete.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
 	</section>{/if}
+{/snippet}
+{#snippet adultSettings()}
+	<section class="adult-gate" aria-label="Adult content">
+		<h2>Adult content</h2>
+		<p class="small-note">{adultOn
+			? 'Sexualized and explicit titles can appear. The two filters above are yours to set.'
+			: 'Sexualized covers and marketing, and explicit sexual content, are hidden.'}</p>
+		{#if !consent.birthDate || editingBirthDate}
+			<div class="birth-row">
+				<label for="birth-date">Date of birth</label>
+				<input id="birth-date" type="date" max={today} bind:value={birthInput} disabled={consentBusy}/>
+				<button class="secondary-button" disabled={consentBusy} onclick={confirmBirthDate}>Confirm</button>
+				{#if consent.birthDate}<button class="subtle-button" disabled={consentBusy} onclick={() => { editingBirthDate = false; consentError = ''; }}>Cancel</button>{/if}
+			</div>
+			<p class="small-note">Confirm your date of birth to choose whether 18+ titles are shown. GitHub does not tell us your age, so this is your own word for it. The date is kept only to check you are {ADULT_AGE} or over, and nothing else reads it.</p>
+		{:else if verifiedAdult}
+			<label class="checkbox-label"><input type="checkbox" checked={consent.allowAdult} disabled={consentBusy} onchange={(e) => setAllowAdult(e.currentTarget.checked)}/>Show 18+ titles</label>
+			<p class="small-note">Off unless you turn it on. Turning it on adds the two sexual-content filters above so you can set them yourself.</p>
+		{:else}
+			<p class="small-note">The date you confirmed is under {ADULT_AGE}, so 18+ titles stay hidden. The option appears on its own once you are old enough.</p>
+		{/if}
+		{#if consent.birthDate && !editingBirthDate}
+			<div class="birth-row"><button class="subtle-button" disabled={consentBusy} onclick={() => { birthInput = consent.birthDate ?? ''; consentError = ''; editingBirthDate = true; }}>Change date</button><button class="subtle-button" disabled={consentBusy} onclick={forgetBirthDate}>Remove date</button></div>
+		{/if}
+		{#if consentError}<p class="notice" role="alert">{consentError}</p>{/if}
+		{#if account.ready && !account.user}<p class="small-note">Saved in this browser only. Sign in with GitHub to keep this across your devices.</p>{/if}
+	</section>
 {/snippet}
 {#snippet freshness()}{#if catalog?.sourceSnapshotAt}<span class="freshness">Source snapshot: {displayDate(catalog.sourceSnapshotAt.slice(0, 10))}</span>{/if}{/snippet}
 {#if selectedBook}{#key selectedBook.id}<BookDetail book={selectedBook} series={seriesOf(selectedBook)} books={bookIndex} {library} {today} now={nowIso} entry={entryOf(selectedBook)} rateable={!!works.get(selectedBook.id)} onclose={closeBook} onshelf={setShelf} onrating={rateBook} onlike={findSimilar} onopen={openBook} onseries={openSeries}/>{/key}{/if}

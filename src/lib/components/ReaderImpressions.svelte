@@ -46,8 +46,10 @@
 			<h3>{heading}</h3>
 			<div class="head-meta">
 				<!-- substantiveVoices, never `voices`: only reviews with something to say were read.
-				     This stays out of the panel so the sample size is visible without interaction. -->
-				<span class="sampled">{view.sampled.toLocaleString()} sampled public review{view.sampled === 1 ? '' : 's'}{#if view.span} · {view.span}{/if}</span>
+				     The count stays out of the panel so it is visible without interaction — it is what
+				     stops "readers found it funny" reading as a claim about every reader. The date
+				     range moved into the panel: it is provenance, not something to read the line with. -->
+				<span class="sampled">From {view.sampled.toLocaleString()} reader review{view.sampled === 1 ? '' : 's'}</span>
 				<!-- role=group: the wrapper carries the pointer handlers that keep the panel open while the
 				     cursor travels from the trigger down into it. -->
 				<span
@@ -67,21 +69,20 @@
 						onpointerdown={() => act('press')}
 						onclick={() => act('click')}
 					>
-						<span aria-hidden="true">i</span><span class="sr-only">About this sample</span>
+						<span aria-hidden="true">i</span><span class="sr-only">Where this comes from</span>
 					</button>
 					<!-- Collapsed with CSS rather than removed from the tree: the methodology is part
 					     of the record even when closed, and server-rendered output must carry it.
 					     `display:none` still keeps it out of the accessibility tree while closed. -->
 					<div class="info-panel" class:open id={panelId}>
-						<p class="info-title">About this sample</p>
+						<p class="info-title">Where this comes from</p>
 						<p>
-							A bounded sample of public reviews, not a rating and not a tally of everyone.
-							Some reviews cover this book in other formats, so they are readers rather than confirmed listeners.
+							A selection of public reviews{#if view.span} posted {view.span}{/if} — not a rating, and not every reader.
+							Some of these reviewers read the book in print or ebook rather than listening.
 						</p>
-						<p>Gathered in bounded batches rather than read exhaustively. Individual review text is not shown.</p>
 						{#if view.sources.length}
 							<!-- rel=external marks these as real outbound URLs, not app routes to resolve. -->
-							<p class="sources">Sampled from {#each view.sources as source, i (source.url)}<a href={source.url} target="_blank" rel="external noreferrer">{source.name}</a>{#if i < view.sources.length - 1} · {/if}{/each}</p>
+							<p class="sources">From {#each view.sources as source, i (source.url)}<a href={source.url} target="_blank" rel="external noreferrer">{source.name}</a>{#if i < view.sources.length - 1} · {/if}{/each}</p>
 						{/if}
 					</div>
 				</span>
@@ -92,8 +93,8 @@
 		{#if view.observation}<p class="observation">{view.observation}</p>{/if}
 		<!-- One judgement about the whole sample. Repeating it per trait would invent
 		     per-trait reader agreement the source does not measure. -->
-		{#if view.consensus === 'mixed'}<p class="consensus mixed">Readers in this sample disagreed with each other.</p>
-		{:else if view.consensus === 'insufficient'}<p class="consensus">Too few voices here to say whether readers agree.</p>{/if}
+		{#if view.consensus === 'mixed'}<p class="consensus mixed">Readers disagreed about this one.</p>
+		{:else if view.consensus === 'insufficient'}<p class="consensus">Not enough reviews to say whether readers agree.</p>{/if}
 		<!-- Each column renders only if the approved split actually carries it. A sample with no
 		     recorded critiques shows one column rather than an empty or invented second. -->
 		{#if view.impressions.length || view.critiques.length}

@@ -32,6 +32,10 @@ h1 { font-size:22px; font-weight:650; } h2,h3 { font-size:14px; font-weight:600;
 .book-list { border-bottom:1px solid var(--line); } .load-more { display:flex; margin:16px auto; }
 .preferences-panel { background:#f0f2ea; border:1px solid var(--line); border-top:0; padding:14px; } .preference-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px 20px; }
 .preference-grid .checkbox-label { white-space:normal; align-items:start; } .preference-grid input { flex-shrink:0; margin-top:1px; }
+.adult-gate { margin-top:14px; padding-top:12px; border-top:1px solid var(--line); display:grid; gap:8px; justify-items:start; max-width:560px; }
+.adult-gate h2 { margin:0; } .adult-gate .small-note { margin:0; } .adult-gate .notice { margin:0; }
+.birth-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px; }
+.birth-row input[type=date] { font:inherit; padding:4px 6px; border:1px solid var(--line); border-radius:4px; background:#fff; }
 .preference-foot { display:flex; align-items:center; gap:16px; justify-content:space-between; margin-top:14px; font-size:11px; line-height:1.5; color:var(--muted); }
 .empty-state { padding:40px 12px; text-align:center; color:var(--muted); } .empty-state button { margin-top:12px; } .loading { padding:24px 0; color:var(--muted); }
 .notice { border:1px solid #e0cc99; background:#fffbef; padding:8px 10px; margin-bottom:12px; font-size:12px; }
