@@ -13,6 +13,12 @@ nav button { background:none; border:0; border-bottom:2px solid transparent; pad
 nav button.active { border-bottom-color:var(--green); color:var(--ink); font-weight:600; } .nav-count { margin-left:5px; font-size:11px; color:var(--muted); }
 .global-search { margin-left:auto; display:flex; align-items:center; width:min(350px,30vw); border:1px solid #d4d8ce; border-radius:4px; background:#fff; padding:0 8px; color:var(--muted); }
 .global-search input { width:100%; min-width:0; border:0 !important; background:transparent !important; }
+.account-controls { display:flex; align-items:center; gap:10px; flex-shrink:0; font-size:12px; }
+.account-name { max-width:130px; overflow:hidden; text-overflow:ellipsis; }
+.browser-library-notice { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.import-library-label { cursor:pointer; }
+.shelf-tools:has(#library-import:focus-visible) .import-library-label { outline:2px solid var(--green); outline-offset:2px; }
+@media(max-width:800px) { .account-controls { margin-left:auto; padding:8px 0; } .site-header .global-search { order:4; } }
 .main-shell { max-width:1600px; margin:0 auto; padding:24px 28px 0; } .page-heading { display:flex; align-items:center; gap:12px; margin-bottom:14px; min-height:30px; }
 h1 { font-size:22px; font-weight:650; } h2,h3 { font-size:14px; font-weight:600; } .muted,.small-note { color:var(--muted); } .small-note { font-size:12px; line-height:1.5; } .shelf-tools { display:flex; gap:6px; margin-left:auto; }
 .primary-button,.secondary-button,.load-more { display:inline-flex; align-items:center; justify-content:center; gap:6px; border:1px solid #d4d8ce; border-radius:4px; padding:6px 10px; background:#fff; color:var(--ink); min-height:30px; }

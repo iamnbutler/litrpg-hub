@@ -26,6 +26,9 @@ jobs:
       - name: Type-check frontend
         run: npx svelte-kit sync && npx svelte-check --tsconfig ./tsconfig.json
 
+      - name: Type-check account Worker
+        run: npm run check:worker
+
       - name: Run tests
         run: npm test
 

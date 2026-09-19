@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { AccountSync, type AccountState } from '$lib/account-sync';
 	import { base } from '$app/paths';
 	import { collapsePlaceholderDuplicates, defaultFilters, displayDate, genreLabels, searchBooks, tasteLabels, type Catalog, type CatalogBook, type ReaderFilters, type Taste, type TasteWeights } from '$lib/catalog';
 	import { buildSeriesContentIndex, passesDiscoveryFilters } from '$lib/series-content';
@@ -32,6 +33,9 @@
 	let sort = $state('popular'), includeUnclassified = $state(false), visibleCount = $state(24);
 	let filters: ReaderFilters = $state({ ...defaultFilters }), filtersOpen = $state(false);
 	let library = $state<SeriesLibrary>(emptyLibrary()), storageWarning = $state('');
+	let account = $state<AccountState>({ user: null, status: 'Checking sign-in…', ready: false, needsLogin: false, canImport: false });
+	let accountSync: AccountSync | undefined;
+	let signingOut = $state(false);
 	let legacyShelf: Library = {}, storedLibrary: SeriesLibrary | null = null, migrated = false, unreadableRecord: string | null = null;
 	let selectedId: string | null = $state(null), seriesId = $state(''), seedId = $state(''), seedQuery = $state('');
 	let weights: TasteWeights = $state({});
@@ -39,7 +43,6 @@
 	let releaseMode = $state('upcoming'), releaseMonth = $state('all'), releaseYear = $state(String(new Date().getUTCFullYear())), followedOnly = $state(false);
 	let toast = $state('');
 	let toastTimer: ReturnType<typeof setTimeout>;
-	let importInput = $state<HTMLInputElement>();
 	// Coverage freshness is an instant, not a date: a date-only value can never be current, and
 	// a value frozen at load would keep claiming currency past an expiry on a long-open tab.
 	let nowIso = $state(new Date().toISOString());
@@ -141,7 +144,20 @@
 		catch { storageWarning = 'Browser storage is unavailable. Export your library to keep a copy.'; }
 	}
 	/** v1 is never written again, so it stays a recoverable backup of the original shelf. */
-	function save(next: SeriesLibrary) { library = next; persist(storageKeys.library, next); }
+	function save(next: SeriesLibrary) {
+		if (accountSync && !accountSync.canEdit()) return announce('Load your account library before editing. Use Retry sync.');
+		library = next;
+		try { if (accountSync) accountSync.save(next); else persist(storageKeys.library, next); }
+		catch { storageWarning = 'Changes could not be saved on this device. Export your library to keep a copy.'; }
+	}
+	function signIn() {
+		window.location.assign(`${base}/auth/login/?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+	}
+	async function signOut() {
+		signingOut = true;
+		if (await accountSync?.logout()) window.location.reload();
+		else signingOut = false;
+	}
 
 	function writeUrl(push = false) {
 		const url = new URL(window.location.href);
@@ -159,6 +175,7 @@
 		view = ['index', 'series', 'releases', 'library', 'similar'].includes(requested ?? '') ? (requested as View) : 'index';
 		query = params.get('q') ?? ''; selectedId = params.get('book'); seedId = params.get('like') ?? ''; seriesId = params.get('series') ?? '';
 		visibleCount = 24;
+		healSeriesUrl();
 	}
 	function navigate(next: View) {
 		view = next; query = ''; genre = 'all'; visibleCount = 24; selectedId = null;
@@ -247,7 +264,7 @@
 			try { localStorage.setItem(`${storageKeys.library}:unreadable:${today}`, unreadableRecord); } catch { /* nothing more we can do */ }
 			unreadableRecord = null;
 		}
-		save(migrateLibrary(legacyShelf, series, storedLibrary, bookIndex));
+		save(migrateLibrary(account.user ? {} : legacyShelf, series, account.user ? library : storedLibrary, bookIndex));
 	}
 	async function loadCatalog(signal?: AbortSignal) {
 		loading = true; error = '';
@@ -260,11 +277,13 @@
 			if (![1, 2].includes(data.version) || !Array.isArray(data.books)) throw new Error('Unsupported catalog');
 			catalog = data;
 			applyMigration(seriesFor(data as Catalog));
+			healSeriesUrl();
 		} catch (e) { if (!(e instanceof DOMException && e.name === 'AbortError')) error = 'The catalog couldn’t be loaded. Please try again.'; }
 		finally { loading = false; }
 	}
 	/** Another tab edited the library: adopt it rather than overwrite it on the next action. */
 	function syncStorage(event: StorageEvent) {
+		if (account.user) { void accountSync?.sync(); return; }
 		if (event.key !== storageKeys.library) return;
 		try {
 			const parsed = parseSeriesLibrary(JSON.parse(event.newValue ?? 'null'));
@@ -272,14 +291,18 @@
 		} catch { /* a tab wrote something unreadable; keep what we have */ }
 	}
 	// A link shared before a rename should heal itself rather than stay stale.
-	$effect(() => {
+	function healSeriesUrl() {
 		if (view === 'series' && currentSeries && seriesId && seriesId !== currentSeries.id) {
 			seriesId = currentSeries.id;
 			writeUrl();
 		}
-	});
+	}
 	onMount(() => {
 		readUrl();
+		if (new URLSearchParams(window.location.search).get('auth') === 'failed') {
+			storageWarning = 'GitHub sign-in did not complete. Please try again.';
+			const url = new URL(window.location.href); url.searchParams.delete('auth'); window.history.replaceState({}, '', url);
+		}
 		let raw: string | null = null;
 		try {
 			legacyShelf = parseLibrary(JSON.parse(localStorage.getItem(storageKeys.legacyLibrary) ?? '{}'));
@@ -294,10 +317,24 @@
 		}
 		// Show saved reads immediately; series follows are filled in once the catalog arrives.
 		library = storedLibrary ?? { ...emptyLibrary(), books: { ...legacyShelf } };
-		const controller = new AbortController(); loadCatalog(controller.signal);
+		const controller = new AbortController();
+		void loadCatalog(controller.signal).then(async () => {
+			if (controller.signal.aborted) return;
+			try {
+				accountSync = new AccountSync(base, localStorage, (state, synced) => { account = state; if (synced) library = synced; });
+				await accountSync.start(library);
+			} catch { account = { ...account, ready: true, status: 'Browser storage is unavailable' }; }
+		});
+		const refreshAccount = () => { if (document.visibilityState === 'visible') void accountSync?.sync(); };
+		window.addEventListener('online', refreshAccount);
+		document.addEventListener('visibilitychange', refreshAccount);
+		const syncClock = setInterval(refreshAccount, 60_000);
 		// Re-evaluate coverage freshness periodically so an expiry takes effect without a reload.
 		const clock = setInterval(() => (nowIso = new Date().toISOString()), 300_000);
-		return () => { controller.abort(); clearTimeout(toastTimer); clearInterval(clock); };
+		return () => {
+			controller.abort(); accountSync?.dispose(); clearTimeout(toastTimer); clearInterval(clock); clearInterval(syncClock);
+			window.removeEventListener('online', refreshAccount); document.removeEventListener('visibilitychange', refreshAccount);
+		};
 	});
 </script>
 
@@ -310,21 +347,29 @@
 <header class="site-header">
 	<button class="brand" onclick={() => navigate('index')}><span class="brand-mark"><Icon name="book" size={18}/></span>LitRPG Hub</button>
 	<nav aria-label="Main navigation">
-		{#each navigation as item}<button class:active={view === item.id || (item.id === 'index' && view === 'series')} aria-current={view === item.id ? 'page' : undefined} onclick={() => navigate(item.id)}>{item.label}{#if item.id === 'library' && followedCount}<span class="nav-count">{followedCount}</span>{/if}</button>{/each}
+		{#each navigation as item (item.id)}<button class:active={view === item.id || (item.id === 'index' && view === 'series')} aria-current={view === item.id ? 'page' : undefined} onclick={() => navigate(item.id)}>{item.label}{#if item.id === 'library' && followedCount}<span class="nav-count">{followedCount}</span>{/if}</button>{/each}
 	</nav>
 	<form class="global-search" onsubmit={(e) => { e.preventDefault(); searchChanged(); }} role="search">
 		<Icon name="search" size={16}/><input aria-label="Search series, authors, or narrators" placeholder="Search series, authors…" bind:value={query} oninput={searchChanged}/>
 		{#if query}<button type="button" class="icon-button" aria-label="Clear search" onclick={() => { query = ''; writeUrl(); }}><Icon name="close" size={14}/></button>{/if}
 	</form>
+	<div class="account-controls">
+		{#if account.user && !account.needsLogin}
+			<span class="account-name" title={account.user.displayName}>@{account.user.username}</span>
+			<button class="subtle-button" disabled={signingOut} onclick={signOut}>{signingOut ? 'Signing out…' : 'Sign out'}</button>
+		{:else}<button class="secondary-button" disabled={!account.ready} onclick={signIn}>{account.needsLogin ? 'Sign in again' : 'Sign in with GitHub'}</button>{/if}
+	</div>
 </header>
 <main id="main" class="main-shell">
 	{#if view !== 'series'}
 		<div class="page-heading">
 			<h1>{view === 'similar' ? 'Similar series' : view === 'releases' ? 'Audiobook releases' : view === 'library' ? 'My library' : 'Series index'}</h1>
-			{#if view === 'library'}<span class="small-note">Saved in this browser</span><div class="shelf-tools"><button class="secondary-button" onclick={downloadLibrary}>Export</button><button class="secondary-button" onclick={() => importInput?.click()}>Import</button><input class="visually-hidden" type="file" accept="application/json,.json" bind:this={importInput} onchange={importLibrary} aria-label="Import a library backup"/></div>{/if}
+			{#if view === 'library'}<span class="small-note" role="status">{account.status}</span><div class="shelf-tools">{#if account.user}<button class="secondary-button" onclick={() => accountSync?.sync()}>Retry sync</button>{/if}<button class="secondary-button" onclick={downloadLibrary}>Export</button><label class="secondary-button import-library-label" for="library-import">Import</label><input class="visually-hidden" type="file" accept="application/json,.json" id="library-import" onchange={importLibrary} aria-label="Import a library backup"/></div>{/if}
 		</div>
 	{/if}
 	{#if storageWarning}<p class="notice" role="status">{storageWarning}</p>{/if}
+	{#if account.canImport}<div class="notice browser-library-notice"><span>You have a library saved in this browser.</span><button class="secondary-button" onclick={() => accountSync?.importGuest()}>Add it to my account</button></div>{/if}
+	{#if account.user && (account.status.includes('paused') || account.status.includes('Could not') || account.needsLogin)}<p class="notice" role="status">{account.status}</p>{/if}
 	{#if error}<div class="empty-state" role="alert"><p>{error}</p><button class="secondary-button" onclick={() => loadCatalog()}>Retry</button></div>
 	{:else if loading}<p class="loading" role="status">Loading catalog…</p>
 	{:else if view === 'series'}
@@ -342,11 +387,11 @@
 				<label class="visually-hidden" for="seed-select">Choose a starting series</label>
 				<select id="seed-select" value={seed?.id ?? ''} onchange={(e) => { seedId = e.currentTarget.value; writeUrl(); }}>
 					{#if seed && !seedOptions.some((b) => b.id === seed.id)}<option value={seed.id}>{seed.series || seed.title}</option>{/if}
-					{#each seedOptions as book}<option value={book.id}>{book.series || book.title} — {book.author}</option>{/each}
+					{#each seedOptions as book (book.id)}<option value={book.id}>{book.series || book.title} — {book.author}</option>{/each}
 				</select>
 				{#if seed}<button class="seed-book" onclick={() => { const hit = works.get(seed.id); return hit ? openSeries(hit.series) : openBook(seed); }}>{#if seed.coverUrl}<img src={seed.coverUrl} alt=""/>{/if}<span><strong>{seed.series || seed.title}</strong><small>{seed.author}</small></span></button>{/if}
 				<div class="weight-heading"><h2>Match priorities</h2><button class="subtle-button" onclick={() => (weights = {})}>Reset</button></div>
-				{#each Object.keys(tasteLabels) as key}<label class="weight-control"><span>{tasteLabels[key as Taste]}<small>{(weights[key as Taste] ?? 1) === 0 ? 'Ignore' : `${weights[key as Taste] ?? 1}×`}</small></span><input type="range" min="0" max="3" step="0.5" value={weights[key as Taste] ?? 1} oninput={(e) => (weights = { ...weights, [key]: Number(e.currentTarget.value) })}/></label>{/each}
+				{#each Object.keys(tasteLabels) as key (key)}<label class="weight-control"><span>{tasteLabels[key as Taste]}<small>{(weights[key as Taste] ?? 1) === 0 ? 'Ignore' : `${weights[key as Taste] ?? 1}×`}</small></span><input type="range" min="0" max="3" step="0.5" value={weights[key as Taste] ?? 1} oninput={(e) => (weights = { ...weights, [key]: Number(e.currentTarget.value) })}/></label>{/each}
 				<p class="small-note">{seed?.assessment ? 'Matches compare reading traits estimated from publisher descriptions. Books without profiles use genre overlap.' : 'This book has no reading profile yet. Results use genre overlap.'}</p>
 			</aside>
 			<section class="match-results" aria-label="Similar series">
@@ -358,8 +403,8 @@
 		</div>
 	{:else if view === 'releases'}
 		<div class="browse-toolbar">
-			<div class="segmented" aria-label="Release period">{#each [{ id: 'upcoming', label: 'Upcoming' }, { id: 'year', label: 'By year' }, { id: 'unknown', label: 'Date unknown' }] as mode}<button class:chosen={releaseMode === mode.id} onclick={() => { releaseMode = mode.id; visibleCount = 24; }}>{mode.label}</button>{/each}</div>
-			{#if releaseMode === 'year'}<select aria-label="Release year" bind:value={releaseYear} onchange={() => (visibleCount = 24)}>{#each years as year}<option value={year}>{year}</option>{/each}</select><select aria-label="Release month" bind:value={releaseMonth} onchange={() => (visibleCount = 24)}><option value="all">All months</option>{#each Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')) as month}<option value={month}>{new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(`2026-${month}-15T12:00:00Z`))}</option>{/each}</select>{/if}
+			<div class="segmented" aria-label="Release period">{#each [{ id: 'upcoming', label: 'Upcoming' }, { id: 'year', label: 'By year' }, { id: 'unknown', label: 'Date unknown' }] as mode (mode.id)}<button class:chosen={releaseMode === mode.id} onclick={() => { releaseMode = mode.id; visibleCount = 24; }}>{mode.label}</button>{/each}</div>
+			{#if releaseMode === 'year'}<select aria-label="Release year" bind:value={releaseYear} onchange={() => (visibleCount = 24)}>{#each years as year (year)}<option value={year}>{year}</option>{/each}</select><select aria-label="Release month" bind:value={releaseMonth} onchange={() => (visibleCount = 24)}><option value="all">All months</option>{#each Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')) as month (month)}<option value={month}>{new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(`2026-${month}-15T12:00:00Z`))}</option>{/each}</select>{/if}
 			<label class="checkbox-label"><input type="checkbox" bind:checked={followedOnly} onchange={() => (visibleCount = 24)}/>Only series I follow</label>
 			{@render filterButton()}
 		</div>
@@ -373,7 +418,7 @@
 			<div class="shelf-tabs" aria-label="Library status">
 				<button class:chosen={libraryState === 'up-next'} onclick={() => { libraryState = 'up-next'; visibleCount = 24; }}>Up next <span>{upNext.length}</span></button>
 				<button class:chosen={libraryState === 'all'} onclick={() => { libraryState = 'all'; visibleCount = 24; }}>All <span>{followedCount}</span></button>
-				{#each Object.entries(stateLabels) as [key, label]}<button class:chosen={libraryState === key} onclick={() => { libraryState = key; visibleCount = 24; }}>{label}<span>{libraryCounts[key] ?? 0}</span></button>{/each}
+				{#each Object.entries(stateLabels) as [key, label] (key)}<button class:chosen={libraryState === key} onclick={() => { libraryState = key; visibleCount = 24; }}>{label}<span>{libraryCounts[key] ?? 0}</span></button>{/each}
 			</div>
 		{/if}
 		{#if view === 'library' && libraryState === 'up-next'}
@@ -385,7 +430,7 @@
 		{:else}
 		<div class="browse-toolbar">
 			<label class="inline-field">Sort<select bind:value={sort} aria-label="Sort series"><option value="popular">Popular</option><option value="new">Latest audiobook</option><option value="volumes">Most books</option><option value="title">Title A–Z</option></select></label>
-			<select bind:value={genre} aria-label="Filter by genre" onchange={() => (visibleCount = 24)}><option value="all">All genres</option>{#each Object.entries(genreLabels) as [key, label]}<option value={key}>{label}</option>{/each}</select>
+			<select bind:value={genre} aria-label="Filter by genre" onchange={() => (visibleCount = 24)}><option value="all">All genres</option>{#each Object.entries(genreLabels) as [key, label] (key)}<option value={key}>{label}</option>{/each}</select>
 			{#if view === 'index'}<label class="checkbox-label"><input type="checkbox" checked={filters.hideSexualized} onchange={(e) => setFilter('hideSexualized', e.currentTarget.checked)}/>Hide sexualized content</label>{@render filterButton()}{/if}
 		</div>
 		{@render preferences()}
@@ -415,7 +460,7 @@
 {#snippet preferences()}
 	{#if filtersOpen && view !== 'library'}<section class="preferences-panel" aria-label="Content filters">
 		<div class="preference-grid">
-			{#each [{ key: 'hideSexualized', label: 'Sexualized covers / marketing' }, { key: 'hideExplicit', label: 'Explicit sexual content' }, { key: 'hideHarem', label: 'Harem / reverse harem' }, { key: 'hideAiNarration', label: 'Disclosed AI narration' }, { key: 'hideAiWriting', label: 'Disclosed AI writing' }, { key: 'hideQualityFlags', label: 'Listing quality concerns' }] as option}<label class="checkbox-label"><input type="checkbox" checked={filters[option.key as keyof ReaderFilters]} onchange={(e) => setFilter(option.key as keyof ReaderFilters, e.currentTarget.checked)}/>Hide {option.label.toLowerCase()}</label>{/each}
+			{#each [{ key: 'hideSexualized', label: 'Sexualized covers / marketing' }, { key: 'hideExplicit', label: 'Explicit sexual content' }, { key: 'hideHarem', label: 'Harem / reverse harem' }, { key: 'hideAiNarration', label: 'Disclosed AI narration' }, { key: 'hideAiWriting', label: 'Disclosed AI writing' }, { key: 'hideQualityFlags', label: 'Listing quality concerns' }] as option (option.key)}<label class="checkbox-label"><input type="checkbox" checked={filters[option.key as keyof ReaderFilters]} onchange={(e) => setFilter(option.key as keyof ReaderFilters, e.currentTarget.checked)}/>Hide {option.label.toLowerCase()}</label>{/each}
 			<label class="checkbox-label"><input type="checkbox" checked={filters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide unclassified content</label>
 			<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include genres awaiting review</label>
 		</div>
