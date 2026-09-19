@@ -1,0 +1,48 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "litrpg-hub",
+  "main": "workers/accounts.ts",
+  "account_id": "2422c3385d4b8785697233252fc8706f",
+  "compatibility_date": "2026-09-18",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [],
+  "vars": {
+    "SITE_URL": "https://litrpg-hub.iamnbutler.workers.dev/",
+    "OAUTH_GITHUB_REDIRECT_URI": "https://litrpg-hub.iamnbutler.workers.dev/auth/callback/"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "litrpg-hub-accounts",
+      "database_id": "3bf23ea2-49a6-45d4-990e-e4693757cf00",
+      "migrations_dir": "workers/migrations"
+    }
+  ],
+  "env": {
+    "local": {
+      "name": "litrpg-hub-accounts-local",
+      "routes": [],
+      "vars": {
+        "SITE_URL": "http://localhost:5173/",
+        "OAUTH_GITHUB_REDIRECT_URI": "http://localhost:5173/auth/callback/"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "litrpg-hub-accounts-local",
+          "database_id": "local-accounts",
+          "migrations_dir": "workers/migrations"
+        }
+      ]
+    }
+  },
+  "assets": {
+    "directory": "build",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/auth/*",
+      "/api/*"
+    ]
+  }
+}

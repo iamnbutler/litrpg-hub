@@ -2,7 +2,7 @@
 
 An audiobook catalog for LitRPG and progression fantasy. Follow series, track the books you have read, find similar series, and check audio releases. Forked from [LitRPG Chart](https://github.com/iamnbutler/litrpg-chart).
 
-[Open LitRPG Hub](https://nate.rip/litrpg-hub/) · [Catalog inspector](https://nate.rip/litrpg-hub/inspector/)
+[Open LitRPG Hub](https://litrpg-hub.iamnbutler.workers.dev/) · [Catalog inspector](https://litrpg-hub.iamnbutler.workers.dev/inspector/)
 
 ## Run the app
 
@@ -17,9 +17,9 @@ npm test
 npm run build
 ```
 
-The interface is a compact cover grid with search, optional list layout, genres, content preferences, series details, and release views. My library contains followed series. Reading progress and personal ratings belong to works, with edition aliases preserving older saved IDs. Mark all as read applies to released audio; future releases and unknown dates are not silently marked read. The original browser shelf is retained when migrating to the series library. Export a library backup to move it between browsers; there are no shared accounts yet.
+The interface is a compact cover grid with search, optional list layout, genres, content preferences, series details, and release views. My library contains followed series. Reading progress and personal ratings belong to works, with edition aliases preserving older saved IDs. Mark all as read applies to released audio; future releases and unknown dates are not silently marked read. The original browser shelf is retained when migrating to the series library. Sign in with GitHub to sync followed series, reading progress, and ratings across devices. Browsing and a local library still work without an account. Existing browser libraries can be explicitly added to an account; export/import also works between different site origins.
 
-Series links use `?view=series&series=dungeon-crawler-carl`; individual editions use `?book=ASIN`. The static SvelteKit build makes no model calls or source requests. `BASE_PATH=/litrpg-hub` builds for a GitHub Pages subdirectory. The Pages deployment workflow can be dispatched manually; the catalog worker also dispatches it after publishing a refreshed snapshot.
+Series links use `?view=series&series=dungeon-crawler-carl`; individual editions use `?book=ASIN`. The static SvelteKit catalog makes no model calls or source requests. Cloudflare serves the app assets and routes account requests to a Worker backed by D1. `BASE_PATH=/litrpg-hub` builds for a GitHub Pages subdirectory. The existing Pages deployment workflow still publishes the legacy site; the catalog worker dispatches it after refreshing snapshots. Deploy the Cloudflare app with `npm run deploy:cloudflare` after updating its committed catalog.
 
 ## Build the catalog
 
@@ -155,7 +155,26 @@ Partial work is checkpointed to a new private release even if work or public exp
 
 ## Reader sign-in configuration
 
-The GitHub OAuth application is for reader sign-in and is separate from the catalog worker credential. Local configuration uses `OAUTH_GITHUB_CLIENT_ID`, `OAUTH_GITHUB_CLIENT_SECRET` and `OAUTH_GITHUB_REDIRECT_URI`. The planned callback is `https://nate.rip/litrpg-hub/auth/callback/`. The credentials are configured; the sign-in handler and account synchronization are not implemented yet. A client secret belongs in a server-side exchange, never in the Pages bundle. Until that integration lands, the library remains local to the browser.
+GitHub OAuth uses a server-side code exchange, single-use state, and PKCE. D1 stores user identities, SHA-256 session-token hashes, and revisioned library snapshots. The browser receives a Secure, HttpOnly, SameSite cookie valid for 30 days. Mutations require a same-origin request and a session-bound CSRF token. GitHub access tokens are never persisted. The private offline catalog remains in its existing SQLite/archive pipeline; D1 holds reader accounts only.
+
+The Worker is `litrpg-hub`; its D1 binding is `DB`, backed by `litrpg-hub-accounts`. [wrangler.jsonc](wrangler.jsonc) records the database ID and production origin. The current callback is `https://litrpg-hub.iamnbutler.workers.dev/auth/callback/`; the GitHub OAuth application's homepage and callback must match this deployment. This Cloudflare account does not manage `nate.rip`, so the GitHub Pages origin cannot host the account Worker directly.
+
+```sh
+npx wrangler login
+npm run db:migrate          # Apply reviewed migrations to production D1
+npm run deploy:cloudflare  # Build at / and deploy assets + account Worker
+npm run secrets:cloudflare # Upload ONLY the two OAuth credentials from .env
+```
+
+`OAUTH_GITHUB_CLIENT_ID` and `OAUTH_GITHUB_CLIENT_SECRET` are Cloudflare secrets. The upload script passes them through stdin and excludes all catalog enrichment credentials. Changing the hostname also requires changing `SITE_URL` and `OAUTH_GITHUB_REDIRECT_URI` in Wrangler and the GitHub OAuth app callback. Deployments are manual; this lane does not add recurring Actions work. The existing refresh worker retains its 08:17 UTC schedule and 22:00–02:00 UTC guards.
+
+For local development, create an ignored `.dev.vars.local` with the two OAuth credentials from a **separate development OAuth app** whose callback is `http://localhost:5173/auth/callback/`. This also prevents Wrangler from loading unrelated `.env` keys. Run `npm run db:migrate:local`, then `npm run dev:accounts` and `npm run dev` in separate terminals. Vite proxies `/api/` and `/auth/` to local Wrangler; local D1 state stays under `.wrangler/`. Browsing does not require the account service.
+
+Account libraries use separate browser caches from the guest library and from other GitHub accounts. The sync client retries on reconnect, tab focus, and once per minute while visible. A revision check prevents stale snapshots overwriting the server; local edits are rebased over concurrent server changes, including deletions. Edits to the same book or series use the local edit on retry. Failed uploads stay on the device, with a visible status and manual retry. Export remains available as a backup. Reader content filters remain browser-local.
+
+To move a saved library from the old `nate.rip/litrpg-hub/` origin, export it there, sign in at the Cloudflare site, and import the JSON in My library. Browsers cannot read local storage across origins.
+
+Validation: `npm run check:worker`, `npm run check`, `npm run check:backend`, `npm test`, `npm run build`, and `npx wrangler deploy --dry-run --env=""`. The account tests execute the real migration and SQL in SQLite and cover OAuth state/replay, PKCE, session expiry, CSRF, account isolation, offline recovery, and concurrent library changes.
 
 ## Keep the catalog safe
 
