@@ -1,200 +1,140 @@
 # 🪎 Shelf Goblin
 
-An audiobook catalog for LitRPG and progression fantasy, formerly LitRPG Hub. Follow series, track the books you have read, find similar series, and check audio releases. The 🪎 treasure chest is the temporary app mark. Forked from [LitRPG Chart](https://github.com/iamnbutler/litrpg-chart).
+An audiobook catalog for LitRPG and progression fantasy. Follow series, track the
+books you have read, find similar series, and check audio releases. Forked from
+[LitRPG Chart](https://github.com/iamnbutler/litrpg-chart).
 
 [Open Shelf Goblin](https://shelfgobl.in/) · [Catalog inspector](https://shelfgobl.in/inspector/)
 
 ## Run the app
 
-Node 22.9+ and npm. The committed JSON snapshot lets a fresh checkout run without a database or API keys.
+Use Node 22.9+ and npm. A fresh checkout runs from committed public JSON without a
+catalog database, API keys, or the private producer repository.
 
 ```sh
 npm ci
 npm run dev
 npm run check
-npm run check:backend
+npm run check:worker
 npm test
 npm run build
 ```
 
-The interface is a compact cover grid with search, optional list layout, genres, content preferences, series details, and release views. My library contains followed series. Reading progress and personal ratings belong to works, with edition aliases preserving older saved IDs. Mark all as read applies to released audio; future releases and unknown dates are not silently marked read. The original browser shelf is retained when migrating to the series library. Sign in with GitHub to sync followed series, reading progress, and ratings across devices. Browsing and a local library still work without an account. Existing browser libraries can be explicitly added to an account; export/import also works between different site origins.
+`npm ci` builds the shared catalog contract before synchronizing SvelteKit. After
+changing contract source, run `npm run build:contract` before checking consumers.
 
-Series links use `?view=series&series=dungeon-crawler-carl`; individual editions use `?book=ASIN`. The static SvelteKit catalog makes no model calls or source requests. Cloudflare serves the canonical app at `https://shelfgobl.in/` and routes account requests to a Worker backed by D1. `BASE_PATH=/litrpg-hub` builds for the [legacy GitHub Pages site](https://nate.rip/litrpg-hub/), which remains available for exporting libraries saved there. The catalog refresh worker still dispatches the Pages workflow after updating snapshots. Cloudflare deployment is manual: run `npm run deploy:cloudflare` after updating the committed catalog.
+The app opens into a compact cover grid with search, filters, series details, and
+release views. My library contains followed series; read state belongs to books,
+with edition aliases preserving older saved IDs. Future releases and unresolved
+audio dates are not silently marked read. GitHub sign-in synchronizes a library
+across devices; browsing and a guest library also work without an account.
 
-## Build the catalog
+## App and catalog ownership
 
-SQLite is the durable catalog; public JSON is its replaceable read model. The app reads `static/data/catalog.json`, not SQLite directly. After an import or enrichment pass, run `npm run pipeline:export` to update the local site; a hosted site needs a new deployment to receive that export. The initial Chart snapshot remains available while a reviewed core is rebuilt from publisher and author bibliographies. Those legacy records are **not** all verified core records.
+| Repository | Owns |
+| --- | --- |
+| [shelfgoblin](https://github.com/iamnbutler/shelfgoblin) — public | UI, reader accounts and libraries, account Worker, public JSON, shared catalog contract |
+| [shelfgoblin-data](https://github.com/iamnbutler/shelfgoblin-data) — private | Acquisition, SQLite and migrations, source evidence, OpenAI/Jev enrichment, quality research, benchmarks, exports, backups |
 
-The selected registry is [catalog-seeds.json](scripts/backend/config/catalog-seeds.json). Aethon, Soundbooth Theater, Podium, Portal Books, Mountaindale Press, and selected author sites provide work lists and fuller descriptions. Publisher indexes retain unselected candidates for later review. Audible is used to verify **already observed, exact audiobook identifiers**, rather than discover arbitrary keyword matches.
+The app reads `static/data/catalog.json`; the inspector reads
+`static/data/health.json`. These are replaceable public snapshots, not the durable
+catalog. Builds and page loads never scrape sources or call models. The inspector
+scores data completeness and evidence quality, not literary quality. Experimental
+book, series, and author rankings remain in the producer until calibrated and
+explicitly enabled for readers.
 
-```sh
-# Register selected series and reuse previously discovered publisher links
-npm run catalog -- seed
-npm run catalog -- run --stage sources --limit 100
+Full source pages, review bodies, reviewer identifiers, model receipts, private
+reports, and cached assets stay in the private producer and its archive. Public
+exports carry bibliographic facts, cover links, reviewed descriptions,
+classifications, and derived reader context. Keep acquisition and model
+credentials out of browser code and committed files. Pipeline commands and
+restore instructions now live in the
+[producer documentation](https://github.com/iamnbutler/shelfgoblin-data).
 
-# Import attributed, reviewed research notes for gaps a crawler cannot fill
-npm run catalog -- curate
+## Shared catalog contract
 
-# Verify exact audiobook identities, dates, narrators and runtimes
-npm run catalog -- plan-audio
-npm run catalog -- run --stage audio --limit 100
-
-# Plan only missing or changed summaries and Jev profiles
-npm run catalog -- plan
-npm run catalog -- run --stage enrich --limit 100
-npm run catalog -- run --stage assess --limit 100
-
-# Inspect coverage and publish the current read model
-npm run catalog -- audit
-npm run catalog -- status
-npm run pipeline:export
-```
-
-Use `--series SERIES_ID` to restrict curation, planning, execution, refresh, retry, or audit. Work can be stopped and resumed with the same command. Durable jobs have unique entity/task/input keys, leases, retry backoff, and explicit review states. Successful results are retained before the next job starts. Review failures do not delete earlier facts or become empty catalogs.
-
-For a single bounded pass through the stages, use `catalog:grind`. By default it resumes saved source and audio jobs without calling models. `--enrich` enables OpenAI descriptions and Jev profiles; each stage defaults to 25 attempts and accepts a limit from 0 to 300. Zero skips that stage. The command reports completions, review cases, remaining jobs and new token usage. Interrupting it finishes the active job before stopping.
-
-```sh
-npm run catalog:grind -- --source-limit 50 --audio-limit 50
-npm run catalog:grind -- --series divine-apostasy --enrich --extract-limit 20 --assess-limit 20
-# Explicitly schedule due observations while preserving earlier completed attempts
-npm run catalog:grind -- --refresh --enrich
-```
-
-The driver processes registered series and saved candidates. It does not select new series, approve uncertain matches, or install a recurring worker. Run `catalog seed` after reviewing registry changes.
+[packages/catalog-contract](packages/catalog-contract/README.md) is the single
+implementation of public catalog types and pure identity, edition, series,
+audio-coverage, and recommendation behavior. The app uses it as a workspace;
+`src/lib` retains compatibility re-exports. The producer installs a versioned
+public GitHub release archive with an exact URL and lockfile integrity.
 
 ```sh
-# Schedule completed source jobs whose saved checks are due
-npm run catalog -- refresh
-npm run catalog -- run --stage sources --limit 100
-npm run catalog -- run --stage audio --limit 100
-
-# Retry transient failures; include review jobs only after investigating the cause
-npm run catalog -- retry --stage audio --series the-ten-realms
-npm run catalog -- retry --stage audio --series the-ten-realms --review
+npm run build:contract
+npm test
+npm pack --workspace @shelfgoblin/catalog-contract
 ```
 
-Raw documents, field claims, identifiers and competing editions remain in the private database. Exact product checks require the expected canonical title, full author credits, series, numeric volume, English language, and standard audiobook format. Direct imports and coverage checks use the same current retained product proof. Title matching preserves distinctive subtitles and part numbers; a matching bare series title can use its explicitly supplied story subtitle. A [reviewed title alias](scripts/backend/config/catalog-audio-title-aliases.json) binds one work and recording to an explicit primary audiobook link and both current source hashes. Changed evidence requires renewed review.
+To release a contract change, bump its version, build and test it, attach the
+package archive to a new immutable
+[public release](https://github.com/iamnbutler/shelfgoblin/releases), then update the
+producer's dependency and lockfile together. Never replace a released archive or
+copy the source into the producer. App builds use the local workspace and do not
+fetch a contract release.
 
-Numbered audio links on a supported author bibliography can create verification jobs before a work's title is known; the retained page and product must agree before import. Coauthors are distinct people, and conflicting credits preserve competing claims for review. A wrong-volume buy link becomes a review job. Print dates, web-serial volume numbers, omnibus counts, and retailer placeholder years never become audiobook release facts. Distinct performances keep their own narrators and dates. The Land's eight reviewed author pages establish works and descriptions; their audiobook identifiers are independently verified from observed links.
+## Recurring catalog work
 
-Source pages are cached by URL and body hash with conditional requests and due dates. Recognized interstitials and identifier-only API responses are rejected. Other degraded pages remain recorded observations; importer guards preserve prior facts and queue review rather than treating them as an empty catalog. Series indexes are checked weekly; stable book pages have longer intervals. Adding a selected series reuses saved index candidates without scraping the index again. `catalog audit` distinguishes confirmed audio, unverified legacy matches, absent audio evidence, missing volumes, undated editions, and stale enrichment. A contiguous list alone never proves a bibliography is complete. Reviewed audio manifests establish the expected mainline list separately from imported rows. The library says “Up to date” only while that assertion is current and every verified released work is read; otherwise it can say “All known audio read.” Story completion is a separate field. See [audio coverage](docs/audio-coverage-proposal.md).
+The public repository's `catalog-refresh.yml` runs private producer code on
+standard public-repository runners, avoiding private-repository Actions minutes.
+It schedules a bounded refresh at **08:17 UTC daily**. Both the workflow and worker
+skip **22:00–02:00 UTC**, including delayed and manual starts, and reserve time for
+a private checkpoint before 22:00.
 
-## Descriptions, metadata and recommendations
+**Setup prerequisite:** `CATALOG_DATA_TOKEN` has not yet been provisioned. Add it as
+an encrypted secret in this public repository: a dedicated fine-grained token
+scoped to Contents read/write for **only** `iamnbutler/shelfgoblin-data`. Reader
+OAuth credentials do not grant that access. The workflow's `GITHUB_TOKEN` writes
+only to this public repository. Paid refreshes also require encrypted
+`OPENAI_API_KEY` and `TYPESAFE_API_KEY` secrets.
 
-Set `OPENAI_API_KEY` and `TYPESAFE_API_KEY` in an ignored `.env`; [.env.example](.env.example) lists optional settings. Offline OpenAI jobs write original, source-grounded synopses and extract descriptive features with supporting spans. Series summaries use the first-book premise. Newly acquired full publisher descriptions stay as private evidence; legacy records retain their short retailer listing snippets until curated. `CATALOG_OPENAI_MODEL` controls the extraction model.
+Manual dispatch defaults to `task=verify`, which installs, type-checks, and tests
+the private producer without model credentials. Use `task=refresh` for catalog
+work; its manual default `no_enrich=true` skips paid inference. The scheduled
+refresh enables the configured bounded enrichment stages.
 
-[Jev](https://docs.typesafe.ai/introduction) assesses genre, content disclosures, listing quality and eight reading traits. Results retain the actual model, rubric, input hash, confidence and token usage. Changed evidence invalidates the old promoted interpretation. Catalog extraction, work-profile, author-profile and reader-trait workers retain successful HTTP response bodies before parsing or validation, including malformed or incomplete output, so unchanged retries do not purchase the same failed response again. Older parsed receipts remain reusable. If a paid receipt cannot commit, the worker parks that job and stops further paid work for storage review. A missing usage report is unknown, not evidence of a free call. Author and reader CLI summaries include `unknownUsageResponses` beside reported token totals, including rejected responses, storage failures, and successful responses whose bodies could not be read. Unreadable successful responses stop for review. Cache replays and requests refused before spending add neither new tokens nor unknown-usage responses. Other worker totals still sum reported usage only; retained receipts preserve missing usage as unknown.
+A refresh restores and verifies the private snapshot, processes selected work,
+and saves a private checkpoint before committing allowed public JSON. Private
+child logs stay on the ephemeral runner; raw evidence and test output are never
+uploaded as public artifacts. Checkpoint failure prevents public publication.
+Runner loss can still interrupt a checkpoint, so inspect a failed run before
+retrying paid work. Neither Cloudflare nor GitHub Pages deploys automatically
+after a catalog commit.
 
-The [editorial review registry](scripts/backend/config/catalog-editorial-reviews.json) approves specific extraction receipts against their source inputs, contributing URLs and feature taxonomy. An approved synopsis stays fixed across model reruns; a manual correction takes precedence while the original response remains private and intact. Changing the title, author, source text, contributing URLs or taxonomy invalidates that review. Only approved positive features reach the public catalog; omitted tags mean unknown. Later-volume summaries can remain unreviewed even when their source extraction is current.
+## Accounts and deployment
 
-Similar series uses cached profiles, reader-adjustable priorities, and explanations of shared traits. Missing profiles fall back to labeled genre matches. Reviewed shared mechanics add a small bonus, capped at 0.04; ignored taste dimensions and already-compared Jev dimensions do not receive that bonus again. An unsupported stats claim on a reviewed book is treated as unknown. Popularity has a small weight. Matching uses an eligible starting audiobook, excludes the seed series, and limits repeated authors. Reader preferences are applied before a recommendation is presented; hiding an early volume cannot turn a later volume into a new series entry point.
+Cloudflare serves `https://shelfgobl.in/`. The account Worker exchanges GitHub
+OAuth codes server-side using state and PKCE; D1 stores account libraries and
+hashed session tokens. Library revisions prevent stale writes from silently
+replacing newer changes. Guests can explicitly add their local library to an
+account, or use export/import. The optional adult-content setting uses a
+self-attested date of birth; GitHub sign-in does not verify age.
 
-Model interpretations remain fallible. Supporting text is not proof that a model interpreted it correctly, and sparse blurbs cannot establish the absence of a trope. Coverage and review queues are part of the data model.
-
-## Content filters and covers
-
-Sexualized marketing, explicit scenes, harem, AI narration, disclosed AI writing, and listing quality are separate signals. OpenAI vision describes the stored cover; Jev combines those observations with source metadata. Cover art never establishes explicit scenes, harem relationships, AI authorship, or prose quality. Missing credits and low-confidence classifications remain unknown.
+Production resources retain their compatibility names: Worker `litrpg-hub`, D1
+binding `DB`, and database `litrpg-hub-accounts`. Browser storage keys and older
+library export formats also remain unchanged. [wrangler.jsonc](wrangler.jsonc)
+records the production origin and existing database ID.
 
 ```sh
-npm run pipeline:covers -- --limit 24 --dry-run
-npm run pipeline:covers -- --limit 100
-npm run pipeline:covers -- --book B0GPFWKVMM --book B0GPFWTMM9
-npm run pipeline:authors -- plan
-npm run pipeline:authors -- run --limit 10
-npm run pipeline:export
+npm run db:migrate          # Apply reviewed account migrations before deployment
+npm run secrets:cloudflare # Upload only the two OAuth credentials from .env
+npm run deploy:cloudflare  # Build at / and deploy the app + account Worker
 ```
 
-Cover jobs cache image bytes under `data/covers`, named by content hash. A model or rubric change reuses those bytes; shared covers reuse an observation. `COVER_MODEL` defaults to `gpt-4.1-mini`. `--refresh-images` checks the source image; `--force` deliberately repeats inference. Vision and Jev content runs retain their raw responses before validation, including failed answers. Forced attempts append history and preserve the last valid result for unchanged evidence; changed image bytes invalidate the old cover verdict. Builds and browsing never run these jobs.
+Register `https://shelfgobl.in/auth/callback/` in the GitHub OAuth app and keep
+`SITE_URL` / `OAUTH_GITHUB_REDIRECT_URI` aligned. Deployment is manual. The Pages
+workflow is also manual; a repository rename changes its project path. The
+`BASE_PATH=/litrpg-hub` CI build tests the historical subpath only and does not
+promise that the old Pages URL remains hosted.
 
-Author defaults require positive evidence across independent series and multiple works, followed by Jev review. They fill only unknown book signals. Changed evidence or a later withdrawn classification invalidates the older default. Reviewed [author rules](scripts/backend/config/author-content.json), such as the user-supplied Bruce Sentar rule, remain distinct from automated inference. [Per-book overrides](scripts/backend/config/content-overrides.json) take final precedence and require a note.
+The unchanged Worker ID preserves the
+[former Workers address](https://litrpg-hub.iamnbutler.workers.dev/) for compatibility.
+Browser storage is origin-specific: unsynced old-domain libraries need exporting
+there and importing at Shelf Goblin. Synced account libraries remain attached to
+the same GitHub identity. Signing in does not automatically combine guest data
+with account data.
 
-Sexualized content is hidden by default. Explicit content, harem and disclosed AI use have separate controls. Unclassified content remains visible unless the reader chooses otherwise. These are evidence-based preferences, not a universal quality score or an AI-writing detector.
-
-The harem preference also checks publisher disclosures elsewhere in the same series. A later volume or collection cannot bypass that preference just because its listing omits the disclosure. A confident book-specific absence takes precedence. This series-level check retains the supporting edition and work IDs without changing any book classification; it does not spread cover, explicit-content, or AI signals. Library membership and reading progress always use the complete series.
-
-## Reader feedback
-
-Reader evidence has its own provenance, source IDs, spoiler flags and distinct-voice digests. Raw comments stay in the private database. Publisher facts, reader opinions and content verdicts remain separate. Aggregate context requires several independent substantive voices and must retain uncertainty and disagreement. A handful of storefront testimonials does not qualify; the first Soundbooth Theater sample was too small and produced no reader consensus. Public Hardcover reviews use its authenticated API, exact title/author matching, privacy filtering, a bounded sample, and thirty-day snapshots. Book-level reviews can cover any format and are not presented as confirmed listener votes. Jev extracts cautious traits; OpenAI writes short original observations with a verbatim-overlap guard. The UI presents reviewed Impressions and Critiques bullets, with sample size visible and methodology/source links behind an accessible information control. The split is bound to both the evidence hash and the exact published prose; a changed observation falls back to prose until reviewed again. A sample need not have equally sized positive and negative columns. Model confidence is never a reader-agreement percentage.
-
-Eligibility and displayed counts use the actual deduplicated, spoiler-filtered sample sent for inference. Explicit spoiler markup excludes a comment even when the source API labels it spoiler-free; its raw evidence remains preserved privately. Traits and observations have separate durable jobs scoped to works or series. Paid prose responses are retained before validation, so a rejected answer can be reviewed without purchasing it again. Stored observations are checked against the current validation policy on every export. A [reviewed correction](scripts/backend/config/reader-observation-corrections.json) must match the exact entity, inference receipt, evidence hash, model, rubric and source URLs; the original answer remains intact. Without per-aspect measurements, prose cannot claim that most or many readers share a particular view. Reader observations currently provide context rather than changing recommendation rank.
-
-```sh
-npm run pipeline:readers -- import-cached
-npm run pipeline:readers -- import-hardcover --title "Dungeon Crawler Carl" --author "Matt Dinniman" --limit 50
-npm run pipeline:readers -- plan
-npm run pipeline:readers -- run --limit 20
-npm run pipeline:readers -- status
-npm run pipeline:readers -- corrections
-```
-
-Use the ignored `HARDCOVER_API_TOKEN` setting for API acquisition. A cached repeat makes zero HTTP requests. `--force` intentionally reacquires the sample; changed evidence invalidates its previous aggregate.
-
-## Catalog inspector
-
-The separate [quality research index](docs/quality-index.md) assesses explicit craft commentary across books, series, and authors, with star ratings excluded. It includes resumable inference, private versioned reports, calibration controls, and an optional PostgreSQL import prototype. These experimental estimates do not change the site's ranking.
-
-The separate [inspector](https://shelfgobl.in/inspector/) is a read-only view of **all canonical works**, including volumes without a confirmed audiobook. It highlights missing data, stale checks and records needing review, with series search and a per-book evidence matrix. It consumes `static/data/health.json`; refreshing the page reloads that published snapshot and does not start a crawler.
-
-```sh
-npm run pipeline:health
-```
-
-The health exporter opens SQLite read-only and makes no network or model calls. Data completeness counts usable retained fields. Evidence quality counts current verification and editorial review. Both scores expose their equally weighted checks; neither rates the book or proves that an unknown final volume has been found. A cover URL is separate from checksum-verified local image bytes, source length is separate from a reviewed synopsis, and a minimum reader sample is separate from consensus. Current cached Jev assessments contribute evidence without another model purchase. Raw comments, source documents, model answers and local asset paths are excluded.
-
-## Recurring refresh and deployment
-
-The public repository's `catalog-refresh.yml` workflow runs at **08:17 UTC daily**, away from the hourly boundary. Both a workflow gate and the worker reject runs during **22:00–02:00 UTC**, including delayed or manual invocations. The worker also reserves time to finish before that window. CI and Pages use standard public-repository runners.
-
-Configure these encrypted repository secrets:
-
-- `CATALOG_DATA_TOKEN`: a dedicated fine-grained GitHub token with Contents read/write access to the **private** `iamnbutler/litrpg-hub-data` repository. The workflow's `GITHUB_TOKEN` handles the public app repository only.
-- `OPENAI_API_KEY` and `TYPESAFE_API_KEY`: offline enrichment credentials.
-
-Each run restores the latest private archive, verifies its checksum and complete member layout before extraction, checks the restored snapshot, and proves private release write access before doing paid work. Limits across selected series are 25 source jobs, 25 exact-audio jobs, 10 extraction jobs and 10 Jev assessments. Global discovery, reader acquisition, cover inference and automatic review approval are excluded. A manual run defaults to `no_enrich=true` for an initial verification without model calls.
-
-Partial work is checkpointed to a new private release even if work or public export fails. Only after that checkpoint succeeds may the worker commit the allowed public JSON files and dispatch Pages. Raw job output is captured privately; public logs contain bounded counts and sanitized failure codes. No private database or reader evidence is uploaded as an Actions artifact. Runner termination or loss of private-repository access can still prevent the final checkpoint; inspect failed runs before retrying paid work. The public build always uses committed JSON and never fetches private data.
-
-## Reader sign-in configuration
-
-GitHub OAuth uses a server-side code exchange, single-use state, and PKCE. D1 stores user identities, SHA-256 session-token hashes, and revisioned library snapshots. The browser receives a Secure, HttpOnly, SameSite cookie valid for 30 days. Mutations require a same-origin request and a session-bound CSRF token. GitHub access tokens are never persisted. The private offline catalog remains in its existing SQLite/archive pipeline; D1 holds reader accounts only.
-
-The repository and deployed resource IDs retain their existing names: Worker `litrpg-hub`, D1 binding `DB`, and database `litrpg-hub-accounts`. [wrangler.jsonc](wrangler.jsonc) records the database ID and canonical production origin. Set the GitHub OAuth application's homepage to `https://shelfgobl.in/` and callback to `https://shelfgobl.in/auth/callback/`. The former [Workers address](https://litrpg-hub.iamnbutler.workers.dev/) remains accessible for existing sessions to finish syncing or export a library; new sign-ins start on the canonical domain.
-
-```sh
-npx wrangler login
-npm run db:migrate          # Apply reviewed migrations to production D1
-npm run deploy:cloudflare  # Build at / and deploy assets + account Worker
-npm run secrets:cloudflare # Upload ONLY the two OAuth credentials from .env
-```
-
-`OAUTH_GITHUB_CLIENT_ID` and `OAUTH_GITHUB_CLIENT_SECRET` are Cloudflare secrets. The upload script passes them through stdin and excludes all catalog enrichment credentials. Changing the hostname also requires changing `SITE_URL` and `OAUTH_GITHUB_REDIRECT_URI` in Wrangler and the GitHub OAuth app callback. Cloudflare auto-deployment is not configured. The existing refresh worker retains its 08:17 UTC schedule and 22:00–02:00 UTC guards.
-
-For local development, create an ignored `.dev.vars.local` with the two OAuth credentials from a **separate development OAuth app** whose callback is `http://localhost:5173/auth/callback/`. This also prevents Wrangler from loading unrelated `.env` keys. Run `npm run db:migrate:local`, then `npm run dev:accounts` and `npm run dev` in separate terminals. Vite proxies `/api/` and `/auth/` to local Wrangler; local D1 state stays under `.wrangler/`. Browsing does not require the account service.
-
-Account libraries use separate browser caches from the guest library and from other GitHub accounts. The sync client retries on reconnect, tab focus, and once per minute while visible. A revision check prevents stale snapshots overwriting the server; local edits are rebased over concurrent server changes, including deletions. Edits to the same book or series use the local edit on retry. Failed uploads stay on the device, with a visible status and manual retry. Export remains available as a backup. Reader content filters remain browser-local.
-
-Guest libraries, account caches, and content preferences use origin-specific browser storage (`localStorage`), so changing domains does not copy them automatically. To move local-only data, open the [old Pages site](https://nate.rip/litrpg-hub/) or [Workers site](https://litrpg-hub.iamnbutler.workers.dev/) in the browser where it was saved, choose My library → Export, then open [Shelf Goblin](https://shelfgobl.in/) and choose My library → Import. Import merges the library; older LitRPG Hub exports remain supported. Content preferences are not part of that export.
-
-An account library already synced to D1 remains attached to the same GitHub identity. Sign in again on the new domain to load it. Before switching, finish syncing any pending old-domain edits or export them as a backup; unsynced changes exist only in that browser. Signing in does not automatically combine a guest library with an account: use “Add it to my account” or import the saved export while signed in.
-
-Validation: `npm run check:worker`, `npm run check`, `npm run check:backend`, `npm test`, `npm run build`, and `npx wrangler deploy --dry-run --env=""`. The account tests execute the real migration and SQL in SQLite and cover OAuth state/replay, PKCE, session expiry, CSRF, account isolation, offline recovery, and concurrent library changes.
-
-## Keep the catalog safe
-
-`data/books.db`, raw source text, model responses, reader text and cover bytes are ignored by Git. Use `CATALOG_DB_PATH` and `CATALOG_ASSET_DIR` for storage outside the checkout. A fresh catalog worker should restore a backup; the public JSON is insufficient to reconstruct source history or paid caches. Export refuses an empty database.
-
-```sh
-# Verified online SQLite snapshot, covers and checksum manifest
-npm run pipeline:backup
-
-# Upload that bundle to an explicitly private GitHub data repository
-npm run pipeline:archive -- --repo OWNER/PRIVATE_DATA_REPO
-
-# Verify an extracted/downloaded snapshot without modifying it
-npm run pipeline:verify-backup -- --snapshot /path/to/catalog-snapshot
-```
-
-The archive command checks repository privacy, file checksums and accidental credential inclusion before upload. It uploads a versioned private release, not raw evidence to the public application repository. To restore, extract a snapshot to a separate directory, run the offline verifier, and point the two storage paths at its `books.db` and `covers` directory. The verifier checks manifest files, SQLite integrity and foreign keys, reports table counts, and compares the books count. It does not establish complete historical image coverage. Do not copy a live SQLite file by itself: committed changes may still be in its WAL.
-
-CI runs frontend/backend checks, offline regression tests and the static build. Tests cover identity mismatches, bad links, incomplete responses, description preservation, job leases, paid-cache recovery, content precedence, library migration and recommendation filtering. See [catalog strategy](docs/catalog-strategy.md) for the data model and remaining work.
+For local accounts, use a separate development OAuth app with callback
+`http://localhost:5173/auth/callback/`. Put its two credentials in ignored
+`.dev.vars.local`, run `npm run db:migrate:local`, then start `npm run dev:accounts`
+and `npm run dev` in separate terminals. Vite proxies account requests to Wrangler;
+local D1 state stays under `.wrangler/`. Browsing needs neither service nor keys.

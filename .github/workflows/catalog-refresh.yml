@@ -1,29 +1,86 @@
-name: Refresh catalog
+name: Catalog producer
 
 on:
   schedule:
     - cron: '17 8 * * *'
   workflow_dispatch:
     inputs:
+      task:
+        description: 'Verify private producer code, or refresh and publish catalog JSON'
+        type: choice
+        options: [verify, refresh]
+        required: true
+        default: verify
       no_enrich:
-        description: 'Skip paid extraction and assessment (use for the first verification)'
+        description: 'Skip paid extraction and assessment during refresh'
         type: boolean
         required: true
         default: true
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 concurrency:
-  group: catalog-refresh
+  group: catalog-producer
   cancel-in-progress: false
 
 jobs:
+  verify:
+    if: github.repository == 'iamnbutler/shelfgoblin' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.task == 'verify'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check the UTC run window
+        id: window
+        run: |
+          python3 - <<'PY'
+          import datetime, os
+          now = datetime.datetime.now(datetime.timezone.utc)
+          end = now.replace(hour=22, minute=0, second=0, microsecond=0)
+          allowed = now.hour >= 2 and now + datetime.timedelta(minutes=27) <= end
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('allowed=' + str(allowed).lower() + '\n')
+          print('Producer verification may run.' if allowed else 'Producer verification skipped: outside the permitted UTC window or too close to 22:00 UTC.')
+          PY
+
+      # No caller-controlled ref: only reviewed code on the private repository's main branch.
+      - uses: actions/checkout@v4
+        if: steps.window.outputs.allowed == 'true'
+        with:
+          repository: iamnbutler/shelfgoblin-data
+          ref: main
+          token: ${{ secrets.CATALOG_DATA_TOKEN }}
+          path: catalog
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        if: steps.window.outputs.allowed == 'true'
+        with:
+          node-version: 22
+
+      # Tests may print source fixtures. Keep their output on the ephemeral runner, never in public logs/artifacts.
+      - name: Install and verify the private producer without model credentials
+        if: steps.window.outputs.allowed == 'true'
+        working-directory: catalog
+        run: |
+          if ! (npm ci && npm run check:backend && npm test) > "$RUNNER_TEMP/catalog-verification.log" 2>&1; then
+            echo 'Private producer verification failed. Reproduce locally; private test output is not published.'
+            exit 1
+          fi
+          echo 'Private producer installation, type-check, and tests passed without model credentials.'
+        env:
+          OPENAI_API_KEY: ''
+          TYPESAFE_API_KEY: ''
+          HARDCOVER_API_TOKEN: ''
+          CATALOG_DATA_TOKEN: ''
+          GITHUB_TOKEN: ''
+
   refresh:
-    if: github.repository == 'iamnbutler/litrpg-hub' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    if: github.repository == 'iamnbutler/shelfgoblin' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.task == 'refresh'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
     steps:
       - name: Check the UTC run window
         id: window
@@ -38,27 +95,52 @@ jobs:
           print('Catalog refresh may run with its checkpoint reserve.' if allowed else 'Catalog refresh skipped: outside the permitted UTC window or too close to 22:00 UTC.')
           PY
 
-      - uses: actions/checkout@v4
+      - name: Check out the public app
+        uses: actions/checkout@v4
         if: steps.window.outputs.allowed == 'true'
         with:
           ref: main
+          path: app
+          persist-credentials: false
+
+      - name: Check out the private producer
+        uses: actions/checkout@v4
+        if: steps.window.outputs.allowed == 'true'
+        with:
+          repository: iamnbutler/shelfgoblin-data
+          ref: main
+          token: ${{ secrets.CATALOG_DATA_TOKEN }}
+          path: catalog
           persist-credentials: false
 
       - uses: actions/setup-node@v4
         if: steps.window.outputs.allowed == 'true'
         with:
           node-version: 22
-          cache: npm
 
-      - run: npm ci
+      - name: Install the private producer
         if: steps.window.outputs.allowed == 'true'
+        working-directory: catalog
+        run: |
+          if ! npm ci > "$RUNNER_TEMP/catalog-install.log" 2>&1; then
+            echo 'Private producer installation failed. Private output is not published.'
+            exit 1
+          fi
 
-      # No raw artifacts or child logs are uploaded from this public repository.
-      # Root provisions the data-repository token; a minted GitHub App token can use this same input.
+      # The private checkpoint must finish before any public JSON commit. No raw artifacts or child logs are uploaded.
       - name: Restore, refresh, checkpoint privately, and publish public JSON
         if: steps.window.outputs.allowed == 'true'
-        run: node --import tsx scripts/backend/automation/worker.ts
+        working-directory: catalog
+        # Module-loader failures happen before the worker's sanitized error handler.
+        # Capture the whole entrypoint, including those failures, on the runner.
+        run: |
+          if ! node --import tsx scripts/backend/automation/worker.ts > "$RUNNER_TEMP/catalog-refresh.log" 2>&1; then
+            echo 'Catalog refresh failed. Inspect the private checkpoint before retrying paid work; private output is not published.'
+            exit 1
+          fi
+          echo 'Catalog refresh finished and private progress was checkpointed.'
         env:
+          CATALOG_APP_ROOT: ${{ github.workspace }}/app
           GITHUB_TOKEN: ${{ github.token }}
           CATALOG_DATA_TOKEN: ${{ secrets.CATALOG_DATA_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

@@ -4,9 +4,10 @@
  * act on, and `Jev` means nothing outside this repo.
  *
  * This is a view-layer filter, not a rewrite of the data: the stored strings are the audit
- * trail and stay exactly as they are. The parse-time builders in `scripts/backend` no longer
- * bake tool names into new assessments, so this only has work to do for records exported
- * before that change. It can be deleted once the snapshot has been fully rebuilt.
+ * trail and stay exactly as they are. The private shelfgoblin-data producer no longer
+ * adds tool names to newly parsed assessments, but cached older receipts can retain that
+ * prose after another export. Remove this only after verifying that published snapshots
+ * no longer carry legacy tooling notes; running an export alone is not that guarantee.
  */
 
 /** Our own tooling, which a reader has no use for. Matched as whole words so a book whose
