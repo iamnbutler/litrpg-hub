@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-19T14:39:30.061Z",
+  "generatedAt": "2026-09-19T22:46:46.534Z",
   "definitions": {
     "completeness": "Data presence, not bibliography completeness: equal weight for source-description, original-summary, extracted-metadata, jev-assessment, audio-edition, audio-date, narrator, runtime, cover-asset, reader-sample. Stale or unverified retained values can earn presence credit; corrupt unusable values cannot.",
     "evidenceQuality": "Current evidence/review checks, never a rating of a book: equal weight for source-description, reviewed-metadata, audio-verified, audio-date, cover-observation, reader-adequacy, reader-traits, reader-observation, source-freshness. Only present/current checks earn credit. No model confidence is converted into a quality score.",
@@ -23,7 +23,7 @@
     "verifiedAudioDates": 379,
     "coverAssets": 62,
     "reviewedMetadata": 66,
-    "adequateReaderSamples": 16,
+    "adequateReaderSamples": 25,
     "meanCompleteness": 80,
     "meanEvidenceQuality": 47
   },
@@ -1645,10 +1645,10 @@
         "explanation": "53/63 equally weighted checks across all 6 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 55,
-        "earned": 31,
+        "percent": 54,
+        "earned": 30,
         "possible": 56,
-        "explanation": "31/56 equally weighted checks across all 6 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "30/56 equally weighted checks across all 6 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -1816,7 +1816,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/6 works are present/current; 5 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/6 works are present/current; 5 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -1907,6 +1907,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 5/6 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/6 works are stale."
         }
       ],
       "missingVolumes": [],
@@ -2050,10 +2055,10 @@
         "explanation": "100/123 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 49,
-        "earned": 54,
+        "percent": 48,
+        "earned": 53,
         "possible": 110,
-        "explanation": "54/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "53/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -2221,7 +2226,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/12 works are present/current; 11 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -2312,6 +2317,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 11/12 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/12 works are stale."
         },
         {
           "code": "bibliography",
@@ -3931,10 +3941,10 @@
         "explanation": "45/53 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 57,
-        "earned": 27,
+        "percent": 55,
+        "earned": 26,
         "possible": 47,
-        "explanation": "27/47 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "26/47 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -4102,7 +4112,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/5 works are present/current; 4 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/5 works are present/current; 4 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -4193,6 +4203,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 4/5 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/5 works are stale."
         },
         {
           "code": "source-freshness",
@@ -5232,16 +5247,16 @@
       "knownWorks": 12,
       "confirmedAudioWorks": 12,
       "completeness": {
-        "percent": 82,
-        "earned": 101,
+        "percent": 85,
+        "earned": 105,
         "possible": 123,
-        "explanation": "101/123 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
+        "explanation": "105/123 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 42,
-        "earned": 46,
+        "percent": 45,
+        "earned": 49,
         "possible": 110,
-        "explanation": "46/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "49/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -5379,7 +5394,7 @@
           "label": "Usable reader comments",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "5/12 works are present/current; 7 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -5389,7 +5404,7 @@
           "label": "Reader sample adequacy",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "5/12 works are present/current; 7 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -5409,7 +5424,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/12 works are present/current; 11 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -5484,12 +5499,12 @@
         {
           "code": "reader-sample:missing",
           "status": "missing",
-          "message": "Usable reader comments: 11/12 works are missing."
+          "message": "Usable reader comments: 7/12 works are missing."
         },
         {
           "code": "reader-adequacy:missing",
           "status": "missing",
-          "message": "Reader sample adequacy: 11/12 works are missing."
+          "message": "Reader sample adequacy: 7/12 works are missing."
         },
         {
           "code": "reader-traits:missing",
@@ -5500,6 +5515,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 11/12 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/12 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -6102,10 +6122,10 @@
         "explanation": "133/173 equally weighted checks across all 17 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 48,
-        "earned": 74,
+        "percent": 47,
+        "earned": 73,
         "possible": 155,
-        "explanation": "74/155 equally weighted checks across all 17 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "73/155 equally weighted checks across all 17 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -6273,7 +6293,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/17 works are present/current; 16 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/17 works are present/current; 16 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -6409,6 +6429,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 16/17 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/17 works are stale."
         },
         {
           "code": "bibliography",
@@ -7098,16 +7123,16 @@
       "knownWorks": 8,
       "confirmedAudioWorks": 8,
       "completeness": {
-        "percent": 84,
-        "earned": 70,
+        "percent": 87,
+        "earned": 72,
         "possible": 83,
-        "explanation": "70/83 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
+        "explanation": "72/83 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 53,
-        "earned": 39,
+        "percent": 55,
+        "earned": 41,
         "possible": 74,
-        "explanation": "39/74 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "41/74 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -7245,7 +7270,7 @@
           "label": "Usable reader comments",
           "status": "missing",
           "available": true,
-          "explanation": "3/8 works are present/current; 5 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "5/8 works are present/current; 3 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7255,7 +7280,7 @@
           "label": "Reader sample adequacy",
           "status": "missing",
           "available": true,
-          "explanation": "1/8 works are present/current; 5 missing, 2 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "4/8 works are present/current; 3 missing, 1 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7275,7 +7300,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/8 works are present/current; 7 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/8 works are present/current; 7 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7350,17 +7375,17 @@
         {
           "code": "reader-sample:missing",
           "status": "missing",
-          "message": "Usable reader comments: 5/8 works are missing."
+          "message": "Usable reader comments: 3/8 works are missing."
         },
         {
           "code": "reader-adequacy:missing",
           "status": "missing",
-          "message": "Reader sample adequacy: 5/8 works are missing."
+          "message": "Reader sample adequacy: 3/8 works are missing."
         },
         {
           "code": "reader-adequacy:unknown",
           "status": "unknown",
-          "message": "Reader sample adequacy: 2/8 works are unknown."
+          "message": "Reader sample adequacy: 1/8 works are unknown."
         },
         {
           "code": "reader-traits:missing",
@@ -7371,6 +7396,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 7/8 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/8 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -7556,10 +7586,10 @@
         "explanation": "106/133 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 51,
-        "earned": 61,
+        "percent": 50,
+        "earned": 60,
         "possible": 119,
-        "explanation": "61/119 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "60/119 equally weighted checks across all 13 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -7727,7 +7757,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/13 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/13 works are present/current; 12 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -7838,6 +7868,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 12/13 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/13 works are stale."
         }
       ],
       "missingVolumes": [],
@@ -8164,16 +8199,16 @@
       "knownWorks": 5,
       "confirmedAudioWorks": 5,
       "completeness": {
-        "percent": 83,
-        "earned": 44,
+        "percent": 85,
+        "earned": 45,
         "possible": 53,
-        "explanation": "44/53 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
+        "explanation": "45/53 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 51,
-        "earned": 24,
+        "percent": 53,
+        "earned": 25,
         "possible": 47,
-        "explanation": "24/47 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "25/47 equally weighted checks across all 5 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -8310,8 +8345,8 @@
           "id": "reader-sample",
           "label": "Usable reader comments",
           "status": "missing",
-          "available": false,
-          "explanation": "0/5 works are present/current; 5 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "available": true,
+          "explanation": "1/5 works are present/current; 4 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -8320,8 +8355,8 @@
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
           "status": "missing",
-          "available": false,
-          "explanation": "0/5 works are present/current; 5 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "available": true,
+          "explanation": "1/5 works are present/current; 4 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -8416,12 +8451,12 @@
         {
           "code": "reader-sample:missing",
           "status": "missing",
-          "message": "Usable reader comments: 5/5 works are missing."
+          "message": "Usable reader comments: 4/5 works are missing."
         },
         {
           "code": "reader-adequacy:missing",
           "status": "missing",
-          "message": "Reader sample adequacy: 5/5 works are missing."
+          "message": "Reader sample adequacy: 4/5 works are missing."
         },
         {
           "code": "reader-traits:missing",
@@ -8935,10 +8970,10 @@
         "explanation": "84/103 equally weighted checks across all 10 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 49,
-        "earned": 45,
+        "percent": 48,
+        "earned": 44,
         "possible": 92,
-        "explanation": "45/92 equally weighted checks across all 10 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "44/92 equally weighted checks across all 10 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -9106,7 +9141,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/10 works are present/current; 9 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/10 works are present/current; 9 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -9197,6 +9232,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 9/10 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/10 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -13069,10 +13109,10 @@
         "explanation": "118/143 equally weighted checks across all 14 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 48,
-        "earned": 61,
+        "percent": 47,
+        "earned": 60,
         "possible": 128,
-        "explanation": "61/128 equally weighted checks across all 14 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "60/128 equally weighted checks across all 14 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -13240,7 +13280,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/14 works are present/current; 13 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/14 works are present/current; 13 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -13351,6 +13391,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 13/14 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/14 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -15663,10 +15708,10 @@
         "explanation": "76/83 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 62,
-        "earned": 46,
+        "percent": 61,
+        "earned": 45,
         "possible": 74,
-        "explanation": "46/74 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "45/74 equally weighted checks across all 8 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -15834,7 +15879,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/8 works are present/current; 7 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/8 works are present/current; 7 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -15915,6 +15960,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 7/8 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/8 works are stale."
         },
         {
           "code": "source-freshness",
@@ -17054,9 +17104,9 @@
       },
       "evidenceQuality": {
         "percent": 45,
-        "earned": 50,
+        "earned": 49,
         "possible": 110,
-        "explanation": "50/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "49/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -17224,7 +17274,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/12 works are present/current; 11 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -17330,6 +17380,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 11/12 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/12 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -17554,10 +17609,10 @@
         "explanation": "29/33 equally weighted checks across all 3 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 66,
-        "earned": 19,
+        "percent": 62,
+        "earned": 18,
         "possible": 29,
-        "explanation": "19/29 equally weighted checks across all 3 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "18/29 equally weighted checks across all 3 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -17725,7 +17780,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/3 works are present/current; 2 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/3 works are present/current; 2 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -17816,6 +17871,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 2/3 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/3 works are stale."
         }
       ],
       "missingVolumes": [],
@@ -17912,10 +17972,10 @@
       "knownWorks": 16,
       "confirmedAudioWorks": 15,
       "completeness": {
-        "percent": 75,
-        "earned": 122,
+        "percent": 77,
+        "earned": 125,
         "possible": 163,
-        "explanation": "122/163 equally weighted checks across all 16 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
+        "explanation": "125/163 equally weighted checks across all 16 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
         "percent": 47,
@@ -18059,7 +18119,7 @@
           "label": "Usable reader comments",
           "status": "missing",
           "available": true,
-          "explanation": "1/16 works are present/current; 15 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "4/16 works are present/current; 12 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -18069,7 +18129,7 @@
           "label": "Reader sample adequacy",
           "status": "missing",
           "available": true,
-          "explanation": "1/16 works are present/current; 15 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "2/16 works are present/current; 12 missing, 2 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -18089,7 +18149,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/16 works are present/current; 15 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/16 works are present/current; 15 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -18189,12 +18249,17 @@
         {
           "code": "reader-sample:missing",
           "status": "missing",
-          "message": "Usable reader comments: 15/16 works are missing."
+          "message": "Usable reader comments: 12/16 works are missing."
         },
         {
           "code": "reader-adequacy:missing",
           "status": "missing",
-          "message": "Reader sample adequacy: 15/16 works are missing."
+          "message": "Reader sample adequacy: 12/16 works are missing."
+        },
+        {
+          "code": "reader-adequacy:unknown",
+          "status": "unknown",
+          "message": "Reader sample adequacy: 2/16 works are unknown."
         },
         {
           "code": "reader-traits:missing",
@@ -18205,6 +18270,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 15/16 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/16 works are stale."
         },
         {
           "code": "bibliography",
@@ -18472,10 +18542,10 @@
         "explanation": "52/73 equally weighted checks across all 7 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 38,
-        "earned": 25,
+        "percent": 37,
+        "earned": 24,
         "possible": 65,
-        "explanation": "25/65 equally weighted checks across all 7 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "24/65 equally weighted checks across all 7 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -18643,7 +18713,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/7 works are present/current; 6 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/7 works are present/current; 6 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -18784,6 +18854,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 6/7 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/7 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -18933,10 +19008,10 @@
         "explanation": "102/123 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog data, not the quality of the story or completeness of its unknown tail."
       },
       "evidenceQuality": {
-        "percent": 42,
-        "earned": 46,
+        "percent": 41,
+        "earned": 45,
         "possible": 110,
-        "explanation": "46/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
+        "explanation": "45/110 equally weighted checks across all 12 canonical works plus series metadata and bibliography. This measures retained catalog evidence and review, not the quality of the story or completeness of its unknown tail."
       },
       "checks": [
         {
@@ -19104,7 +19179,7 @@
           "label": "Publishable reader context",
           "status": "missing",
           "available": true,
-          "explanation": "1/12 works are present/current; 11 missing, 0 unknown, 0 stale. Every canonical work is included, regardless of audio status.",
+          "explanation": "0/12 works are present/current; 11 missing, 0 unknown, 1 stale. Every canonical work is included, regardless of audio status.",
           "sourceUrl": null,
           "observedAt": null,
           "dueAt": null
@@ -19195,6 +19270,11 @@
           "code": "reader-observation:missing",
           "status": "missing",
           "message": "Publishable reader context: 11/12 works are missing."
+        },
+        {
+          "code": "reader-observation:stale",
+          "status": "stale",
+          "message": "Publishable reader context: 1/12 works are stale."
         },
         {
           "code": "source-freshness:unknown",
@@ -28749,10 +28829,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -28918,9 +28998,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/sufficiently-advanced-magic",
           "observedAt": "2026-09-19T04:33:35.508Z",
           "dueAt": null
@@ -28936,7 +29016,13 @@
           "dueAt": "2026-12-18T03:37:14.667Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -28962,7 +29048,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/sufficiently-advanced-magic"
         ]
@@ -30481,10 +30567,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -30650,9 +30736,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/awaken-online-catharsis-2016",
           "observedAt": "2026-09-19T04:33:47.478Z",
           "dueAt": null
@@ -30668,7 +30754,13 @@
           "dueAt": "2026-12-18T02:44:53.175Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -30694,7 +30786,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/awaken-online-catharsis-2016"
         ]
@@ -43180,10 +43272,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -43349,9 +43441,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/beware-of-chicken",
           "observedAt": "2026-09-19T03:50:10.289Z",
           "dueAt": null
@@ -43367,7 +43459,13 @@
           "dueAt": "2026-12-18T03:29:54.345Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -43393,7 +43491,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/beware-of-chicken"
         ]
@@ -48816,10 +48914,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 89,
-        "earned": 8,
+        "percent": 78,
+        "earned": 7,
         "possible": 9,
-        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "7/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -48985,9 +49083,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/unsouled",
           "observedAt": "2026-09-19T03:50:02.438Z",
           "dueAt": null
@@ -49004,6 +49102,11 @@
         }
       ],
       "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        },
         {
           "code": "source-freshness",
           "status": "unknown",
@@ -49035,7 +49138,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/unsouled"
         ]
@@ -49076,16 +49179,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 56,
+        "earned": 5,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -49221,21 +49324,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "30 usable comments are selected from 33 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/soulsmith",
+          "observedAt": "2026-09-19T16:42:03.252Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "30/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/soulsmith",
+          "observedAt": "2026-09-19T16:42:03.252Z",
           "dueAt": null
         },
         {
@@ -49244,7 +49347,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/soulsmith",
           "observedAt": null,
           "dueAt": null
         },
@@ -49254,8 +49357,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/soulsmith",
+          "observedAt": "2026-09-19T16:42:03.252Z",
           "dueAt": null
         },
         {
@@ -49279,16 +49382,6 @@
           "code": "cover-observation",
           "status": "missing",
           "message": "No validated observation is bound to the current cached cover bytes."
-        },
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -49316,8 +49409,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -49326,13 +49419,15 @@
         "releaseDate": "2019-09-25"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 33,
+        "selectedCount": 30,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/soulsmith"
+        ]
       },
       "cover": {
         "url": "https://m.media-amazon.com/images/I/51bOa-sSM0L._SL500_.jpg",
@@ -50257,16 +50352,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 33,
-        "earned": 3,
+        "percent": 44,
+        "earned": 4,
         "possible": 9,
-        "explanation": "3/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -50402,21 +50497,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "13 usable comments are selected from 17 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/underlord-2019",
+          "observedAt": "2026-09-19T16:42:07.226Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "13/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/underlord-2019",
+          "observedAt": "2026-09-19T16:42:07.226Z",
           "dueAt": null
         },
         {
@@ -50425,7 +50520,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/underlord-2019",
           "observedAt": null,
           "dueAt": null
         },
@@ -50435,8 +50530,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/underlord-2019",
+          "observedAt": "2026-09-19T16:42:07.226Z",
           "dueAt": null
         },
         {
@@ -50467,16 +50562,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -50502,8 +50587,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -50512,13 +50597,15 @@
         "releaseDate": "2019-09-25"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 17,
+        "selectedCount": 13,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/underlord-2019"
+        ]
       },
       "cover": {
         "url": "https://m.media-amazon.com/images/I/51gvVAB4zqL._SL500_.jpg",
@@ -51752,16 +51839,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 33,
-        "earned": 3,
+        "percent": 44,
+        "earned": 4,
         "possible": 9,
-        "explanation": "3/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -51897,21 +51984,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "11 usable comments are selected from 13 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/dreadgod",
+          "observedAt": "2026-09-19T16:42:11.242Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "11/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/dreadgod",
+          "observedAt": "2026-09-19T16:42:11.242Z",
           "dueAt": null
         },
         {
@@ -51920,7 +52007,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/dreadgod",
           "observedAt": null,
           "dueAt": null
         },
@@ -51930,8 +52017,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/dreadgod",
+          "observedAt": "2026-09-19T16:42:11.242Z",
           "dueAt": null
         },
         {
@@ -51962,16 +52049,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -51997,8 +52074,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -52007,13 +52084,15 @@
         "releaseDate": "2022-07-05"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 13,
+        "selectedCount": 11,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/dreadgod"
+        ]
       },
       "cover": {
         "url": "https://m.media-amazon.com/images/I/51NB4F281GL._SL500_.jpg",
@@ -52051,16 +52130,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 33,
-        "earned": 3,
+        "percent": 44,
+        "earned": 4,
         "possible": 9,
-        "explanation": "3/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -52196,21 +52275,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "15 usable comments are selected from 16 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/waybound",
+          "observedAt": "2026-09-19T16:42:15.233Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "15/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/waybound",
+          "observedAt": "2026-09-19T16:42:15.233Z",
           "dueAt": null
         },
         {
@@ -52219,7 +52298,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/waybound",
           "observedAt": null,
           "dueAt": null
         },
@@ -52229,8 +52308,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/waybound",
+          "observedAt": "2026-09-19T16:42:15.233Z",
           "dueAt": null
         },
         {
@@ -52261,16 +52340,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -52296,8 +52365,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -52306,13 +52375,15 @@
         "releaseDate": "2023-06-06"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 16,
+        "selectedCount": 15,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/waybound"
+        ]
       },
       "cover": {
         "url": "https://m.media-amazon.com/images/I/51iLwIVWH5L._SL500_.jpg",
@@ -53224,10 +53295,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -53393,9 +53464,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/defiance-of-the-fall",
           "observedAt": "2026-09-19T03:35:19.519Z",
           "dueAt": null
@@ -53411,7 +53482,13 @@
           "dueAt": "2026-12-18T02:21:03.671Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -53437,7 +53514,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/defiance-of-the-fall"
         ]
@@ -61652,10 +61729,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -61821,9 +61898,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/dungeon-crawler-carl",
           "observedAt": "2026-09-19T03:35:11.615Z",
           "dueAt": null
@@ -61839,7 +61916,13 @@
           "dueAt": "2026-12-18T03:28:20.026Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -61865,7 +61948,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/dungeon-crawler-carl",
           "https://soundbooththeater.com/shop/audiobooks/dungeon-crawler-carl/"
@@ -61913,10 +61996,10 @@
         "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 56,
-        "earned": 5,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -62054,19 +62137,19 @@
           "label": "Usable reader comments",
           "status": "present",
           "available": true,
-          "explanation": "1 usable comments are selected from 1 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/carls-doomsday-scenario-dungeon-crawler-carl-book-2/",
-          "observedAt": "2026-09-19T03:06:28.783Z",
+          "explanation": "41 usable comments are selected from 51 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/carls-doomsday-scenario",
+          "observedAt": "2026-09-19T16:42:19.239Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "unknown",
-          "available": false,
-          "explanation": "1/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/carls-doomsday-scenario-dungeon-crawler-carl-book-2/",
-          "observedAt": "2026-09-19T03:06:28.783Z",
+          "status": "present",
+          "available": true,
+          "explanation": "41/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/carls-doomsday-scenario",
+          "observedAt": "2026-09-19T16:42:19.239Z",
           "dueAt": null
         },
         {
@@ -62075,7 +62158,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/carls-doomsday-scenario-dungeon-crawler-carl-book-2/",
+          "sourceUrl": "https://hardcover.app/books/carls-doomsday-scenario",
           "observedAt": null,
           "dueAt": null
         },
@@ -62085,8 +62168,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/carls-doomsday-scenario-dungeon-crawler-carl-book-2/",
-          "observedAt": "2026-09-19T03:06:28.783Z",
+          "sourceUrl": "https://hardcover.app/books/carls-doomsday-scenario",
+          "observedAt": "2026-09-19T16:42:19.239Z",
           "dueAt": null
         },
         {
@@ -62112,11 +62195,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-adequacy",
-          "status": "unknown",
-          "message": "1/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -62138,7 +62216,7 @@
         "coverAsset": false,
         "coverReviewed": false,
         "readerSample": true,
-        "readerAdequate": false
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 3,
@@ -62147,13 +62225,14 @@
         "releaseDate": "2021-04-22"
       },
       "reader": {
-        "retainedCount": 1,
-        "selectedCount": 1,
-        "eligible": false,
+        "retainedCount": 51,
+        "selectedCount": 41,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
         "sourceUrls": [
+          "https://hardcover.app/books/carls-doomsday-scenario",
           "https://soundbooththeater.com/shop/audiobooks/carls-doomsday-scenario-dungeon-crawler-carl-book-2/"
         ]
       },
@@ -62768,16 +62847,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 44,
-        "earned": 4,
+        "percent": 56,
+        "earned": 5,
         "possible": 9,
-        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -62913,21 +62992,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "43 usable comments are selected from 50 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/the-butchers-masquerade",
+          "observedAt": "2026-09-19T16:42:23.242Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "43/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/the-butchers-masquerade",
+          "observedAt": "2026-09-19T16:42:23.242Z",
           "dueAt": null
         },
         {
@@ -62936,7 +63015,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/the-butchers-masquerade",
           "observedAt": null,
           "dueAt": null
         },
@@ -62946,8 +63025,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/the-butchers-masquerade",
+          "observedAt": "2026-09-19T16:42:23.242Z",
           "dueAt": null
         },
         {
@@ -62978,16 +63057,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -63008,8 +63077,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 3,
@@ -63018,13 +63087,15 @@
         "releaseDate": "2022-05-26"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 50,
+        "selectedCount": 43,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/the-butchers-masquerade"
+        ]
       },
       "cover": {
         "url": "https://soundbooththeater.com/wp-content/uploads/2022/03/DCC-5-Audio-Cover-1000x1000-1-600x600.jpg",
@@ -63357,16 +63428,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 33,
-        "earned": 3,
+        "percent": 44,
+        "earned": 4,
         "possible": 9,
-        "explanation": "3/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "4/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -63502,21 +63573,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "43 usable comments are selected from 50 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/this-inevitable-ruin",
+          "observedAt": "2026-09-19T16:42:27.236Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "43/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/this-inevitable-ruin",
+          "observedAt": "2026-09-19T16:42:27.236Z",
           "dueAt": null
         },
         {
@@ -63525,7 +63596,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/this-inevitable-ruin",
           "observedAt": null,
           "dueAt": null
         },
@@ -63535,8 +63606,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/this-inevitable-ruin",
+          "observedAt": "2026-09-19T16:42:27.236Z",
           "dueAt": null
         },
         {
@@ -63567,16 +63638,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -63602,8 +63663,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -63612,13 +63673,15 @@
         "releaseDate": "2025-02-11"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 50,
+        "selectedCount": 43,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/this-inevitable-ruin"
+        ]
       },
       "cover": {
         "url": "https://m.media-amazon.com/images/I/51rtjss07uL._SL500_.jpg",
@@ -63963,10 +64026,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -64132,9 +64195,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/he-who-fights-with-monsters-2021",
           "observedAt": "2026-09-19T03:50:06.352Z",
           "dueAt": null
@@ -64150,7 +64213,13 @@
           "dueAt": "2026-12-18T02:21:35.772Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -64176,7 +64245,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/he-who-fights-with-monsters-2021"
         ]
@@ -67845,16 +67914,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 90,
-        "earned": 9,
+        "percent": 100,
+        "earned": 10,
         "possible": 10,
-        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 67,
-        "earned": 6,
+        "percent": 78,
+        "earned": 7,
         "possible": 9,
-        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "7/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -67990,21 +68059,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "7 usable comments are selected from 9 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/heretical-fishing",
+          "observedAt": "2026-09-19T16:41:53.228Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "7/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/heretical-fishing",
+          "observedAt": "2026-09-19T16:41:53.228Z",
           "dueAt": null
         },
         {
@@ -68013,7 +68082,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/heretical-fishing",
           "observedAt": null,
           "dueAt": null
         },
@@ -68023,8 +68092,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/heretical-fishing",
+          "observedAt": "2026-09-19T16:41:53.228Z",
           "dueAt": null
         },
         {
@@ -68039,16 +68108,6 @@
         }
       ],
       "issues": [
-        {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
         {
           "code": "reader-traits",
           "status": "missing",
@@ -68070,8 +68129,8 @@
         "audioDateVerified": true,
         "coverAsset": true,
         "coverReviewed": true,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -68080,13 +68139,15 @@
         "releaseDate": "2024-03-12"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 9,
+        "selectedCount": 7,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/heretical-fishing"
+        ]
       },
       "cover": {
         "url": "https://m.media-amazon.com/images/I/51LUW-jLC+L._SL500_.jpg",
@@ -70455,10 +70516,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -70624,9 +70685,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/mark-of-the-fool",
           "observedAt": "2026-09-19T03:50:24.310Z",
           "dueAt": null
@@ -70642,7 +70703,13 @@
           "dueAt": "2026-12-18T02:42:34.518Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -70668,7 +70735,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/mark-of-the-fool"
         ]
@@ -90081,10 +90148,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -90250,9 +90317,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/completionist-chronicles-ritualist",
           "observedAt": "2026-09-19T04:33:43.490Z",
           "dueAt": null
@@ -90268,7 +90335,13 @@
           "dueAt": "2026-12-18T04:09:12.679Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -90294,7 +90367,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/completionist-chronicles-ritualist"
         ]
@@ -102980,10 +103053,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -103149,9 +103222,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-land-founding",
           "observedAt": "2026-09-19T05:43:05.124Z",
           "dueAt": null
@@ -103167,7 +103240,13 @@
           "dueAt": "2026-12-18T05:44:17.234Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -103193,7 +103272,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/the-land-founding"
         ]
@@ -111405,10 +111484,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -111574,9 +111653,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-path-of-ascension",
           "observedAt": "2026-09-19T03:50:16.303Z",
           "dueAt": null
@@ -111592,7 +111671,13 @@
           "dueAt": "2026-12-18T02:23:49.608Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -111618,7 +111703,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/the-path-of-ascension"
         ]
@@ -114937,10 +115022,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -115106,9 +115191,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-perfect-run",
           "observedAt": "2026-09-19T03:50:32.334Z",
           "dueAt": null
@@ -115124,7 +115209,13 @@
           "dueAt": "2026-12-18T03:37:05.949Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -115150,7 +115241,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/the-perfect-run"
         ]
@@ -115786,10 +115877,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -115955,9 +116046,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-primal-hunter",
           "observedAt": "2026-09-19T03:35:15.538Z",
           "dueAt": null
@@ -115973,7 +116064,13 @@
           "dueAt": "2026-12-18T02:20:33.711Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -115999,7 +116096,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "published",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/the-primal-hunter"
         ]
@@ -116041,16 +116138,16 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 56,
-        "earned": 5,
+        "percent": 67,
+        "earned": 6,
         "possible": 9,
-        "explanation": "5/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "6/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -116186,21 +116283,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "8 usable comments are selected from 10 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-2",
+          "observedAt": "2026-09-19T16:42:31.236Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
-          "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "8/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-2",
+          "observedAt": "2026-09-19T16:42:31.236Z",
           "dueAt": null
         },
         {
@@ -116209,7 +116306,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-2",
           "observedAt": null,
           "dueAt": null
         },
@@ -116219,8 +116316,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-2",
+          "observedAt": "2026-09-19T16:42:31.236Z",
           "dueAt": null
         },
         {
@@ -116246,16 +116343,6 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
-          "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
-        },
-        {
           "code": "reader-traits",
           "status": "missing",
           "message": "No current set of reader-trait receipts is retained."
@@ -116276,8 +116363,8 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
-        "readerAdequate": false
+        "readerSample": true,
+        "readerAdequate": true
       },
       "audio": {
         "retainedEditionCount": 2,
@@ -116286,13 +116373,15 @@
         "releaseDate": "2022-06-14"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
-        "eligible": false,
+        "retainedCount": 10,
+        "selectedCount": 8,
+        "eligible": true,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/the-primal-hunter-2"
+        ]
       },
       "cover": {
         "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/05/81yCVfZ9QvL-1.jpg",
@@ -117206,10 +117295,10 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
         "percent": 44,
@@ -117351,21 +117440,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "1 usable comments are selected from 1 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-6",
+          "observedAt": "2026-09-19T16:42:35.238Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
+          "status": "unknown",
           "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "explanation": "1/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-6",
+          "observedAt": "2026-09-19T16:42:35.238Z",
           "dueAt": null
         },
         {
@@ -117374,7 +117463,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-6",
           "observedAt": null,
           "dueAt": null
         },
@@ -117384,8 +117473,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-6",
+          "observedAt": "2026-09-19T16:42:35.238Z",
           "dueAt": null
         },
         {
@@ -117416,14 +117505,9 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
           "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
+          "status": "unknown",
+          "message": "1/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -117446,7 +117530,7 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
+        "readerSample": true,
         "readerAdequate": false
       },
       "audio": {
@@ -117456,13 +117540,15 @@
         "releaseDate": "2023-08-15"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
+        "retainedCount": 1,
+        "selectedCount": 1,
         "eligible": false,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/the-primal-hunter-6"
+        ]
       },
       "cover": {
         "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/05/81g0CIRD7qL-1.jpg",
@@ -118976,10 +119062,10 @@
       ],
       "publicationStatus": "released",
       "completeness": {
-        "percent": 80,
-        "earned": 8,
+        "percent": 90,
+        "earned": 9,
         "possible": 10,
-        "explanation": "8/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
+        "explanation": "9/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
         "percent": 44,
@@ -119121,21 +119207,21 @@
         {
           "id": "reader-sample",
           "label": "Usable reader comments",
-          "status": "missing",
-          "available": false,
-          "explanation": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "status": "present",
+          "available": true,
+          "explanation": "3 usable comments are selected from 4 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook.",
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-12",
+          "observedAt": "2026-09-19T16:42:39.269Z",
           "dueAt": null
         },
         {
           "id": "reader-adequacy",
           "label": "Reader sample adequacy",
-          "status": "missing",
+          "status": "unknown",
           "available": false,
-          "explanation": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "explanation": "3/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality.",
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-12",
+          "observedAt": "2026-09-19T16:42:39.269Z",
           "dueAt": null
         },
         {
@@ -119144,7 +119230,7 @@
           "status": "missing",
           "available": false,
           "explanation": "No current set of reader-trait receipts is retained.",
-          "sourceUrl": null,
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-12",
           "observedAt": null,
           "dueAt": null
         },
@@ -119154,8 +119240,8 @@
           "status": "missing",
           "available": false,
           "explanation": "No retained reader observation is available.",
-          "sourceUrl": null,
-          "observedAt": null,
+          "sourceUrl": "https://hardcover.app/books/the-primal-hunter-12",
+          "observedAt": "2026-09-19T16:42:39.269Z",
           "dueAt": null
         },
         {
@@ -119186,14 +119272,9 @@
           "message": "No validated observation is bound to the current cached cover bytes."
         },
         {
-          "code": "reader-sample",
-          "status": "missing",
-          "message": "0 usable comments are selected from 0 retained, nonremoved comments after deduplication, minimum length, spoiler exclusion, and the 60-comment cap. This does not establish that contributors listened to the audiobook."
-        },
-        {
           "code": "reader-adequacy",
-          "status": "missing",
-          "message": "0/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
+          "status": "unknown",
+          "message": "3/5 required selected voices. This is the existing aggregation gate, not measured agreement, representativeness, or a judgement of comment quality."
         },
         {
           "code": "reader-traits",
@@ -119216,7 +119297,7 @@
         "audioDateVerified": true,
         "coverAsset": false,
         "coverReviewed": false,
-        "readerSample": false,
+        "readerSample": true,
         "readerAdequate": false
       },
       "audio": {
@@ -119226,13 +119307,15 @@
         "releaseDate": "2025-06-11"
       },
       "reader": {
-        "retainedCount": 0,
-        "selectedCount": 0,
+        "retainedCount": 4,
+        "selectedCount": 3,
         "eligible": false,
         "minimum": 5,
         "currentTraits": false,
         "observation": "missing",
-        "sourceUrls": []
+        "sourceUrls": [
+          "https://hardcover.app/books/the-primal-hunter-12"
+        ]
       },
       "cover": {
         "url": "https://b4076937.assetcdn.net/2.0/4076937/wp-content/uploads/sites/7/2026/01/81kbF3Wj8sL._SL1500_-1.jpg",
@@ -120504,10 +120587,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 89,
-        "earned": 8,
+        "percent": 78,
+        "earned": 7,
         "possible": 9,
-        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "7/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -120673,9 +120756,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/shadeslinger",
           "observedAt": "2026-09-19T04:11:16.623Z",
           "dueAt": null
@@ -120692,6 +120775,11 @@
         }
       ],
       "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        },
         {
           "code": "source-freshness",
           "status": "unknown",
@@ -120723,7 +120811,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "corrected",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/shadeslinger"
         ]
@@ -122651,10 +122739,10 @@
         "explanation": "10/10 equally weighted usable retained data checks. Retained data can earn presence credit while still needing verification."
       },
       "evidenceQuality": {
-        "percent": 100,
-        "earned": 9,
+        "percent": 89,
+        "earned": 8,
         "possible": 9,
-        "explanation": "9/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
+        "explanation": "8/9 equally weighted current evidence and review checks. Unknown, missing, and stale checks earn no evidence credit."
       },
       "checks": [
         {
@@ -122820,9 +122908,9 @@
         {
           "id": "reader-observation",
           "label": "Publishable reader context",
-          "status": "present",
+          "status": "stale",
           "available": true,
-          "explanation": "A retained, original observation or reviewed correction passes the current evidence and prose gates.",
+          "explanation": "An earlier observation exists, but none resolves for the current selected evidence.",
           "sourceUrl": "https://hardcover.app/books/the-two-week-curse",
           "observedAt": "2026-09-19T04:34:01.501Z",
           "dueAt": null
@@ -122838,7 +122926,13 @@
           "dueAt": "2026-12-18T02:42:56.262Z"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "code": "reader-observation",
+          "status": "stale",
+          "message": "An earlier observation exists, but none resolves for the current selected evidence."
+        }
+      ],
       "flags": {
         "sourceDescription": true,
         "summary": true,
@@ -122864,7 +122958,7 @@
         "eligible": true,
         "minimum": 5,
         "currentTraits": true,
-        "observation": "published",
+        "observation": "missing",
         "sourceUrls": [
           "https://hardcover.app/books/the-two-week-curse"
         ]
