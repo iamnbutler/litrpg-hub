@@ -183,6 +183,13 @@ export async function paidJev(db: Database.Database, state: unknown, request: Pa
   // a parsed answer without ever handing us a body to retain, and then this is the only receipt.
   // Whichever receipt owns the cost also owns whether that cost is known.
   const fresh = archived ? account : accountFor(response.usage);
+  // A parsed-only adapter skips onResponse, including its in-flight transaction check. The
+  // sole receipt must still commit independently; a successful return cannot promise durability
+  // for a row the caller can roll back. Real HTTP responses already have the independent wire.
+  if (!archived) {
+    const late = independentCommitBlocker(db);
+    if (late) throw new JevPaidStorageError(fresh.tokens, `${late} before the sole normalized receipt could commit`, fresh.unknownUsageResponses);
+  }
   try { save(request.kind, response.model, response, archived ? ZERO : normalizeUsage(response.usage) ?? {}); }
   catch (error) {
     // The answer is bought either way. If a wire was archived a retry replays it for nothing,

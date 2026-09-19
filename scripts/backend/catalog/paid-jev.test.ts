@@ -184,6 +184,23 @@ describe('a paid Jev answer is never bought twice', () => {
       .toMatchObject({ cached: true, usage: { input_tokens: 0, output_tokens: 0 } });
   });
 
+  it('stops a parsed-only evaluator from saving its sole receipt inside a mid-flight transaction', async () => {
+    const evaluate = vi.fn(async () => {
+      await Promise.resolve();
+      db.exec('BEGIN');
+      return answer; // No onResponse callback: the normalized row would be the only receipt.
+    });
+    const failed = await paidJev(db, {}, request(evaluate as never)).catch((error: unknown) => error);
+    expect(failed).toBeInstanceOf(JevPaidStorageError);
+    expect(failed).not.toBeInstanceOf(JevTransactionError); // The response was already bought.
+    expect(failed).toMatchObject({ usage: { input_tokens: 90, output_tokens: 7 }, unknownUsageResponses: 0 });
+    expect(evaluate).toHaveBeenCalledTimes(1);
+    expect(rows('author-profile')).toHaveLength(0);
+    expect(rows('author-profile-wire')).toHaveLength(0);
+    db.exec('ROLLBACK');
+    expect(rows('author-profile')).toHaveLength(0);
+  });
+
   it('parks a corrupt normalized receipt instead of cycling retries', async () => {
     db.prepare(`INSERT INTO catalog_inferences(id,entity_type,entity_id,kind,input_hash,requested_model,actual_model,rubric_version,result_json,usage_json,evaluated_at)
       VALUES(?,'author','an-author','author-profile','hash-1','jev-latest','jev-test','v1','{not json',' {}',?)`)

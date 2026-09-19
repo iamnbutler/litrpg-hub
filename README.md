@@ -132,6 +132,8 @@ Use the ignored `HARDCOVER_API_TOKEN` setting for API acquisition. A cached repe
 
 ## Catalog inspector
 
+The separate [quality research index](docs/quality-index.md) assesses explicit craft commentary across books, series, and authors, with star ratings excluded. It includes resumable inference, private versioned reports, calibration controls, and an optional PostgreSQL import prototype. These experimental estimates do not change the site's ranking.
+
 The separate [inspector](https://shelfgobl.in/inspector/) is a read-only view of **all canonical works**, including volumes without a confirmed audiobook. It highlights missing data, stale checks and records needing review, with series search and a per-book evidence matrix. It consumes `static/data/health.json`; refreshing the page reloads that published snapshot and does not start a crawler.
 
 ```sh

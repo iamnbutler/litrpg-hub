@@ -28,6 +28,7 @@
 		"catalog": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/index.ts",
 		"catalog:grind": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/grind.ts",
 		"pipeline:readers": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/reader-cli.ts",
+		"pipeline:quality": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/cli.ts",
 		"pipeline:verify-backup": "node --import tsx scripts/backend/storage/verify-backup.ts",
 		"pipeline:health": "node --env-file-if-exists=.env --import tsx scripts/backend/exporters/health.ts",
 		"catalog:worker": "node --import tsx scripts/backend/automation/worker.ts",
@@ -36,7 +37,9 @@
 		"db:migrate:local": "wrangler d1 migrations apply DB --local --env local",
 		"db:migrate": "wrangler d1 migrations apply DB --remote",
 		"deploy:cloudflare": "BASE_PATH= npm run build && wrangler deploy --env=\"\"",
-		"secrets:cloudflare": "node --env-file=.env scripts/cloudflare-secrets.mjs"
+		"secrets:cloudflare": "node --env-file=.env scripts/cloudflare-secrets.mjs",
+		"pipeline:quality:eval": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/model-eval.ts",
+		"pipeline:quality:claims": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/claims-cli.ts"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^5.20260911.1",

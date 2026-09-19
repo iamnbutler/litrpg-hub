@@ -1,0 +1,944 @@
+{
+  "version": 1,
+  "asOf": "2026-09-19",
+  "description": "User-informed calibration priors and synthetic scoring contracts. No entry is a measured quality verdict. Synthetic fixtures contain invented evidence and must never enter the catalog.",
+  "policy": {
+    "ratingsExcluded": true,
+    "ratingCountsExcluded": true,
+    "targetsNeverEnterScoring": true,
+    "renownCapPoints": 5,
+    "renownCombination": "max-per-entity; deduplicate the same recognition event and do not copy author or series recognition into every child",
+    "cadenceAloneChangesCraft": false,
+    "unknownIsNotLow": true,
+    "syntheticFixturesAreBlindHoldout": false,
+    "realLowQualityAnchorAvailable": false
+  },
+  "anchors": [
+    {
+      "id": "dcc-high",
+      "entityType": "series",
+      "entityId": "dungeon-crawler-carl",
+      "title": "Dungeon Crawler Carl",
+      "author": "Matt Dinniman",
+      "target": {
+        "min": 85,
+        "max": 100,
+        "metric": "craft",
+        "basis": "agent-guestimate-from-user-high-anchor",
+        "evaluated": false
+      },
+      "notes": [
+        "User supplied the qualitative high-quality anchor; this broad numeric range is a proposed calibration band, not an empirical result.",
+        "Do not apply the target to every volume or to unrelated Matt Dinniman works."
+      ],
+      "evidenceIds": [
+        "dcc-bam-2025",
+        "dcc-prh-nyt"
+      ]
+    },
+    {
+      "id": "cradle-high",
+      "entityType": "series",
+      "entityId": "cradle",
+      "title": "Cradle",
+      "author": "Will Wight",
+      "target": {
+        "min": 85,
+        "max": 100,
+        "metric": "craft",
+        "basis": "agent-guestimate-from-user-high-anchor",
+        "evaluated": false
+      },
+      "notes": [
+        "User supplied the qualitative high-quality anchor; the numeric band is an agent guestimate.",
+        "Assess early and late books separately; book-one evidence cannot establish the whole-series trajectory."
+      ],
+      "evidenceIds": [
+        "cradle-author-nyt",
+        "dreadgod-audible-2022"
+      ]
+    },
+    {
+      "id": "primal-hunter-high",
+      "entityType": "series",
+      "entityId": "the-primal-hunter",
+      "title": "The Primal Hunter",
+      "author": "Zogarth",
+      "target": {
+        "min": 80,
+        "max": 95,
+        "metric": "craft",
+        "basis": "agent-guestimate-from-user-high-anchor",
+        "evaluated": false
+      },
+      "notes": [
+        "User supplied the qualitative high-quality anchor; the numeric band is an agent guestimate.",
+        "Author-disclosed serialization cadence is context, not negative craft evidence."
+      ],
+      "evidenceIds": [
+        "primal-aethon-charts-2023",
+        "primal-serial-cadence"
+      ]
+    },
+    {
+      "id": "heretical-fishing-upper-mid",
+      "entityType": "series",
+      "entityId": "heretical-fishing",
+      "title": "Heretical Fishing",
+      "author": "Haylock Jobson",
+      "target": {
+        "min": 60,
+        "max": 79,
+        "metric": "craft",
+        "basis": "agent-guestimate-from-user-upper-mid-anchor",
+        "evaluated": false
+      },
+      "trendHypothesis": {
+        "direction": "declining",
+        "basis": "user-report",
+        "independentlyVerified": false
+      },
+      "notes": [
+        "The user described upper-mid quality and later falloff; no independent volume-specific confirmation is claimed.",
+        "Do not penalize deliberate cozy pacing or fishing subject matter."
+      ],
+      "evidenceIds": [
+        "heretical-podium-identity"
+      ]
+    }
+  ],
+  "renownEvidence": [
+    {
+      "id": "dcc-bam-2025",
+      "entityType": "book",
+      "entityId": "work-dungeon-crawler-carl-1",
+      "title": "Dungeon Crawler Carl",
+      "recognitionKey": "books-a-million:book-of-the-year:2025",
+      "kind": "retailer-editorial-selection",
+      "claim": "Books-A-Million selected Dungeon Crawler Carl as its inaugural 2025 Book of the Year.",
+      "sourceUrl": "https://www.prnewswire.com/news-releases/books-a-million-names-dungeon-crawler-carl-as-inaugural-book-of-the-year-302604458.html",
+      "sourceName": "Books-A-Million, Inc.",
+      "sourceRelation": "originating-retailer-announcement",
+      "observedAt": "2026-09-19",
+      "publishedAt": "2025-11-04",
+      "eventDate": "2025-11-04",
+      "dateMeaning": "Selection announced on this date.",
+      "limitations": [
+        "Bookseller editorial enthusiasm; not a juried literary or audiobook-performance award.",
+        "Recognition is directly of book one; do not copy it independently to each series volume."
+      ],
+      "assessment": {
+        "score": 60,
+        "confidence": 0.95,
+        "evidenceIds": [
+          "dcc-bam-2025"
+        ],
+        "basis": "independent-recognition"
+      }
+    },
+    {
+      "id": "dcc-prh-nyt",
+      "entityType": "book",
+      "entityId": "work-dungeon-crawler-carl-1",
+      "title": "Dungeon Crawler Carl",
+      "recognitionKey": "nyt:bestseller:dungeon-crawler-carl:date-unknown",
+      "kind": "publisher-reported-bestseller",
+      "claim": "Penguin Random House describes this book as a New York Times bestseller.",
+      "sourceUrl": "https://www.penguinrandomhouse.com/books/772002/dungeon-crawler-carl-by-matt-dinniman/",
+      "sourceName": "Penguin Random House",
+      "sourceRelation": "publisher-claim",
+      "observedAt": "2026-09-19",
+      "publishedAt": null,
+      "eventDate": null,
+      "dateMeaning": "Chart date and rank were not established; edition publication dates must not substitute.",
+      "limitations": [
+        "Not independently checked against the originating New York Times chart.",
+        "A bestseller is market recognition, not direct craftsmanship evidence."
+      ],
+      "assessment": {
+        "score": 40,
+        "confidence": 0.8,
+        "evidenceIds": [
+          "dcc-prh-nyt"
+        ],
+        "basis": "editorial-reference"
+      }
+    },
+    {
+      "id": "cradle-author-nyt",
+      "entityType": "series",
+      "entityId": "cradle",
+      "title": "Cradle",
+      "recognitionKey": "nyt:bestseller:cradle-series:date-unknown",
+      "kind": "author-reported-bestseller",
+      "claim": "Will Wight's official series page describes Cradle as a New York Times bestselling series.",
+      "sourceUrl": "https://www.willwight.com/cradle.html",
+      "sourceName": "Will Wight / Hidden Gnome Publishing",
+      "sourceRelation": "author-publisher-claim",
+      "observedAt": "2026-09-19",
+      "publishedAt": null,
+      "eventDate": null,
+      "dateMeaning": "The page does not establish a chart date or claim that every volume charted.",
+      "limitations": [
+        "Series claim, not a credential for every book or the author's unrelated series.",
+        "Not independently checked against an originating New York Times chart."
+      ],
+      "assessment": {
+        "score": 40,
+        "confidence": 0.8,
+        "evidenceIds": [
+          "cradle-author-nyt"
+        ],
+        "basis": "editorial-reference"
+      }
+    },
+    {
+      "id": "dreadgod-audible-2022",
+      "entityType": "book",
+      "entityId": "work-cradle-11",
+      "title": "Dreadgod",
+      "recognitionKey": "audible:bestseller:dreadgod:2022-06-21",
+      "kind": "author-reported-chart-position",
+      "claim": "Will Wight reported Dreadgod at number four on Audible's bestseller list during preorder.",
+      "sourceUrl": "https://www.willwight.com/a-blog-of-dubious-intent/dreadgod-pre-order-is-live",
+      "sourceName": "Will Wight / Hidden Gnome Publishing",
+      "sourceRelation": "author-publisher-contemporaneous-claim",
+      "observedAt": "2026-09-19",
+      "publishedAt": "2022-06-21",
+      "eventDate": "2022-06-21",
+      "dateMeaning": "Historical chart position as reported that day, not a current position.",
+      "limitations": [
+        "Historical preorder chart position, not a juried award.",
+        "Author-reported; original chart snapshot not independently retrieved."
+      ],
+      "assessment": {
+        "score": 40,
+        "confidence": 0.8,
+        "evidenceIds": [
+          "dreadgod-audible-2022"
+        ],
+        "basis": "editorial-reference"
+      }
+    },
+    {
+      "id": "primal-aethon-charts-2023",
+      "entityType": "series",
+      "entityId": "the-primal-hunter",
+      "title": "The Primal Hunter",
+      "recognitionKey": "amazon-top-charts:bestseller:primal-hunter:date-unknown",
+      "kind": "publisher-reported-bestseller",
+      "claim": "Aethon describes The Primal Hunter as an Amazon Top Charts bestseller in its WEBTOON adaptation announcement.",
+      "sourceUrl": "https://aethonbooks.com/2023/01/18/aethon-partners-with-webtoon-for-origincomic-adaptations/",
+      "sourceName": "Aethon Books",
+      "sourceRelation": "publisher-claim",
+      "observedAt": "2026-09-19",
+      "publishedAt": "2023-01-18",
+      "eventDate": null,
+      "dateMeaning": "The announcement date is known; the underlying chart event date and position are not.",
+      "limitations": [
+        "Publisher-reported market visibility; not direct evidence of craft.",
+        "Adaptation, web-serial readership, and repeated publisher blurbs must not stack as independent craft recognition."
+      ],
+      "assessment": {
+        "score": 40,
+        "confidence": 0.8,
+        "evidenceIds": [
+          "primal-aethon-charts-2023"
+        ],
+        "basis": "editorial-reference"
+      }
+    }
+  ],
+  "contextEvidence": [
+    {
+      "id": "primal-serial-cadence",
+      "entityType": "series",
+      "entityId": "the-primal-hunter",
+      "kind": "author-disclosed-serialization",
+      "claim": "The author listing states five chapters per week and an average chapter length of 2,500 words.",
+      "sourceUrl": "https://www.royalroad.com/fiction/36049/the-primal-hunter",
+      "sourceName": "Zogarth on Royal Road",
+      "observedAt": "2026-09-19",
+      "publishedAt": null,
+      "qualityEffect": 0,
+      "inference": "If sustained, that announced rate is approximately 100,000 words in eight weeks. This is arithmetic from a stated schedule, not measured output."
+    },
+    {
+      "id": "wight-overlapping-drafts-2023",
+      "entityType": "author",
+      "entityId": null,
+      "author": "Will Wight",
+      "kind": "overlapping-production",
+      "claim": "A January 31, 2023 progress post says Waybound and the new space-fantasy book are both nearing draft completion; the March 2 announcement gives The Captain April 4 and Waybound June 6 release dates.",
+      "sourceUrls": [
+        "https://www.willwight.com/a-blog-of-dubious-intent/archives/01-2023",
+        "https://www.willwight.com/a-blog-of-dubious-intent/announcing-the-captain-and-nothing-else"
+      ],
+      "sourceName": "Will Wight / Hidden Gnome Publishing",
+      "observedAt": "2026-09-19",
+      "publishedAt": [
+        "2023-01-31",
+        "2023-03-02"
+      ],
+      "qualityEffect": 0,
+      "inference": "A 63-day publication interval cannot be interpreted as 63 days spent composing the later novel."
+    },
+    {
+      "id": "heretical-podium-identity",
+      "entityType": "series",
+      "entityId": "heretical-fishing",
+      "kind": "publisher-series-identity",
+      "claim": "Podium identifies Heretical Fishing by Haylock Jobson, narrated by Heath Miller, with the first release dated March 12, 2024.",
+      "sourceUrl": "https://podiumentertainment.com/series/1893/heretical-fishing",
+      "sourceName": "Podium Entertainment",
+      "observedAt": "2026-09-19",
+      "publishedAt": null,
+      "qualityEffect": 0,
+      "renownEligible": false,
+      "exclusionReason": "Royal Road Rising Star marketing is not used because the ranking mechanism has not been shown to exclude ratings."
+    }
+  ],
+  "disclosureControls": [
+    {
+      "id": "royal-road-explicit-ai-warning",
+      "entityType": "external-work",
+      "entityId": null,
+      "title": "WORTHLESS: A Dungeon Merchant LitRPG",
+      "author": "Jon Pettner",
+      "sourceUrl": "https://www.royalroad.com/fiction/190302/worthless-a-dungeon-merchant-litrpg",
+      "sourceName": "Author listing on Royal Road",
+      "observedAt": "2026-09-19",
+      "observedDisclosure": "AI-Generated Content",
+      "expected": {
+        "disclosurePresent": true,
+        "craftScore": null,
+        "audiobookConfirmed": false
+      },
+      "scope": "evidence-format-only",
+      "limitations": [
+        "This verifies the displayed platform warning only.",
+        "It does not establish the portion of generated prose, craft quality, or an audiobook edition.",
+        "Do not use this title as a low-quality anchor or import it into the audiobook catalog on this evidence."
+      ]
+    },
+    {
+      "id": "virtual-voice-is-narration",
+      "entityType": "documentation",
+      "entityId": null,
+      "sourceUrl": "https://kdp.amazon.com/en_US/help/topic/GFAQU3LUEHCRB8KD",
+      "sourceName": "Amazon Kindle Direct Publishing",
+      "observedAt": "2026-09-19",
+      "observedDisclosure": "Virtual Voice uses computer-generated speech technology.",
+      "expected": {
+        "narrationDisclosure": true,
+        "aiWritingInference": false,
+        "craftScore": null
+      },
+      "scope": "evidence-separation-only"
+    }
+  ],
+  "syntheticControls": [
+    {
+      "id": "strong-craft",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented well-crafted book",
+      "input": {
+        "id": "synthetic:strong-craft",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "craftProfile": "profile-1"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftMin": 85,
+        "craftMax": 100
+      }
+    },
+    {
+      "id": "repetitive-unedited-incoherent",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented padding, editing defects, and incoherent progression",
+      "input": {
+        "id": "synthetic:repetitive-unedited-incoherent",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "craftProfile": "profile-2"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftMin": 0,
+        "craftMax": 30
+      },
+      "invariant": "Low craft follows concrete defects, not a real-author AI allegation."
+    },
+    {
+      "id": "strong-erotic-craft",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented well-crafted erotic fiction",
+      "input": {
+        "id": "synthetic:strong-erotic-craft",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "content": {
+          "explicit": {
+            "verdict": "present",
+            "confidence": 0.95,
+            "evidenceIds": [
+              "synthetic:publisher-explicit-disclosure"
+            ]
+          }
+        },
+        "craftProfile": "profile-1"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftMin": 85,
+        "craftMax": 100,
+        "indexLessThanCraft": true
+      },
+      "invariant": "Erotic-content avoidance lowers fit, while craft remains identical to the strong-craft control."
+    },
+    {
+      "id": "fast-backlog",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented strong book in a monthly audiobook backlog release",
+      "input": {
+        "id": "synthetic:fast-backlog",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "production": {
+          "asOf": "2026-09-19",
+          "backlogExcluded": false,
+          "releases": [
+            {
+              "workId": "synthetic:backlog-1",
+              "date": "2026-01-15",
+              "format": "audiobook",
+              "role": "edition-release",
+              "verified": true,
+              "evidenceIds": [
+                "synthetic:audio-date-1"
+              ]
+            },
+            {
+              "workId": "synthetic:backlog-2",
+              "date": "2026-02-15",
+              "format": "audiobook",
+              "role": "edition-release",
+              "verified": true,
+              "evidenceIds": [
+                "synthetic:audio-date-2"
+              ]
+            },
+            {
+              "workId": "synthetic:backlog-3",
+              "date": "2026-03-15",
+              "format": "audiobook",
+              "role": "edition-release",
+              "verified": true,
+              "evidenceIds": [
+                "synthetic:audio-date-3"
+              ]
+            },
+            {
+              "workId": "synthetic:backlog-4",
+              "date": "2026-04-15",
+              "format": "audiobook",
+              "role": "edition-release",
+              "verified": true,
+              "evidenceIds": [
+                "synthetic:audio-date-4"
+              ]
+            },
+            {
+              "workId": "synthetic:backlog-5",
+              "date": "2026-05-15",
+              "format": "audiobook",
+              "role": "edition-release",
+              "verified": true,
+              "evidenceIds": [
+                "synthetic:audio-date-5"
+              ]
+            },
+            {
+              "workId": "synthetic:backlog-6",
+              "date": "2026-06-15",
+              "format": "audiobook",
+              "role": "edition-release",
+              "verified": true,
+              "evidenceIds": [
+                "synthetic:audio-date-6"
+              ]
+            }
+          ]
+        },
+        "craftProfile": "profile-1"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftMin": 85,
+        "craftMax": 100,
+        "noAdjustmentKind": "production-risk"
+      },
+      "invariant": "Edition-release dates and unexcluded backlog never establish fast original production."
+    },
+    {
+      "id": "deliberate-cozy-pacing",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented deliberate cozy story whose scenes serve its intended structure",
+      "input": {
+        "id": "synthetic:deliberate-cozy-pacing",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "craftProfile": "profile-1"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftMin": 85,
+        "craftMax": 100
+      },
+      "invariant": "A slow, quiet subject is not by itself a pacing defect."
+    },
+    {
+      "id": "single-voice",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented strong opinion from only one reader",
+      "input": {
+        "id": "synthetic:single-voice",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "craftProfile": "profile-3"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftScore": null
+      },
+      "invariant": "Six aspect labels from the same person do not become six independent voices."
+    },
+    {
+      "id": "unassessed",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented unassessed book",
+      "input": {
+        "id": "synthetic:unassessed",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "craftProfile": "profile-4"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftScore": null
+      },
+      "invariant": "Missing evidence never becomes a low quality verdict."
+    },
+    {
+      "id": "renown-alone",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Invented acclaimed but unassessed book",
+      "input": {
+        "id": "synthetic:renown-only",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "renown": {
+          "score": 100,
+          "confidence": 1,
+          "evidenceIds": [
+            "synthetic:recognition"
+          ],
+          "basis": "independent-recognition"
+        },
+        "craftProfile": "profile-4"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftScore": null,
+        "indexScore": null
+      },
+      "invariant": "Recognition cannot create a craft score when evidence is absent."
+    },
+    {
+      "id": "rating-invariance",
+      "synthetic": true,
+      "kind": "book",
+      "label": "Same invented evidence with a perfect star score and a million ratings",
+      "input": {
+        "id": "synthetic:strong-craft",
+        "seriesId": "synthetic:control-series",
+        "number": 1,
+        "rating": 5,
+        "ratingCount": 1000000,
+        "craftProfile": "profile-1"
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "sameCraftAs": "strong-craft",
+        "sameIndexAs": "strong-craft"
+      },
+      "invariant": "Star ratings and rating counts are ignored even when present as extraneous input fields."
+    },
+    {
+      "id": "series-falloff",
+      "synthetic": true,
+      "kind": "series",
+      "label": "Invented series with comparable early and late craft evidence",
+      "input": {
+        "id": "synthetic:falloff-series",
+        "books": [
+          {
+            "id": "synthetic:falloff-1",
+            "seriesId": "synthetic:falloff-series",
+            "number": 1,
+            "craftProfile": "profile-5"
+          },
+          {
+            "id": "synthetic:falloff-2",
+            "seriesId": "synthetic:falloff-series",
+            "number": 2,
+            "craftProfile": "profile-6"
+          },
+          {
+            "id": "synthetic:falloff-3",
+            "seriesId": "synthetic:falloff-series",
+            "number": 3,
+            "craftProfile": "profile-7"
+          },
+          {
+            "id": "synthetic:falloff-4",
+            "seriesId": "synthetic:falloff-series",
+            "number": 4,
+            "craftProfile": "profile-8"
+          }
+        ],
+        "knownWorkCount": 4,
+        "catalogComplete": true
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "trend": "declining"
+      },
+      "adapter": "Score each BookQualityInput before passing it to scoreSeries; these are inputs, not stored results."
+    },
+    {
+      "id": "author-series-balance",
+      "synthetic": true,
+      "kind": "author",
+      "label": "Invented author with one prolific weak series and one small strong series",
+      "input": {
+        "id": "synthetic:balanced-author",
+        "series": [
+          {
+            "id": "synthetic:prolific-series",
+            "books": [
+              {
+                "id": "synthetic:prolific-1",
+                "seriesId": "synthetic:prolific-series",
+                "number": 1,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-2",
+                "seriesId": "synthetic:prolific-series",
+                "number": 2,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-3",
+                "seriesId": "synthetic:prolific-series",
+                "number": 3,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-4",
+                "seriesId": "synthetic:prolific-series",
+                "number": 4,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-5",
+                "seriesId": "synthetic:prolific-series",
+                "number": 5,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-6",
+                "seriesId": "synthetic:prolific-series",
+                "number": 6,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-7",
+                "seriesId": "synthetic:prolific-series",
+                "number": 7,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-8",
+                "seriesId": "synthetic:prolific-series",
+                "number": 8,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-9",
+                "seriesId": "synthetic:prolific-series",
+                "number": 9,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-10",
+                "seriesId": "synthetic:prolific-series",
+                "number": 10,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-11",
+                "seriesId": "synthetic:prolific-series",
+                "number": 11,
+                "craftProfile": "profile-9"
+              },
+              {
+                "id": "synthetic:prolific-12",
+                "seriesId": "synthetic:prolific-series",
+                "number": 12,
+                "craftProfile": "profile-9"
+              }
+            ],
+            "knownWorkCount": 12,
+            "catalogComplete": true
+          },
+          {
+            "id": "synthetic:small-series",
+            "books": [
+              {
+                "id": "synthetic:small-1",
+                "seriesId": "synthetic:small-series",
+                "number": 1,
+                "craftProfile": "profile-1"
+              },
+              {
+                "id": "synthetic:small-2",
+                "seriesId": "synthetic:small-series",
+                "number": 2,
+                "craftProfile": "profile-1"
+              }
+            ],
+            "knownWorkCount": 2,
+            "catalogComplete": true
+          }
+        ],
+        "knownSeriesCount": 2,
+        "catalogComplete": true
+      },
+      "preferences": {
+        "avoidExplicit": true,
+        "avoidHarem": true,
+        "avoidSexualizedMarketing": true,
+        "useRenown": true,
+        "useCorroboratedProductionRisk": true
+      },
+      "expected": {
+        "craftMin": 70,
+        "craftMax": 80
+      },
+      "adapter": "Score books then series before scoreAuthor; equal-quality series should have equal influence regardless of their book counts."
+    }
+  ],
+  "openGaps": [
+    {
+      "id": "real-low-audio",
+      "status": "unfilled",
+      "description": "No defensible low-craft audiobook example with verified AI-generated writing was established by this bounded search. Synthetic defects test the low end without alleging facts about a real author."
+    },
+    {
+      "id": "heldout-real-set",
+      "status": "unfilled",
+      "description": "The named series informed calibration. A separate independently reviewed real holdout has not been collected; neither visible synthetic controls nor matching the anchors establishes empirical accuracy."
+    },
+    {
+      "id": "later-volume-evidence",
+      "status": "requires-acquisition",
+      "description": "Heretical Fishing decline is a user-reported hypothesis. Comparable early, middle, and late volume craft evidence is required before measuring it."
+    },
+    {
+      "id": "author-targets",
+      "status": "unfilled",
+      "description": "No author-wide benchmark was inferred from the four series preferences, and no canonical author IDs were fabricated where the local author table lacked them."
+    }
+  ],
+  "syntheticCraftProfiles": {
+    "profile-1": {
+      "scores": {
+        "prose": 90,
+        "editing": 90,
+        "coherence": 90,
+        "structure": 90,
+        "pacing": 90,
+        "repetition": 90
+      },
+      "confidence": 0.95,
+      "voices": 10
+    },
+    "profile-2": {
+      "scores": {
+        "prose": 15,
+        "editing": 10,
+        "coherence": 10,
+        "structure": 15,
+        "pacing": 20,
+        "repetition": 5
+      },
+      "confidence": 0.95,
+      "voices": 10
+    },
+    "profile-3": {
+      "scores": {
+        "prose": 90,
+        "editing": 90,
+        "coherence": 90,
+        "structure": 90,
+        "pacing": 90,
+        "repetition": 90
+      },
+      "confidence": 0.95,
+      "voices": 1
+    },
+    "profile-4": {
+      "scores": {},
+      "confidence": 0.95,
+      "voices": 0
+    },
+    "profile-5": {
+      "scores": {
+        "prose": 92,
+        "editing": 92,
+        "coherence": 92,
+        "structure": 92,
+        "pacing": 92,
+        "repetition": 92
+      },
+      "confidence": 0.95,
+      "voices": 10
+    },
+    "profile-6": {
+      "scores": {
+        "prose": 88,
+        "editing": 88,
+        "coherence": 88,
+        "structure": 88,
+        "pacing": 88,
+        "repetition": 88
+      },
+      "confidence": 0.95,
+      "voices": 10
+    },
+    "profile-7": {
+      "scores": {
+        "prose": 65,
+        "editing": 65,
+        "coherence": 65,
+        "structure": 65,
+        "pacing": 65,
+        "repetition": 65
+      },
+      "confidence": 0.95,
+      "voices": 10
+    },
+    "profile-8": {
+      "scores": {
+        "prose": 55,
+        "editing": 55,
+        "coherence": 55,
+        "structure": 55,
+        "pacing": 55,
+        "repetition": 55
+      },
+      "confidence": 0.95,
+      "voices": 10
+    },
+    "profile-9": {
+      "scores": {
+        "prose": 60,
+        "editing": 60,
+        "coherence": 60,
+        "structure": 60,
+        "pacing": 60,
+        "repetition": 60
+      },
+      "confidence": 0.95,
+      "voices": 10
+    }
+  },
+  "syntheticProfileExpansion": {
+    "description": "Expand each input.craftProfile into CraftInput before using the scoring API. Profile scores apply only to these invented cases.",
+    "evidenceIds": "For each book, generate profile.voices unique synthetic:<book-id>:voice-<1-based-index> IDs; use these same unique IDs across dimensions rather than adding their counts.",
+    "voiceAccounting": "Each listed dimension has judgedVoices=voices. For score>=60 use positiveVoices=voices; score<40 negativeVoices=voices; otherwise mixedVoices=voices. Set the other two counts to zero. relevantVoices=voices. Unknown profiles with no scores have dimensions={}.",
+    "confidence": "Use the declared confidence for each dimension. All scores and counts are invented fixture data, not model outcomes."
+  }
+}
