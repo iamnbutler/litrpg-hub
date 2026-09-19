@@ -1,0 +1,56 @@
+{
+  "name": "@shelfgoblin/catalog-contract",
+  "version": "1.0.0",
+  "description": "Public catalog types and pure catalog behavior shared by Shelf Goblin and its data producer.",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "import": "./dist/catalog.js",
+      "default": "./dist/catalog.js"
+    },
+    "./series": {
+      "types": "./dist/series.d.ts",
+      "import": "./dist/series.js",
+      "default": "./dist/series.js"
+    },
+    "./edition": {
+      "types": "./dist/edition.d.ts",
+      "import": "./dist/edition.js",
+      "default": "./dist/edition.js"
+    },
+    "./audio-coverage": {
+      "types": "./dist/audio-coverage.d.ts",
+      "import": "./dist/audio-coverage.js",
+      "default": "./dist/audio-coverage.js"
+    },
+    "./reader-context": {
+      "types": "./dist/reader-context.d.ts",
+      "import": "./dist/reader-context.js",
+      "default": "./dist/reader-context.js"
+    },
+    "./catalog-health": {
+      "types": "./dist/catalog-health.d.ts",
+      "import": "./dist/catalog-health.js",
+      "default": "./dist/catalog-health.js"
+    },
+    "./recommend": {
+      "types": "./dist/recommend.d.ts",
+      "import": "./dist/recommend.js",
+      "default": "./dist/recommend.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

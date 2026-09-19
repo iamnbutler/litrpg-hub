@@ -1,45 +1,24 @@
 {
-	"name": "shelf-goblin",
+	"name": "shelfgoblin",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"pipeline": "node --env-file-if-exists=.env --import tsx scripts/backend/index.ts",
-		"pipeline:fetch": "npm run pipeline -- fetch",
-		"pipeline:export": "node --env-file-if-exists=.env --import tsx scripts/backend/exporters/json.ts",
-		"pipeline:classify": "npm run pipeline -- classify",
-		"pipeline:build": "npm run pipeline -- build",
-		"pipeline:backfill": "npm run pipeline -- backfill",
-		"pipeline:enrich": "node --env-file-if-exists=.env --import tsx scripts/backend/jev/enrich.ts",
-		"pipeline:covers": "node --env-file-if-exists=.env --import tsx scripts/backend/covers/enrich.ts",
-		"pipeline:authors": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/author-cli.ts",
-		"pipeline:backup": "node --env-file-if-exists=.env --import tsx scripts/backend/storage/backup.ts",
-		"pipeline:archive": "node --env-file-if-exists=.env --import tsx scripts/backend/storage/archive.ts",
-		"pipeline:series": "node --env-file-if-exists=.env --import tsx scripts/backend/scrape-series.ts",
 		"build": "vite build",
-		"check:backend": "tsc --project tsconfig.backend.json --noEmit",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "npm run build:contract && svelte-kit sync",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"catalog": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/index.ts",
-		"catalog:grind": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/grind.ts",
-		"pipeline:readers": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/reader-cli.ts",
-		"pipeline:quality": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/cli.ts",
-		"pipeline:verify-backup": "node --import tsx scripts/backend/storage/verify-backup.ts",
-		"pipeline:health": "node --env-file-if-exists=.env --import tsx scripts/backend/exporters/health.ts",
-		"catalog:worker": "node --import tsx scripts/backend/automation/worker.ts",
+		"test": "vitest run --exclude '**/.worktrees/**'",
+		"test:watch": "vitest --exclude '**/.worktrees/**'",
 		"check:worker": "tsc -p tsconfig.worker.json",
 		"dev:accounts": "wrangler dev --env local --port 8787",
 		"db:migrate:local": "wrangler d1 migrations apply DB --local --env local",
 		"db:migrate": "wrangler d1 migrations apply DB --remote",
 		"deploy:cloudflare": "BASE_PATH= npm run build && wrangler deploy --env=\"\"",
 		"secrets:cloudflare": "node --env-file=.env scripts/cloudflare-secrets.mjs",
-		"pipeline:quality:eval": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/model-eval.ts",
-		"pipeline:quality:claims": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/claims-cli.ts"
+		"build:contract": "npm run build --workspace @shelfgoblin/catalog-contract"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^5.20260911.1",
@@ -49,15 +28,17 @@
 		"@types/better-sqlite3": "^7.6.13",
 		"svelte": "^5.54.0",
 		"svelte-check": "^4.4.2",
-		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
 		"vitest": "^4.1.2",
-		"wrangler": "^4.131.1"
+		"wrangler": "^4.131.1",
+		"better-sqlite3": "^12.8.0"
 	},
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
-		"better-sqlite3": "^12.8.0",
-		"cheerio": "^1.2.0"
-	}
+		"@shelfgoblin/catalog-contract": "1.0.0"
+	},
+	"workspaces": [
+		"packages/catalog-contract"
+	]
 }

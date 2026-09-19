@@ -1,33 +1,62 @@
 # Shelf Goblin
 
-The public app lives at https://shelfgobl.in/. The repository, Worker, database, and browser storage identifiers retain their original `litrpg-hub` names to preserve deployment and library continuity.
+The public reader app lives at https://shelfgobl.in/ and its repository is
+`iamnbutler/shelfgoblin`. Cloudflare Worker `litrpg-hub`, D1 database
+`litrpg-hub-accounts`, binding `DB`, browser storage keys, and legacy-origin
+handling are compatibility identifiers. Do not rename them as cosmetic cleanup.
 
 ## Product and UI
 
-This is a browsing and reading tool. Open directly into the cover grid, with an optional compact list. Preserve the warm, book-focused visual character; do not flatten it into a generic data table. Keep search, filters, shelf actions, and release dates immediately accessible. Book covers supply the visual interest. Use compact app headings and restrained book typography. Do not add marketing heroes, slogans, oversized headline layouts, promotional sections, or a landing page.
+This is a browsing and reading tool. Open directly into the cover grid, with an
+optional compact list. Preserve the warm, book-focused visual character; do not
+flatten it into a generic data table. Keep search, filters, library actions, and
+release dates immediately accessible. Book covers supply the visual interest.
+Use compact app headings and restrained book typography. Do not add marketing
+heroes, slogans, oversized headline layouts, promotional sections, or a landing
+page. Keep pipeline terminology out of reader-facing text; technical details
+belong in the catalog inspector or producer tools.
 
-## Source integrity
+## Repository boundary
 
-- The Audible catalog API may return HTTP 200 with an empty product array and a positive total when throttled. Treat this as failure; do not advance the successful cursor or replace the catalog.
-- The catalog `series` query parameter does not reliably filter by series. Use a verified series webpage, parse its actual product containers, then verify each product's series ASIN and author. Do not scrape arbitrary `/pd/` links, which include recommendations.
-- Preserve longer descriptions and nonempty metadata when merging partial responses. Missing dates and narrator names remain unknown. Never invent ASINs to fill series gaps.
-- Series identity includes the primary author. Keep editions with different narrators separate. Raw source rows are retained; reader filters do not delete books.
-- Run the bounded `pipeline:series` command for a refresh. A blocked or incomplete source stops the job and keeps the existing snapshot.
+- This repository owns the UI, reader accounts, libraries, Cloudflare Worker,
+  committed public JSON snapshots, and the public catalog contract package.
+- [shelfgoblin-data](https://github.com/iamnbutler/shelfgoblin-data) is private and
+  owns acquisition, SQLite, migrations, source evidence, enrichment, scoring,
+  benchmarks, exports, and backups. Make producer changes there.
+- Browsing and builds consume `static/data/catalog.json` and
+  `static/data/health.json`. They never fetch source pages, open the private
+  database, or call inference APIs. Never copy private comments, source bodies,
+  model responses, or API credentials into this repository.
+- `packages/catalog-contract` is the single implementation of shared pure types
+  and behavior. `src/lib` compatibility modules re-export it. Build it before
+  checking consumers; publish versioned immutable package archives for the
+  producer, with an exact dependency and lockfile integrity. No sibling-checkout
+  imports or copied implementations.
 
-## Inference
+## Reader data and evidence
 
-- Jev profiles reading traits and metadata. OpenAI observes covers; Jev combines these observations with the listing.
-- Sexualized marketing, on-page explicit content, harem, AI narration, disclosed AI writing, and listing quality are separate. Covers cannot establish story content or AI authorship.
-- All inference is explicit offline work. Cache by inputs, image hash, model, and rubric. Never put API keys in browser code or committed files.
-- Use bounded runs and inspect token usage. Do not scale a new rubric before checking positive, negative, and ambiguous examples.
+Preserve work/edition/series aliases and browser storage keys so saved reading
+history survives catalog changes. Missing data remains unknown. Sexualized
+marketing, explicit scenes, harem, AI narration, disclosed AI writing, and listing
+quality remain separate; covers cannot establish story content or AI authorship.
+Filters never delete source records or library history. Reader opinions are
+distinct from publisher facts, and experimental quality scores are not a public
+ranking until calibrated and explicitly enabled.
 
-## Commands
+## Commands and automation
 
-- `npm run dev` — run the static UI using the committed catalog.
-- `npm run pipeline:series -- --series dungeon-crawler-carl --limit 20` — verified series refresh.
-- `npm run pipeline:enrich -- --limit 24` — Jev reading profiles.
-- `npm run pipeline:covers -- --limit 24` — cover observations and content decisions.
-- `npm run pipeline:export` — export the local SQLite snapshot.
-- `npm run check`, `npm run check:backend`, `npm test`, `npm run build` — verification.
+- `npm ci` builds the contract workspace and synchronizes SvelteKit.
+- `npm run dev` uses the committed public catalog; accounts are optional locally.
+- `npm run build:contract` rebuilds changed shared contract source.
+- `npm run check`, `npm run check:worker`, `npm test`, `npm run build` verify the app.
+- `npm run db:migrate` applies reviewed account D1 migrations.
+- `npm run deploy:cloudflare` manually deploys the canonical app and account Worker.
 
-The independent upstream is LitRPG Chart. Deployment is manual; builds never fetch or call inference APIs.
+The public catalog workflow runs private producer code on standard public
+repository runners at 08:17 UTC. It requires a separately provisioned
+`CATALOG_DATA_TOKEN` scoped to private-repository Contents read/write. Neither
+private logs nor raw artifacts may be published. Recurring and manual producer
+runs must skip 22:00–02:00 UTC and reserve enough time to checkpoint before 22:00.
+Snapshot publication does not automatically deploy Cloudflare or GitHub Pages.
+
+The independent upstream is LitRPG Chart. Production deployment remains manual.

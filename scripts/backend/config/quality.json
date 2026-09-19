@@ -1,9 +1,0 @@
-{
-	"exportMinScore": 0,
-	"weights": {
-		"rating": 1.0,
-		"ratingCount": 0.5,
-		"seriesPresence": 0.3,
-		"descriptionLength": 0.2
-	}
-}
