@@ -641,32 +641,31 @@ describe('a paid observation is never bought twice', () => {
   });
 
   it('refuses to buy on a read-only cache, before making the request', async () => {
-    // A genuinely read-only handle, not a stand-in: populate a file, close it, reopen read-only.
+    // Reuse the prepared fixture in one snapshot instead of committing every migration
+    // and evidence insert separately to a slow CI disk. The handle is genuinely read-only.
     const folder = mkdtempSync(join(tmpdir(), 'reader-readonly-'));
     const file = join(folder, 'catalog.db');
-    const writable = new Database(file);
-    for (const name of MIGRATIONS) writable.exec(readFileSync(join(import.meta.dirname, '../migrations', name), 'utf8'));
-    const original = db;
-    db = writable;
-    addVoices(6);
-    db = original;
-    writable.close();
+    let readOnly: Database.Database | undefined;
+    try {
+      addVoices(6);
+      await db.backup(file);
+      readOnly = new Database(file, { readonly: true });
+      let calls = 0;
+      const request = (async () => { calls++; return reply({ observation: 'x', grounded: true }); }) as typeof fetch;
+      const refused = await processReaderObservation(readOnly, 'work', 'work-1', { request }).catch((e: unknown) => e);
+      const stored = readOnly.prepare("SELECT COUNT(*) AS n FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").get();
 
-    const readOnly = new Database(file, { readonly: true });
-    let calls = 0;
-    const request = (async () => { calls++; return reply({ observation: 'x', grounded: true }); }) as typeof fetch;
-    const refused = await processReaderObservation(readOnly, 'work', 'work-1', { request }).catch((e: unknown) => e);
-    const stored = readOnly.prepare("SELECT COUNT(*) AS n FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").get();
-    readOnly.close();
-    rmSync(folder, { recursive: true, force: true });
-
-    // A cache miss here would buy an answer SQLITE_READONLY then guarantees we cannot keep.
-    expect(refused).toBeInstanceOf(ReaderTransactionError);
-    expect(refused).toBeInstanceOf(ReviewError);                    // the runner stops, never retries
-    expect(refused).not.toBeInstanceOf(PaidResponseStorageError);   // nothing was bought to lose
-    expect((refused as Error).message).toMatch(/read-only/);
-    expect(calls).toBe(0);
-    expect(stored).toEqual({ n: 0 });
+      // A cache miss here would buy an answer SQLITE_READONLY then guarantees we cannot keep.
+      expect(refused).toBeInstanceOf(ReaderTransactionError);
+      expect(refused).toBeInstanceOf(ReviewError);                    // the runner stops, never retries
+      expect(refused).not.toBeInstanceOf(PaidResponseStorageError);   // nothing was bought to lose
+      expect((refused as Error).message).toMatch(/read-only/);
+      expect(calls).toBe(0);
+      expect(stored).toEqual({ n: 0 });
+    } finally {
+      readOnly?.close();
+      rmSync(folder, { recursive: true, force: true });
+    }
   });
 
   it('parks an archived body that cannot be parsed, and keeps transport errors transient', async () => {
