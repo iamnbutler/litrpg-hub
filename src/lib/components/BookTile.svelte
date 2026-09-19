@@ -7,6 +7,12 @@
         onopen: (book: CatalogBook) => void; onsave: (book: CatalogBook) => void; onlike: (book: CatalogBook) => void;
     } = $props();
     let imageFailed = $state(false);
+    // Edition joins the genre list rather than being appended to it, so a book with no
+    // genres reads "Dramatized" and not " \u00b7 Dramatized".
+    const genres = $derived([
+        ...book.subgenres.slice(0, 3).map((g) => genreLabels[g] ?? g),
+        ...(book.edition === 'audiobook' ? [] : [book.edition === 'dramatized' ? 'Dramatized' : 'Collection'])
+    ].join(' \u00b7 '));
 </script>
 <article class="book-row" class:grid={layout === 'grid'} role="listitem">
     <button class="book-cover" onclick={() => onopen(book)} aria-label={`Open ${book.title}`}>{#if book.coverUrl && !imageFailed}<img src={book.coverUrl} alt="" loading="lazy" onerror={() => imageFailed = true}/>{:else}<Icon name="book" size={24}/>{/if}</button>
@@ -14,7 +20,7 @@
         <h3><button onclick={() => onopen(book)}>{book.title}</button></h3>
         <p class="author">{book.author}{#if book.seriesNumber != null}<span>{' · '}Book {book.seriesNumber}</span>{/if}</p>
         {#if recommendation}<p class="match-reason">{recommendation.method === 'taste' ? 'Shared traits' : 'Shared genres'}: {recommendation.reasons.join(', ')}</p>
-        {:else}<p class="genres">{book.subgenres.slice(0, 3).map(g => genreLabels[g] ?? g).join(' · ') || 'Genre awaiting review'}{#if book.edition !== 'audiobook'} · {book.edition === 'dramatized' ? 'Dramatized' : 'Collection'}{/if}</p>{/if}
+        {:else}<p class="genres">{genres}</p>{/if}
     </div>
     <div class="rating" aria-label={book.rating != null ? `${book.rating.toFixed(2)} from ${book.ratingCount} Audible ratings` : 'No Audible ratings'}><strong>{#if layout === 'grid'}<span class="rating-star" aria-hidden="true">★</span> {/if}{book.rating?.toFixed(2) ?? '—'}</strong><span>{book.ratingCount.toLocaleString()} ratings</span></div>
     <div class="release-date" class:hidden={layout === 'grid'}>{book.releaseDate ? displayDate(book.releaseDate) : 'Unknown'}</div>

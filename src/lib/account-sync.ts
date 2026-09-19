@@ -1,7 +1,12 @@
 import { emptyLibrary, mergeLibraries, parseSeriesLibrary, storageKeys, type SeriesLibrary } from './library';
+import { noConsent, parseAdultConsent, type AdultConsent } from './adult';
 
 export interface AccountUser { id: string; username: string; displayName: string; avatarUrl: string }
-export interface AccountState { user: AccountUser | null; status: string; ready: boolean; needsLogin: boolean; canImport: boolean }
+export interface AccountState {
+  user: AccountUser | null; status: string; ready: boolean; needsLogin: boolean; canImport: boolean;
+  /** The reader's own age claim. Account-scoped when signed in, browser-scoped otherwise. */
+  consent: AdultConsent;
+}
 interface Snapshot { userId: string; library: SeriesLibrary; revision: number }
 interface Cache { library: SeriesLibrary; base: SeriesLibrary; revision: number }
 const equal = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
@@ -21,7 +26,7 @@ export function rebaseLibrary(base: SeriesLibrary, local: SeriesLibrary, remote:
 }
 
 export class AccountSync {
-  state: AccountState = { user: null, status: 'Checking sign-in…', ready: false, needsLogin: false, canImport: false };
+  state: AccountState = { user: null, status: 'Checking sign-in…', ready: false, needsLogin: false, canImport: false, consent: noConsent() };
   private csrf = '';
   private cache: Cache | null = null;
   private guest = emptyLibrary();
@@ -43,16 +48,26 @@ export class AccountSync {
     return this.fetcher(`${this.basePath}/${route}`, { ...init, credentials: 'same-origin', cache: 'no-store',
       signal: AbortSignal.timeout(15_000), headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': this.csrf, ...init?.headers } });
   }
-  async start(guest: SeriesLibrary): Promise<void> {
+  async start(guest: SeriesLibrary, guestConsent: AdultConsent = noConsent()): Promise<void> {
     this.guest = guest;
+    // Applied up front so an unreachable session endpoint leaves the reader in guest mode with
+    // their own claim, rather than with no claim at all.
+    this.state = { ...this.state, consent: guestConsent };
     try {
       const response = await this.request('api/session/');
       if (!response.ok) throw new Error('unavailable');
-      const { user, csrf } = await response.json() as { user: AccountUser | null; csrf: string | null };
+      const { user, csrf, consent } = await response.json() as { user: AccountUser | null; csrf: string | null; consent?: unknown };
       if (this.disposed) return;
       this.csrf = csrf ?? '';
-      this.state = { user, ready: true, needsLogin: false, status: '', canImport: !!user && !!(Object.keys(guest.books).length || Object.keys(guest.series).length) };
+      this.state = { user, ready: true, needsLogin: false, status: '', consent: user ? parseAdultConsent(consent) : guestConsent,
+        canImport: !!user && !!(Object.keys(guest.books).length || Object.keys(guest.series).length) };
       if (!user) { this.report('Saved in this browser'); return; }
+      // A claim made in this browser moments ago came from the same reader, so carry it up
+      // instead of asking again. The server still recomputes the unlock from the date.
+      if (!this.state.consent.birthDate && guestConsent.birthDate) {
+        try { await this.saveConsent(guestConsent); } catch { /* the gate stays shut, which is the safe direction */ }
+      }
+      if (this.disposed) return;
       let cached: Cache | null = null;
       try {
         const raw = JSON.parse(this.storage.getItem(this.key()) ?? 'null');
@@ -80,6 +95,27 @@ export class AccountSync {
     this.timer = setTimeout(() => { void this.sync(); }, 400);
   }
   canEdit() { return !this.state.user || this.cache !== null; }
+  /** The age claim is account state, not library content: it is written straight through
+   * rather than merged, because there is nothing to reconcile between two devices — the
+   * reader's date of birth is the same on both. */
+  async saveConsent(next: AdultConsent): Promise<AdultConsent> {
+    const requested = parseAdultConsent(next);
+    if (!this.state.user) {
+      this.storage.setItem(storageKeys.adult, JSON.stringify(requested));
+      this.state = { ...this.state, consent: requested };
+      this.report(this.state.status);
+      return requested;
+    }
+    const response = await this.request('api/adult/', { method: 'PUT', body: JSON.stringify({ consent: requested }) });
+    if (response.status === 401 || response.status === 403) { this.expired(); throw new Error('signed out'); }
+    if (!response.ok) throw new Error('consent save failed');
+    // The server's answer is authoritative: it may refuse an unlock this device asked for.
+    const saved = parseAdultConsent((await response.json() as { consent?: unknown }).consent);
+    if (this.disposed) return saved;
+    this.state = { ...this.state, consent: saved };
+    this.report(this.state.status);
+    return saved;
+  }
   importGuest() {
     if (!this.cache) return;
     const library = mergeLibraries(this.cache.library, this.guest);

@@ -23,7 +23,7 @@
 	<div class="series-info">
 		<h3><button onclick={() => onopen(series)}>{series.title}</button></h3>
 		<p class="author">{series.author}</p>
-		{#if reason}<p class="match-reason">{reason}</p>{:else}<p class="genres">{series.genres.slice(0, 2).map((g) => genreLabels[g] ?? g).join(' · ') || 'Genre awaiting review'}</p>{/if}
+		{#if reason}<p class="match-reason">{reason}</p>{:else}<p class="genres">{series.genres.slice(0, 2).map((g) => genreLabels[g] ?? g).join(' · ')}</p>{/if}
 	</div>
 	<div class="series-state">
 		<span class="state-label" class:current={progress.caughtUp} class:partial={progress.state === 'caught-up-partial'}>{#if progress.caughtUp}<Icon name="check" size={13}/>{/if}{label}</span>

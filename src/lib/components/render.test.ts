@@ -113,7 +113,7 @@ describe('series detail rendering', () => {
 	it('explains exactly why it will not claim the reader is current', () => {
 		const html = detail(markSeriesRead(emptyLibrary(), series, TODAY));
 		expect(html).toContain('All known audio read');
-		expect(html).toContain('Book 2 is missing from the catalog');
+		expect(html).toContain('Book 2 is missing from this list');
 		expect(html).not.toContain('>Up to date<');
 	});
 });
@@ -189,8 +189,8 @@ describe('the library is honest about gaps', () => {
 			series, books: bookMap(gappy), library, progress: seriesProgress(library, series, NOW), today: TODAY,
 			following: true, onback: () => {}, onfollow: () => {}, onmarkall: () => {}, onwork: () => {}, onthrough: () => {}, onopenbook: () => {}, onlike: () => {}
 		} }).body;
-		expect(html).toContain('Book 2, 3 are missing from the catalog');
-		expect(html).toContain('we can’t confirm this series’ audiobook list is complete');
+		expect(html).toContain('Book 2, 3 are missing from this list');
+		expect(html).toContain('This list may be incomplete');
 		expect(html).not.toContain('>Up to date<');
 	});
 	it('keeps a followed series legible on the card even with gaps', () => {
@@ -219,7 +219,7 @@ describe('reader impressions rendering', () => {
 	});
 	it('reports the sampled count and never the raw voice total', () => {
 		const html = show(ctx);
-		expect(html).toContain('18 sampled public reviews');
+		expect(html).toContain('From 18 reader reviews');
 		expect(html).not.toContain('900');
 	});
 	it('never prints a model confidence as if it were reader agreement', () => {
@@ -232,11 +232,11 @@ describe('reader impressions rendering', () => {
 		expect(show(ctx)).not.toContain('4.62');
 	});
 	it('marks disagreement qualitatively', () => {
-		expect(show(ctx)).toContain('Readers in this sample disagreed');
+		expect(show(ctx)).toContain('Readers disagreed about this one');
 	});
 	it('says readers rather than claiming everyone listened', () => {
 		const html = show(ctx);
-		expect(html).toContain('readers rather than confirmed listeners');
+		expect(html).toContain('in print or ebook rather than listening');
 	});
 	it('links its sources', () => {
 		expect(show(ctx)).toContain('https://www.goodreads.com/book/1');
@@ -281,8 +281,8 @@ describe('observation-led reader impressions', () => {
 	it('renders from an observation with no traits at all', () => {
 		const html = show({ ...base, observation });
 		expect(html).toContain(observation);
-		expect(html).toContain('47 sampled public reviews');
-		expect(html).toContain('readers rather than confirmed listeners');
+		expect(html).toContain('From 47 reader reviews');
+		expect(html).toContain('in print or ebook rather than listening');
 	});
 	it('does not print a contradictory binary label beside the observation', () => {
 		// The observation itself may well mention slowness — what must not appear is the
@@ -362,7 +362,7 @@ describe('the trait fallback makes no per-trait claims', () => {
 		expect(html).toContain('Readers found it funny.');
 		expect(html).not.toContain('mentioned it');
 		expect(html).not.toContain('9 ');
-		expect(html).toContain('18 sampled public reviews');
+		expect(html).toContain('From 18 reader reviews');
 	});
 });
 

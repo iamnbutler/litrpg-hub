@@ -42,7 +42,7 @@ export function toAssessment(book: Parameters<typeof assessmentState>[0], respon
 	const signal = (id: string): ContentSignal => {
 		const answer = choice(id);
 		return { verdict: answer.choice as ContentSignal['verdict'], confidence: answer.confidence, source: 'jev',
-			note: id === 'quality' ? 'Jev assessed the publisher listing, not the book’s writing quality or authorship.' : 'Jev assessment of the supplied publisher metadata; not independently verified.' };
+			note: id === 'quality' ? 'Reflects the publisher’s listing, not the book’s writing or who wrote it.' : 'Read from the publisher’s listing. Not independently verified.' };
 	};
 	const taste: Assessment['taste'] = {};
 	for (const key of Object.keys(tasteLabels) as Taste[]) {

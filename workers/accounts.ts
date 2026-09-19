@@ -1,4 +1,5 @@
 import { emptyLibrary, parseSeriesLibrary } from '../src/lib/library';
+import { noConsent, parseAdultConsent, type AdultConsent } from '../src/lib/adult';
 
 export interface Env {
   DB: D1Database;
@@ -45,13 +46,20 @@ function returnTo(input: string | null, site: URL): string {
   const url = new URL(input, site);
   return url.origin === site.origin && url.pathname === site.pathname ? url.href : site.href;
 }
-interface UserRow { id: string; username: string; display_name: string; avatar_url: string }
+interface UserRow {
+  id: string; username: string; display_name: string; avatar_url: string;
+  birth_date: string | null; birth_attested_at: string | null; allow_adult: number;
+}
+/** Stored columns are re-parsed rather than trusted: `allowAdult` is always recomputed from
+ * the date, so a row written before a reader's birthday ages up on its own. */
+const consentOf = (user: UserRow): AdultConsent =>
+  parseAdultConsent({ birthDate: user.birth_date, attestedAt: user.birth_attested_at, allowAdult: user.allow_adult === 1 });
 interface Session { user: UserRow; csrf: string; tokenHash: string }
 async function session(request: Request, env: Env): Promise<Session | null> {
   const token = cookie(request, SESSION_COOKIE);
   if (!token) return null;
   const tokenHash = await digest(token);
-  const user = await env.DB.prepare(`SELECT u.id, u.username, u.display_name, u.avatar_url
+  const user = await env.DB.prepare(`SELECT u.id, u.username, u.display_name, u.avatar_url, u.birth_date, u.birth_attested_at, u.allow_adult
     FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?`)
     .bind(tokenHash, now()).first<UserRow>();
   return user ? { user, tokenHash, csrf: await digest(`csrf:${token}`) } : null;
@@ -168,7 +176,7 @@ export async function handle(request: Request, env: Env, fetcher: typeof fetch =
   }
   if (request.method === 'GET' && route === 'auth/login') return login(request, env, site);
   if (request.method === 'GET' && route === 'auth/callback') return callback(request, env, fetcher);
-  if (!['api/session', 'api/library', 'auth/logout'].includes(route)) {
+  if (!['api/session', 'api/library', 'api/adult', 'auth/logout'].includes(route)) {
     if (!route.startsWith('api/') && !route.startsWith('auth/') && env.ASSETS) return env.ASSETS.fetch(request);
     return json({ error: 'Not found.' }, 404);
   }
@@ -176,7 +184,7 @@ export async function handle(request: Request, env: Env, fetcher: typeof fetch =
   const auth = await session(request, env);
   if (route === 'api/session' && request.method === 'GET') {
     return json({ user: auth ? { id: auth.user.id, username: auth.user.username, displayName: auth.user.display_name, avatarUrl: auth.user.avatar_url } : null,
-      csrf: auth?.csrf ?? null });
+      consent: auth ? consentOf(auth.user) : noConsent(), csrf: auth?.csrf ?? null });
   }
   if (!auth) return json({ error: 'Sign in to sync your library.' }, 401);
   if (request.method !== 'GET' && (request.headers.get('Origin') !== site.origin || request.headers.get('X-CSRF-Token') !== auth.csrf)) {
@@ -187,6 +195,16 @@ export async function handle(request: Request, env: Env, fetcher: typeof fetch =
     const response = json({ ok: true });
     response.headers.set('Set-Cookie', setCookie(cookieEnv, SESSION_COOKIE, '', 0));
     return response;
+  }
+  if (route === 'api/adult' && request.method === 'PUT') {
+    let data: { consent?: unknown };
+    try { data = await body(request) as typeof data; } catch { return json({ error: 'Expected a JSON consent record.' }, 400); }
+    // The client's unlock claim is never taken at face value: parseAdultConsent recomputes it
+    // from the date, so a submitted `allowAdult` cannot bypass the age bar.
+    const consent = parseAdultConsent(data?.consent);
+    await env.DB.prepare('UPDATE users SET birth_date = ?, birth_attested_at = ?, allow_adult = ?, updated_at = ? WHERE id = ?')
+      .bind(consent.birthDate, consent.attestedAt, consent.allowAdult ? 1 : 0, now(), auth.user.id).run();
+    return json({ consent });
   }
   if (route === 'api/library' && request.method === 'GET') return json(await library(env, auth.user.id));
   if (route === 'api/library' && request.method === 'PUT') {

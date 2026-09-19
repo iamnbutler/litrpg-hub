@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Database from 'better-sqlite3';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { digest, handle, type Env } from './accounts';
 import { emptyLibrary, followSeries } from '../src/lib/library';
 
@@ -27,9 +27,14 @@ const token = 'a'.repeat(43);
 beforeEach(async () => {
   db = new Database(':memory:');
   db.pragma('foreign_keys = ON');
-  db.exec(readFileSync(new URL('./migrations/0001_accounts.sql', import.meta.url), 'utf8'));
+  // Every migration, in order, so a schema change is exercised here the way D1 applies it.
+  const migrations = new URL('./migrations/', import.meta.url);
+  for (const file of readdirSync(migrations).filter((name) => name.endsWith('.sql')).sort()) {
+    db.exec(readFileSync(new URL(file, migrations), 'utf8'));
+  }
   env = { DB: binding(db), SITE_URL: site, OAUTH_GITHUB_CLIENT_ID: 'client', OAUTH_GITHUB_CLIENT_SECRET: 'secret', OAUTH_GITHUB_REDIRECT_URI: `${site}auth/callback/` };
-  db.prepare('INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)').run('github:1', '1', 'reader', 'Reader', '', 1, 1);
+  db.prepare('INSERT INTO users (id, github_id, username, display_name, avatar_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .run('github:1', '1', 'reader', 'Reader', '', 1, 1);
   db.prepare('INSERT INTO libraries (user_id, updated_at) VALUES (?, ?)').run('github:1', 1);
   db.prepare('INSERT INTO sessions VALUES (?, ?, ?)').run(await digest(token), 'github:1', Math.floor(Date.now() / 1000) + 1000);
 });
@@ -47,6 +52,33 @@ describe('account API', () => {
     expect(response.headers.get('Cache-Control')).toBe('no-store');
     expect(await response.json()).toMatchObject({ user: { id: 'github:1', username: 'reader' }, csrf: await digest(`csrf:${token}`) });
     expect((await handle(new Request(`${site}api/library/`), env)).status).toBe(401);
+  });
+  it('stores a self-attested date of birth and recomputes the unlock server-side', async () => {
+    const csrf = await digest(`csrf:${token}`);
+    const send = (consent: unknown) => handle(req('api/adult/', { method: 'PUT',
+      headers: { Origin: 'https://nate.rip', 'X-CSRF-Token': csrf, 'Content-Type': 'application/json' }, body: JSON.stringify({ consent }) }), env);
+
+    // An adult's opt-in is honoured and persisted.
+    expect(await (await send({ birthDate: '1990-01-01', attestedAt: '2026-09-19T00:00:00.000Z', allowAdult: true })).json())
+      .toEqual({ consent: { birthDate: '1990-01-01', attestedAt: '2026-09-19T00:00:00.000Z', allowAdult: true } });
+    expect(db.prepare('SELECT birth_date, allow_adult FROM users WHERE id = ?').get('github:1'))
+      .toMatchObject({ birth_date: '1990-01-01', allow_adult: 1 });
+    expect(await (await handle(req('api/session/'), env)).json()).toMatchObject({ consent: { allowAdult: true } });
+
+    // A client asking to unlock on a minor's date is stored as a refusal, not a grant.
+    const minor = String(new Date().getUTCFullYear() - 10);
+    expect(await (await send({ birthDate: `${minor}-01-01`, attestedAt: '2026-09-19T00:00:00.000Z', allowAdult: true })).json())
+      .toMatchObject({ consent: { birthDate: `${minor}-01-01`, allowAdult: false } });
+    expect(db.prepare('SELECT allow_adult FROM users WHERE id = ?').get('github:1')).toMatchObject({ allow_adult: 0 });
+
+    // Withdrawing removes the date entirely rather than leaving it behind a false flag.
+    expect(await (await send(null)).json()).toEqual({ consent: { birthDate: null, attestedAt: null, allowAdult: false } });
+    expect(db.prepare('SELECT birth_date FROM users WHERE id = ?').get('github:1')).toMatchObject({ birth_date: null });
+  });
+  it('refuses to record an age claim without a session or CSRF token', async () => {
+    const body = JSON.stringify({ consent: { birthDate: '1990-01-01', allowAdult: true } });
+    expect((await handle(new Request(`${site}api/adult/`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body }), env)).status).toBe(401);
+    expect((await handle(req('api/adult/', { method: 'PUT', headers: { Origin: 'https://nate.rip', 'Content-Type': 'application/json' }, body }), env)).status).toBe(403);
   });
   it('rejects expired sessions and cross-origin or missing-CSRF mutations', async () => {
     expect((await put(emptyLibrary(), 0, { Origin: 'https://evil.example' })).status).toBe(403);

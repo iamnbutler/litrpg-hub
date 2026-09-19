@@ -5,7 +5,9 @@ import { isAudioCoverageCurrent } from './audio-coverage.js';
 export const storageKeys = {
 	legacyLibrary: 'litrpg-hub:library:v1',
 	library: 'litrpg-hub:library:v2',
-	filters: 'litrpg-hub:filters:v1'
+	filters: 'litrpg-hub:filters:v1',
+	/** Signed-out readers only. A signed-in reader's age claim lives on their account. */
+	adult: 'litrpg-hub:adult:v1'
 } as const;
 
 export type ShelfStatus = 'want' | 'reading' | 'read' | 'paused';
@@ -259,14 +261,14 @@ export function seriesProgress(library: SeriesLibrary, series: CatalogSeries, no
 
 	const unresolved = coverageCurrent
 		? [
-			...(unmatched ? [`${unmatched} verified audiobook${unmatched === 1 ? ' is' : 's are'} missing from the catalog`] : []),
-			...(unvouched ? [`${unvouched} catalogued volume${unvouched === 1 ? ' is' : 's are'} not covered by the reviewed audio list`] : [])
+			...(unmatched ? [`${unmatched} audiobook${unmatched === 1 ? ' is' : 's are'} missing from this list`] : []),
+			...(unvouched ? [`${unvouched} book${unvouched === 1 ? ' here has' : 's here have'} not been confirmed as an audiobook`] : [])
 		]
 		: [
-			...(gaps.length ? [`Book ${gaps.join(', ')} ${gaps.length === 1 ? 'is' : 'are'} missing from the catalog`] : []),
+			...(gaps.length ? [`Book ${gaps.join(', ')} ${gaps.length === 1 ? 'is' : 'are'} missing from this list`] : []),
 			...(undated ? [`${undated} audiobook${undated === 1 ? ' has' : 's have'} no confirmed release date`] : []),
-			...(side.length - sideRead ? [`${side.length - sideRead} unnumbered entr${side.length - sideRead === 1 ? 'y is' : 'ies are'} unread`] : []),
-			'we can’t confirm this series’ audiobook list is complete'
+			...(side.length - sideRead ? [`${side.length - sideRead} side entr${side.length - sideRead === 1 ? 'y is' : 'ies are'} unread`] : []),
+			'This list may be incomplete'
 		];
 
 	const finished = available.length > 0 && read === available.length;
