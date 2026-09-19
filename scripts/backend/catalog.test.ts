@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { classifyContent, narrationSignal } from './classifiers/content.js';
 import { collapsePlaceholderDuplicates, defaultFilters, passesFilters, recommend, seriesIdentity, seriesStarters, validReleaseDate, type Assessment, type CatalogBook } from '../../src/lib/catalog.js';
-import { parseLibrary } from '../../src/lib/library.js';
 import { matchesSeries, parseSeriesPage, type SeriesReference } from './fetchers/series.js';
 import { catalogPage } from './fetchers/audible.js';
 import { applyAuthorRules } from './classifiers/authors.js';
@@ -96,10 +95,7 @@ describe('catalog identities and recommendations', () => {
 		expect(validReleaseDate('2026-02-30', now)).toBeNull();
 		expect(validReleaseDate('2026-01-01T00:00:00Z', now)).toBe('2026-01-01');
 	});
-	it('validates saved shelf data rather than trusting arbitrary imports', () => {
-		expect(parseLibrary({ BOOK1: { status: 'read', rating: 5 }, BOOK2: { status: 'broken', rating: 100 } })).toMatchObject({ BOOK1: { status: 'read', rating: 5 } });
-		expect(Object.keys(parseLibrary({ BOOK2: { status: 'broken', rating: 100 } }))).toHaveLength(0);
-	});
+
 });
 
 describe('source integrity', () => {

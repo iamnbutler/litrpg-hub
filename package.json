@@ -1,5 +1,5 @@
 {
-	"name": "shelf-goblin",
+	"name": "shelfgoblin",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -20,7 +20,7 @@
 		"build": "vite build",
 		"check:backend": "tsc --project tsconfig.backend.json --noEmit",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "npm run build:contract && svelte-kit sync",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "vitest run",
@@ -39,7 +39,8 @@
 		"deploy:cloudflare": "BASE_PATH= npm run build && wrangler deploy --env=\"\"",
 		"secrets:cloudflare": "node --env-file=.env scripts/cloudflare-secrets.mjs",
 		"pipeline:quality:eval": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/model-eval.ts",
-		"pipeline:quality:claims": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/claims-cli.ts"
+		"pipeline:quality:claims": "node --env-file-if-exists=.env --import tsx scripts/backend/quality/claims-cli.ts",
+		"build:contract": "npm run build --workspace @shelfgoblin/catalog-contract"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^5.20260911.1",
@@ -58,6 +59,10 @@
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
 		"better-sqlite3": "^12.8.0",
-		"cheerio": "^1.2.0"
-	}
+		"cheerio": "^1.2.0",
+		"@shelfgoblin/catalog-contract": "1.0.0"
+	},
+	"workspaces": [
+		"packages/catalog-contract"
+	]
 }
