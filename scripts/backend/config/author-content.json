@@ -1,0 +1,15 @@
+[
+  {
+    "id": "bruce-sentar",
+    "name": "Bruce Sentar",
+    "aliases": ["Bruce Sentar"],
+    "reviewedAt": "2026-09-19",
+    "source": "reader-review",
+    "signals": {
+      "sexualized": {
+        "verdict": "present",
+        "note": "Author-level content filter: reader review identifies Bruce Sentar's books as sexually focused. Individual book exceptions can override this rule."
+      }
+    }
+  }
+]

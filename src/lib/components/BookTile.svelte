@@ -12,7 +12,7 @@
     <button class="book-cover" onclick={() => onopen(book)} aria-label={`Open ${book.title}`}>{#if book.coverUrl && !imageFailed}<img src={book.coverUrl} alt="" loading="lazy" onerror={() => imageFailed = true}/>{:else}<Icon name="book" size={24}/>{/if}</button>
     <div class="book-info">
         <h3><button onclick={() => onopen(book)}>{book.title}</button></h3>
-        <p class="author">{book.author}{#if book.seriesNumber != null}<span> · Book {book.seriesNumber}</span>{/if}</p>
+        <p class="author">{book.author}{#if book.seriesNumber != null}<span>{' · '}Book {book.seriesNumber}</span>{/if}</p>
         {#if recommendation}<p class="match-reason">{recommendation.method === 'taste' ? 'Shared traits' : 'Shared genres'}: {recommendation.reasons.join(', ')}</p>
         {:else}<p class="genres">{book.subgenres.slice(0, 3).map(g => genreLabels[g] ?? g).join(' · ') || 'Genre awaiting review'}{#if book.edition !== 'audiobook'} · {book.edition === 'dramatized' ? 'Dramatized' : 'Collection'}{/if}</p>{/if}
     </div>

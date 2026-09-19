@@ -1,10 +1,10 @@
 # LitRPG Hub
 
-A compact index for LitRPG and progression fantasy: a searchable series index, personal reading shelves, explainable recommendations, and audiobook release dates. Evolved from [LitRPG Chart](https://github.com/iamnbutler/litrpg-chart).
+An audiobook catalog for LitRPG and progression fantasy. Follow series, track the books you have read, find similar series, and check audio releases. Forked from [LitRPG Chart](https://github.com/iamnbutler/litrpg-chart).
 
-## Run it
+## Run the app
 
-Node 22.9+ and npm. The committed catalog lets a fresh checkout run without a database or API key.
+Node 22.9+ and npm. The committed JSON snapshot lets a fresh checkout run without a database or API keys.
 
 ```sh
 npm ci
@@ -15,102 +15,130 @@ npm test
 npm run build
 ```
 
-The default view is a cover grid with compact controls and an optional list layout. The UI includes search by title, series, author, and narrator; genre and content filters; a series entry view or all editions; upcoming, historical, and unconfirmed releases; and book details with source notes. Reading shelves and personal ratings are saved in this browser. Export/import a JSON shelf backup to move between browsers. There are no shared accounts or community reviews yet. Star ratings in the catalog come from Audible.
+The interface is a compact cover grid with search, optional list layout, genres, content preferences, series details, and release views. My library contains followed series. Reading progress and personal ratings belong to works, with edition aliases preserving older saved IDs. Mark all as read applies to released audio; future releases and unknown dates are not silently marked read. The original browser shelf is retained when migrating to the series library. Export a library backup to move it between browsers; there are no shared accounts yet.
 
-Book links use `?book=ASIN`; discovery links use `?view=similar&like=ASIN`. The app remains a static SvelteKit site. Set `BASE_PATH=/litrpg-hub` for GitHub Pages, or leave it empty for a root deployment. The deployment workflow is manual and builds the committed snapshot.
+Series links use `?view=series&series=dungeon-crawler-carl`; individual editions use `?book=ASIN`. The static SvelteKit build makes no model calls or source requests. `BASE_PATH=/litrpg-hub` builds for a GitHub Pages subdirectory. Deployment is manual.
 
-## Jev experiments
+## Build the catalog
 
-[Jev / TypeSafe](https://docs.typesafe.ai/introduction) evaluates 12 independent questions in one request per book: genre, explicit content, harem, listing quality, and eight taste dimensions. The app compares those profiles in code, lets readers adjust what matters, and explains shared traits. Books awaiting profiles use explicitly labeled genre matches. Recommendations exclude other volumes of the same series and limit repeated authors. Popularity is only a small tie-breaker.
+SQLite is the durable catalog; public JSON is its replaceable read model. The initial Chart snapshot remains available while a reviewed core is rebuilt from publisher and author bibliographies. Those legacy records are **not** all verified core records.
 
-Put `TYPESAFE_API_KEY` in an ignored `.env` (see `.env.example`). Keys are used only by offline jobs. Builds, page loads, filters, and recommendation sliders make no Jev calls.
+The selected registry is [catalog-seeds.json](scripts/backend/config/catalog-seeds.json). Aethon, Soundbooth Theater, Podium, Portal Books, Mountaindale Press, and selected author sites provide work lists and fuller descriptions. Publisher indexes retain unselected candidates for later review. Audible is used to verify **already observed, exact audiobook identifiers**, rather than discover arbitrary keyword matches.
 
 ```sh
-# Inspect the next batch without calling the API
-npm run pipeline:enrich -- --limit 24 --dry-run
+# Register selected series and reuse previously discovered publisher links
+npm run catalog -- seed
+npm run catalog -- run --stage sources --limit 100
 
-# Enrich up to 24 uncached series entry points
-npm run pipeline:enrich -- --limit 24
+# Import attributed, reviewed research notes for gaps a crawler cannot fill
+npm run catalog -- curate
 
-# Inspect/update a particular edition
-npm run pipeline:enrich -- --book B08V8B2CGV
-npm run pipeline:enrich -- --book B08V8B2CGV --force
+# Verify exact audiobook identities, dates, narrators and runtimes
+npm run catalog -- plan-audio
+npm run catalog -- run --stage audio --limit 100
 
-# Export the resulting assessments for the UI
+# Plan only missing or changed summaries and Jev profiles
+npm run catalog -- plan
+npm run catalog -- run --stage enrich --limit 100
+npm run catalog -- run --stage assess --limit 100
+
+# Inspect coverage and publish the current read model
+npm run catalog -- audit
+npm run catalog -- status
 npm run pipeline:export
 ```
 
-Each run has a maximum of 100 evaluations. Responses are validated before saving, failures stop the job, previous successes remain usable, and token counts are printed. SQLite caches by the supplied metadata, complete rubric, rubric version, and requested model. A changed description invalidates its old assessment. `jev-latest` is a moving alias: pin `JEV_MODEL` to a model version for repeatability, or use `--force` when deliberately refreshing that alias. Raw responses stay in the local database; normalized assessments go in the public catalog.
+Use `--series SERIES_ID` to restrict curation, planning, execution, refresh, retry, or audit. Work can be stopped and resumed with the same command. Durable jobs have unique entity/task/input keys, leases, retry backoff, and explicit review states. Successful results are retained before the next job starts. Review failures do not delete earlier facts or become empty catalogs.
 
-**Content judgments have limits.** Sexualized covers/marketing, explicit sexual content, harem, AI narration, disclosed AI writing, and listing quality are separate signals. Romance, violence, mature themes, small audiences, and author identity are not exclusion rules. An absent narrator is unknown. AI writing is flagged only when the source explicitly discloses it; Jev is not an authorship detector. Listing-quality flags route suspicious metadata for review and do not claim the novel itself is low quality. Unknown and low-confidence records remain visible by default. The thresholds are conservative starting points, not a calibrated benchmark.
+For a single bounded pass through the stages, use `catalog:grind`. By default it resumes saved source and audio jobs without calling models. `--enrich` enables OpenAI descriptions and Jev profiles; each stage defaults to 25 attempts and accepts a limit from 0 to 300. Zero skips that stage. The command reports completions, review cases, remaining jobs and new token usage. Interrupting it finishes the active job before stopping.
 
-## Cover classification
+```sh
+npm run catalog:grind -- --source-limit 50 --audio-limit 50
+npm run catalog:grind -- --series divine-apostasy --enrich --extract-limit 20 --assess-limit 20
+# Explicitly schedule due observations while preserving earlier completed attempts
+npm run catalog:grind -- --refresh --enrich
+```
 
-The cover pipeline uses **OpenAI GPT-4.1 mini** to produce structured visual observations, then **Jev** to assess those observations alongside the book metadata. The rubric catches clothed pin-up marketing as well as explicit imagery. An attractive character, ordinary romance, or a shirtless action scene alone is not sufficient. Cover evidence never establishes on-page sex, harem relationships, AI authorship, or prose quality.
+The driver processes registered series and saved candidates. It does not select new series, approve uncertain matches, or install a recurring worker. Run `catalog seed` after reviewing registry changes.
 
-Set `OPENAI_API_KEY` and `TYPESAFE_API_KEY` in `.env`. `COVER_MODEL` defaults to `gpt-4.1-mini`; it can be pinned to a snapshot. The observed model version is recorded. Run:
+```sh
+# Schedule completed source jobs whose saved checks are due
+npm run catalog -- refresh
+npm run catalog -- run --stage sources --limit 100
+npm run catalog -- run --stage audio --limit 100
+
+# Retry transient failures; include review jobs only after investigating the cause
+npm run catalog -- retry --stage audio --series the-ten-realms
+npm run catalog -- retry --stage audio --series the-ten-realms --review
+```
+
+Raw documents, field claims, identifiers and competing editions remain in the private database. Exact product checks require the expected author, series, numeric volume, English language, and standard audiobook format. Numbered audio links on a supported author bibliography can create verification jobs before a work's title is known; the retained page and product must agree before import. Coauthors are distinct people, and conflicting credits preserve competing claims for review. A wrong-volume buy link becomes a review job. Print dates, web-serial volume numbers, omnibus counts, and retailer placeholder years never become audiobook release facts. Distinct performances keep their own narrators and dates.
+
+Source pages are cached by URL and body hash with conditional requests and due dates. Recognized interstitials and identifier-only API responses are rejected. Other degraded pages remain recorded observations; importer guards preserve prior facts and queue review rather than treating them as an empty catalog. Series indexes are checked weekly; stable book pages have longer intervals. Adding a selected series reuses saved index candidates without scraping the index again. `catalog audit` distinguishes confirmed audio, unverified legacy matches, absent audio evidence, missing volumes, undated editions, and stale enrichment. A contiguous list alone never proves a bibliography is complete. Reviewed audio manifests establish the expected mainline list separately from imported rows. The library says “Up to date” only while that assertion is current and every verified released work is read; otherwise it can say “All known audio read.” Story completion is a separate field. See [audio coverage](docs/audio-coverage-proposal.md).
+
+## Descriptions, metadata and recommendations
+
+Set `OPENAI_API_KEY` and `TYPESAFE_API_KEY` in an ignored `.env`; [.env.example](.env.example) lists optional settings. Offline OpenAI jobs write original, source-grounded synopses and extract descriptive features with supporting spans. Series summaries use the first-book premise. Newly acquired full publisher descriptions stay as private evidence; legacy records retain their short retailer listing snippets until curated. `CATALOG_OPENAI_MODEL` controls the extraction model.
+
+[Jev](https://docs.typesafe.ai/introduction) assesses genre, content disclosures, listing quality and eight reading traits. Results retain the actual model, rubric, input hash, confidence and token usage. Changed evidence invalidates the old promoted interpretation. Catalog extraction and work-profile workers save HTTP responses before validation, including malformed or incomplete output, so unchanged retries do not purchase the same failed response again. If a paid receipt cannot commit, those workers park that job and stop further paid work for storage review. Author-profile and reader-trait jobs currently cache successfully parsed responses. A missing usage report is unknown, not evidence of a free call.
+
+The [editorial review registry](scripts/backend/config/catalog-editorial-reviews.json) approves specific extraction receipts against their source inputs, contributing URLs and feature taxonomy. An approved synopsis stays fixed across model reruns; a manual correction takes precedence while the original response remains private and intact. Changing the title, author, source text, contributing URLs or taxonomy invalidates that review. Only approved positive features reach the public catalog; omitted tags mean unknown. Later-volume summaries can remain unreviewed even when their source extraction is current.
+
+Similar series uses cached profiles, reader-adjustable priorities, and explanations of shared traits. Missing profiles fall back to labeled genre matches. Reviewed shared mechanics add a small bonus, capped at 0.04; ignored taste dimensions and already-compared Jev dimensions do not receive that bonus again. An unsupported stats claim on a reviewed book is treated as unknown. Popularity has a small weight. Matching uses an eligible starting audiobook, excludes the seed series, and limits repeated authors. Reader preferences are applied before a recommendation is presented; hiding an early volume cannot turn a later volume into a new series entry point.
+
+Model interpretations remain fallible. Supporting text is not proof that a model interpreted it correctly, and sparse blurbs cannot establish the absence of a trope. Coverage and review queues are part of the data model.
+
+## Content filters and covers
+
+Sexualized marketing, explicit scenes, harem, AI narration, disclosed AI writing, and listing quality are separate signals. OpenAI vision describes the stored cover; Jev combines those observations with source metadata. Cover art never establishes explicit scenes, harem relationships, AI authorship, or prose quality. Missing credits and low-confidence classifications remain unknown.
 
 ```sh
 npm run pipeline:covers -- --limit 24 --dry-run
-npm run pipeline:covers -- --limit 24
+npm run pipeline:covers -- --limit 100
 npm run pipeline:covers -- --book B0GPFWKVMM --book B0GPFWTMM9
+npm run pipeline:authors -- plan
+npm run pipeline:authors -- run --limit 10
 npm run pipeline:export
 ```
 
-The job defaults to series entry points, accepts `--all-editions`, and caps each run at 100 books. Images are checked against source hosts, content types, byte signatures, and a 5 MB limit. Their bytes are retained under `data/covers` (or `CATALOG_ASSET_DIR`) so changing the model or rubric can reuse the original image without downloading it again. SHA-256 image hashes, model, prompt, schema, and rubric version key the visual cache, so editions sharing a cover reuse the observation. Source URLs for upcoming/recent books are rechecked after seven days, older releases after 180 days, and unknown release dates after 30 days; `--refresh-images` checks it immediately and `--force` repeats inference. Jev content judgments additionally depend on the book metadata and visual evidence. Missing images, refusals, errors, low confidence, and ambiguous covers are never treated as confirmed clean. Failed jobs preserve prior successes.
+Cover jobs cache image bytes under `data/covers`, named by content hash. A model or rubric change reuses those bytes; shared covers reuse an observation. `COVER_MODEL` defaults to `gpt-4.1-mini`. `--refresh-images` checks the source image; `--force` deliberately repeats inference. Vision and Jev content runs retain their raw responses before validation, including failed answers. Forced attempts append history and preserve the last valid result for unchanged evidence; changed image bytes invalidate the old cover verdict. Builds and browsing never run these jobs.
 
-**Hide sexualized content** is enabled by default and uses confident marketing flags. Detailed filters separately control explicit scenes, harem, AI narration, and disclosed AI writing. Unclassified content stays visible unless explicitly excluded. Details show the actual evidence and source, and filters show cover-assessment coverage. Builds and browsing make no API calls. This is a bounded initial sample, not a claim that every catalog cover has been assessed.
+Author defaults require positive evidence across independent series and multiple works, followed by Jev review. They fill only unknown book signals. Changed evidence or a later withdrawn classification invalidates the older default. Reviewed [author rules](scripts/backend/config/author-content.json), such as the user-supplied Bruce Sentar rule, remain distinct from automated inference. [Per-book overrides](scripts/backend/config/content-overrides.json) take final precedence and require a note.
 
-Reviewed exceptions go in `scripts/backend/config/content-overrides.json`:
+Sexualized content is hidden by default. Explicit content, harem and disclosed AI use have separate controls. Unclassified content remains visible unless the reader chooses otherwise. These are evidence-based preferences, not a universal quality score or an AI-writing detector.
 
-```json
-{
-  "BOOK_ASIN": {
-    "harem": { "verdict": "absent", "note": "Publisher explicitly confirms no harem. Source URL and review date here." }
-  }
-}
-```
+## Reader feedback
 
-See [the experiment notes](docs/jev-discovery.md) for what to try next and how to evaluate it.
+Reader evidence has its own provenance, source IDs, spoiler flags and distinct-voice digests. Raw comments stay in the private database. Publisher facts, reader opinions and content verdicts remain separate. Aggregate context requires several independent substantive voices and must retain uncertainty and disagreement. A handful of storefront testimonials does not qualify; the first Soundbooth Theater sample was too small and produced no reader consensus. Public Hardcover reviews use its authenticated API, exact title/author matching, privacy filtering, a bounded sample, and thirty-day snapshots. Book-level reviews can cover any format and are not presented as confirmed listener votes. Jev extracts cautious traits; OpenAI writes short original observations with a verbatim-overlap guard. Sample counts, sources and disagreement accompany those observations; model confidence is never a reader-agreement percentage.
 
-## Catalog and scraping
-
-`data/books.db` is local and ignored. In this fork it began as an independent snapshot of the Chart database. A fresh clone needs a source fetch or a copied SQLite backup before running export; an empty database is refused so it cannot erase the committed catalog.
+Eligibility and displayed counts use the actual deduplicated, spoiler-filtered sample sent for inference. Traits and observations have separate durable jobs scoped to works or series. Paid prose responses are retained before validation, so a rejected answer can be reviewed without purchasing it again. Stored observations are checked against the current validation policy on every export. A [reviewed correction](scripts/backend/config/reader-observation-corrections.json) must match the exact entity, inference receipt, evidence hash, model, rubric and source URLs; the original answer remains intact. Without per-aspect measurements, prose cannot claim that most or many readers share a particular view. Reader observations currently provide context rather than changing recommendation rank.
 
 ```sh
-# Prefer a bounded, verified series refresh
-npm run pipeline:series -- --help
-npm run pipeline:series -- --series dungeon-crawler-carl --limit 20
-npm run pipeline:series -- --series the-completionist-chronicles --limit 40
-
-# Broader discovery remains available as an explicit job
-npm run pipeline:fetch -- --source audible --year 2026
-npm run pipeline:classify
-npm run pipeline:export
+npm run pipeline:readers -- import-cached
+npm run pipeline:readers -- import-hardcover --title "Dungeon Crawler Carl" --author "Matt Dinniman" --limit 50
+npm run pipeline:readers -- plan
+npm run pipeline:readers -- run --limit 20
+npm run pipeline:readers -- status
+npm run pipeline:readers -- corrections
 ```
 
-Series discovery parses actual product containers with Cheerio, follows only same-series pagination, and verifies both the source series ASIN and author. Where available it retains the longer per-book publisher synopsis from the series page. Partial product responses never wipe good metadata. Empty catalog responses with a positive result count, malformed payloads, partial pages, and source errors stop the source without advancing a successful search cursor. Fetch runs distinguish completed, partial, and failed work. The full pipeline stops before export after a critical fetch failure.
+Use the ignored `HARDCOVER_API_TOKEN` setting for API acquisition. A cached repeat makes zero HTTP requests. `--force` intentionally reacquires the sample; changed evidence invalidates its previous aggregate.
 
-Books keep stable IDs and distinct raw source snapshots; unchanged payloads update their last-seen time without duplicating the evidence. Series grouping includes the primary author and normalizes punctuation/extra contributor credits. Obvious duplicate backfill placeholders are hidden from browse/release views when an exact richer edition exists; their records and direct links remain available. Distinct narrators, editions, dates, and authors stay distinct. Alias reconciliation across different pen names still needs source identifiers or human review.
+## Keep the catalog safe
 
-Exports preserve uncertain records and provide `catalog.json`, `review.json`, year files, and a series index. Dates are normalized in UTC. Impossible dates and far-future placeholders become unknown and appear under **Date unknown**. Genre-uncertain books are available through **Include genres awaiting review**. Per-reader content preferences never delete source records.
-
-The UI shows the median source timestamp, not the export time, so a new build does not imply a refreshed catalog. The initial snapshot is largely April 2026. The first live series refresh during this fork returned an incomplete page and was recorded as failed; the existing catalog was preserved. Series coverage, content labels, and future release dates remain incomplete.
-
-## Checks
-
-Regression tests cover missing narrator credits, negated content disclaimers, unknown/low-confidence filters, author/series collisions, duplicate placeholders, date normalization, similarity ranking, malformed Jev and vision results, cover refusals, invalid image downloads, changed-cover invalidation, rate-limit backoff, partial metadata preservation, and failed fetch cursors. CI runs frontend and backend type checks, tests, and a static build with the Pages base path. No network credentials are required for CI.
-
-## Preserve the catalog
-
-The SQLite database and cover assets are durable input to future enrichment. They are ignored by Git; the committed JSON is only the site's read model. `CATALOG_DB_PATH` and `CATALOG_ASSET_DIR` can point to a persistent volume outside this checkout.
+`data/books.db`, raw source text, model responses, reader text and cover bytes are ignored by Git. Use `CATALOG_DB_PATH` and `CATALOG_ASSET_DIR` for storage outside the checkout. A fresh catalog worker should restore a backup; the public JSON is insufficient to reconstruct source history or paid caches. Export refuses an empty database.
 
 ```sh
+# Verified online SQLite snapshot, covers and checksum manifest
 npm run pipeline:backup
-# Or create a bundle in another location:
-npm run pipeline:backup -- --dir /path/to/catalog-backups
+
+# Upload that bundle to an explicitly private GitHub data repository
+npm run pipeline:archive -- --repo OWNER/PRIVATE_DATA_REPO
+
+# Verify an extracted/downloaded snapshot without modifying it
+npm run pipeline:verify-backup -- --snapshot /path/to/catalog-snapshot
 ```
 
-Each new backup contains a verified SQLite snapshot (including committed WAL changes), source history, inference caches, cover files, and a checksum manifest. Copy the bundle to off-machine storage. To restore, copy it to a new directory and point the two storage variables at its `books.db` and `covers` directory; keep the original backup unchanged. Run `pipeline:export` to reconstruct the site snapshot. Do not copy a live SQLite file by itself.
+The archive command checks repository privacy, file checksums and accidental credential inclusion before upload. It uploads a versioned private release, not raw evidence to the public application repository. To restore, extract a snapshot to a separate directory, run the offline verifier, and point the two storage paths at its `books.db` and `covers` directory. The verifier checks manifest files, SQLite integrity and foreign keys, reports table counts, and compares the books count. It does not establish complete historical image coverage. Do not copy a live SQLite file by itself: committed changes may still be in its WAL.
 
-[Catalog strategy](docs/catalog-strategy.md) describes coverage, work/edition identity, evidence retention, targeted refreshes, the proposed task queue, and the migration order. Work/edition separation, field-level claims, the persisted queue, and remote backup scheduling remain next steps.
+CI runs frontend/backend checks, offline regression tests and the static build. Tests cover identity mismatches, bad links, incomplete responses, description preservation, job leases, paid-cache recovery, content precedence, library migration and recommendation filtering. See [catalog strategy](docs/catalog-strategy.md) for the data model and remaining work.

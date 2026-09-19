@@ -4,6 +4,7 @@ import { collapsePlaceholderDuplicates, defaultFilters, passesFilters, recommend
 import { parseLibrary } from '../../src/lib/library.js';
 import { matchesSeries, parseSeriesPage, type SeriesReference } from './fetchers/series.js';
 import { catalogPage } from './fetchers/audible.js';
+import { applyAuthorRules } from './classifiers/authors.js';
 
 const makeBook = (fields: Partial<CatalogBook> = {}): CatalogBook => ({
 	id: 'BOOK000001', title: 'A new adventure', subtitle: '', author: 'Author', narrator: null,
@@ -14,6 +15,14 @@ const makeBook = (fields: Partial<CatalogBook> = {}): CatalogBook => ({
 });
 
 describe('content filtering regressions', () => {
+	it('inherits a reviewed author filter for new and unassessed titles without guessing story explicitness', () => {
+		const book=makeBook({author:'Bruce Sentar',title:'A future title'});applyAuthorRules(book);
+		expect(passesFilters(book,defaultFilters)).toBe(false);
+		expect(book.content.sexualized.source).toBe('manual');
+		expect(book.content.explicit.verdict).toBe('unknown');
+		const unrelated=makeBook({author:'Bruce Sentarson'});applyAuthorRules(unrelated);
+		expect(passesFilters(unrelated,defaultFilters)).toBe(true);
+	});
 	it('does not call missing narrator metadata AI narration', () => {
 		expect(narrationSignal(null).verdict).toBe('unknown');
 		expect(narrationSignal('Virtual Voice').verdict).toBe('present');

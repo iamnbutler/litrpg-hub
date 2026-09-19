@@ -42,7 +42,7 @@ export function coverCacheKey(imageHash: string, model = coverModel()): string {
 export async function fetchCover(url: string, request: typeof fetch = fetch): Promise<{ data: Buffer; mime: string; hash: string }> {
 	const parsed = new URL(url);
 	if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.port ||
-		!['m.media-amazon.com', 'images-na.ssl-images-amazon.com', 'images-eu.ssl-images-amazon.com', 'images.gr-assets.com', 'assets.hardcover.app'].includes(parsed.hostname)) {
+		!['m.media-amazon.com', 'images-na.ssl-images-amazon.com', 'images-eu.ssl-images-amazon.com', 'images.gr-assets.com', 'assets.hardcover.app', 'assets.podiumentertainment.com', 'soundbooththeater.com', 'aethonbooks.com', 'portal-books.com'].includes(parsed.hostname)) {
 		throw new Error('Cover URL is not on an approved source image host.');
 	}
 	const response = await request(url, { signal: AbortSignal.timeout(20_000), redirect: 'error' });
@@ -76,9 +76,49 @@ export interface VisionResult {
 	usage: { input_tokens: number; output_tokens: number };
 }
 
-export async function observeCover(image: { data: Buffer; mime: string }, options: {
-	apiKey?: string; model?: string; fetch?: typeof fetch; sleep?: (ms: number) => Promise<void>
-} = {}): Promise<VisionResult> {
+/** Fixed, safe messages only: provider text must never become a CLI error. */
+export class VisionResponseError extends Error {}
+
+export function validateVisionUsage(value: unknown): VisionResult['usage'] {
+	const usage = value as Partial<VisionResult['usage']> | null;
+	if (!usage || ![usage.input_tokens, usage.output_tokens].every(n => Number.isSafeInteger(n) && Number(n) >= 0)) {
+		throw new VisionResponseError('OpenAI omitted valid token usage.');
+	}
+	return { input_tokens: usage.input_tokens!, output_tokens: usage.output_tokens! };
+}
+
+/** Revalidate retained wire text without issuing another request. */
+export function parseVisionResponse(responseText: string): VisionResult {
+	let data: Record<string, unknown>;
+	try { data = JSON.parse(responseText); } catch { throw new VisionResponseError('OpenAI returned invalid JSON.'); }
+	if (!data || typeof data !== 'object' || data.status !== 'completed' || !Array.isArray(data.output) ||
+		typeof data.model !== 'string' || !data.model.trim()) throw new VisionResponseError('OpenAI cover assessment was incomplete.');
+	const parts: { type: string; text?: unknown }[] = [];
+	for (const item of data.output) {
+		if (!item || typeof item !== 'object' || (item.content !== undefined && !Array.isArray(item.content))) {
+			throw new VisionResponseError('OpenAI returned an invalid cover assessment.');
+		}
+		for (const part of item.content ?? []) {
+			if (!part || typeof part !== 'object' || typeof part.type !== 'string') throw new VisionResponseError('OpenAI returned an invalid cover assessment.');
+			parts.push(part);
+		}
+	}
+	if (parts.some(p => p.type === 'refusal')) throw new VisionResponseError('OpenAI declined to assess this cover; it remains unclassified.');
+	const output = parts.filter(p => p.type === 'output_text');
+	if (output.some(p => typeof p.text !== 'string')) throw new VisionResponseError('OpenAI returned an invalid cover assessment.');
+	let observation: CoverObservation;
+	try { observation = validateObservation(JSON.parse(output.map(p => p.text).join(''))); }
+	catch { throw new VisionResponseError('OpenAI returned an invalid cover assessment.'); }
+	return { model: data.model, observation, usage: validateVisionUsage(data.usage) };
+}
+
+export interface VisionOptions {
+	apiKey?: string; model?: string; fetch?: typeof fetch; sleep?: (ms: number) => Promise<void>;
+	/** Commit this private wire response before any JSON or assessment validation. */
+	onResponse?: (responseText: string) => void | Promise<void>;
+}
+
+export async function observeCover(image: { data: Buffer; mime: string }, options: VisionOptions = {}): Promise<VisionResult> {
 	const key = options.apiKey ?? process.env.OPENAI_API_KEY;
 	if (!key) throw new Error('Set OPENAI_API_KEY in the ignored .env file to assess covers.');
 	const request = options.fetch ?? fetch;
@@ -107,16 +147,12 @@ export async function observeCover(image: { data: Buffer; mime: string }, option
 			}
 			throw new Error(`OpenAI cover assessment returned HTTP ${response.status}. No assessment was stored.`);
 		}
-		let data: { status: string; model: string; output: { type: string; content?: { type: string; text?: string }[] }[]; usage: VisionResult['usage'] };
-		try { data = await response.json(); } catch { throw new Error('OpenAI returned invalid JSON. No assessment was stored.'); }
-		if (data.status !== 'completed' || !Array.isArray(data.output) || !data.model) throw new Error('OpenAI cover assessment was incomplete.');
-		const parts = data.output.flatMap(item => item.content ?? []);
-		if (parts.some(p => p.type === 'refusal')) throw new Error('OpenAI declined to assess this cover; it remains unclassified.');
-		const text = parts.filter(p => p.type === 'output_text').map(p => p.text ?? '').join('');
-		let observation: CoverObservation;
-		try { observation = validateObservation(JSON.parse(text)); } catch { throw new Error('OpenAI returned an invalid cover assessment.'); }
-		if (!data.usage || ![data.usage.input_tokens, data.usage.output_tokens].every(n => Number.isInteger(n) && n >= 0)) throw new Error('OpenAI omitted token usage.');
-		return { model: data.model, observation, usage: data.usage };
+		let responseText: string;
+		try { responseText = await response.text(); } catch { throw new Error('OpenAI cover response could not be read.'); }
+		// This callback is deliberately outside the network retry block. A save or
+		// validation failure must not silently buy the same response again.
+		await options.onResponse?.(responseText);
+		return parseVisionResponse(responseText);
 	}
 	throw new Error('OpenAI cover retries exhausted.');
 }

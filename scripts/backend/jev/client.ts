@@ -11,8 +11,8 @@ const bounded = (value: unknown, max = 1): value is number => typeof value === '
 export function validateResponse(data: unknown, questions: Record<string, Question>): JevResponse {
 	if (!data || typeof data !== 'object') throw new Error('Jev returned an invalid response.');
 	const response = data as JevResponse;
-	if (typeof response.model !== 'string' || !response.answers || !response.usage ||
-		!bounded(response.usage.input_tokens, Number.MAX_SAFE_INTEGER) || !bounded(response.usage.output_tokens, Number.MAX_SAFE_INTEGER)) throw new Error('Jev returned incomplete response metadata.');
+	if (typeof response.model !== 'string' || !response.model.trim() || !response.answers || !response.usage ||
+		![response.usage.input_tokens, response.usage.output_tokens].every(n => Number.isSafeInteger(n) && n >= 0)) throw new Error('Jev returned incomplete response metadata.');
 	for (const [id, question] of Object.entries(questions)) {
 		const answer = response.answers[id];
 		if (!answer || answer.type !== question.type) throw new Error(`Jev omitted or changed answer ${id}.`);
@@ -28,8 +28,17 @@ export function validateResponse(data: unknown, questions: Record<string, Questi
 	return response;
 }
 
+/** Revalidate a privately retained HTTP response without making another request. */
+export function parseResponseText(text: string, questions: Record<string, Question>): JevResponse {
+	let data: unknown;
+	try { data = JSON.parse(text); } catch { throw new Error('Jev returned invalid JSON.'); }
+	return validateResponse(data, questions);
+}
+
 export async function evaluate(state: unknown, questions: Record<string, Question>, options: {
-	apiKey?: string; model?: string; fetch?: typeof fetch; sleep?: (ms: number) => Promise<void>
+	apiKey?: string; model?: string; fetch?: typeof fetch; sleep?: (ms: number) => Promise<void>;
+	/** Commit a successful HTTP response before parsing or validating its paid contents. */
+	onResponse?: (text: string) => void | Promise<void>;
 } = {}): Promise<JevResponse> {
 	const key = options.apiKey ?? process.env.TYPESAFE_API_KEY;
 	if (!key) throw new Error('Set TYPESAFE_API_KEY in the ignored .env file to run Jev enrichment.');
@@ -49,9 +58,11 @@ export async function evaluate(state: unknown, questions: Record<string, Questio
 			continue;
 		}
 		if (response.ok) {
-			let data: unknown;
-			try { data = await response.json(); } catch { throw new Error('Jev returned invalid JSON. No assessment was stored.'); }
-			return validateResponse(data, questions);
+			let text: string;
+			try { text = await response.text(); } catch { throw new Error('Jev response could not be read.'); }
+			// Saving/validation errors are deliberately outside the network retry block.
+			await options.onResponse?.(text);
+			return parseResponseText(text, questions);
 		}
 		if ([429, 500, 502, 503, 504, 529].includes(response.status) && attempt < 2) {
 			const header = response.headers.get('retry-after');

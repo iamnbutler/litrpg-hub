@@ -20,6 +20,7 @@ export async function backupCatalog(db: Database.Database, directory: string, as
 	let books = 0;
 	try {
 		if (verification.pragma('quick_check',{ simple:true }) !== 'ok') throw new Error('Catalog backup failed the SQLite integrity check.');
+		if ((verification.pragma('foreign_key_check') as unknown[]).length) throw new Error('Catalog backup has broken references; repair or quarantine the orphaned evidence before archiving.');
 		books = (verification.prepare('SELECT COUNT(*) AS n FROM books').get() as { n: number }).n;
 	} finally { verification.close(); }
 	const files: { path: string; bytes: number; sha256: string }[] = [];

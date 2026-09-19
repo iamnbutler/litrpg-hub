@@ -3,7 +3,7 @@
 	const paths: Record<string, string> = {
 		book: 'M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14',
 		search: 'M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',
-		arrow: 'M4 12h16m-6-6 6 6-6 6', plus: 'M12 5v14M5 12h14', check: 'm5 12 4 4L19 6',
+		arrow: 'M4 12h16m-6-6 6 6-6 6', back: 'M20 12H4m6 6-6-6 6-6', plus: 'M12 5v14M5 12h14', check: 'm5 12 4 4L19 6',
 		bookmark: 'M6 3h12v18l-6-4-6 4V3Z', calendar: 'M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2ZM7 2v6m10-6v6M3 11h18',
 		sparkles: 'm12 3 2.3 6.7L21 12l-6.7 2.3L12 21l-2.3-6.7L3 12l6.7-2.3L12 3ZM21 2v4m-2-2h4',
 		filter: 'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M9 15v6',

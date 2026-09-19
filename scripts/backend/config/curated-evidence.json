@@ -1,0 +1,2934 @@
+[
+  {
+    "seriesId": "dungeon-crawler-carl",
+    "sourceUrl": "https://www.penguinrandomhouse.com/books/812016/this-inevitable-ruin-by-matt-dinniman/",
+    "observedAt": "2026-09-19T02:33:18Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "This Inevitable Ruin",
+      "series": "Dungeon Crawler Carl",
+      "number": 7,
+      "author": "Matt Dinniman",
+      "description": "In book seven, Carl and Donut reach the ninth floor's Faction Wars, an army-scale contest for control of a central castle. Rich alien leaders enter with established factions, but the crawlers now field their own army. Self-aware NPCs form another independent force, and battlefield deaths are permanent for every participant. Carl's group must navigate alliances, rival armies, and betrayal while the war is broadcast as entertainment. A rule that permits only one of Donut and Katia to leave adds a personal conflict to the campaign.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "released",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": []
+    }
+  },
+  {
+    "seriesId": "dungeon-crawler-carl",
+    "sourceUrl": "https://www.penguinrandomhouse.com/books/812017/a-parade-of-horribles-by-matt-dinniman/",
+    "observedAt": "2026-09-19T02:33:18Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "A Parade of Horribles",
+      "series": "Dungeon Crawler Carl",
+      "number": 8,
+      "author": "Matt Dinniman",
+      "description": "Book eight follows Carl and Donut onto the tenth floor after Faction Wars. The new challenge is a sequence of vehicle races: survive each course, choose an upgrade, and face a harder track. The apparent simplicity conceals growing system glitches and uncertainty about the eleventh floor, which the dungeon AI calls A Parade of Horribles. Carl resents the restrictive rules and begins developing his own dangerous plan. He keeps it from his friends to avoid alerting the AI, while the possible consequences extend beyond his and Donut's survival.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "released",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": []
+    }
+  },
+  {
+    "seriesId": "azarinth-healer",
+    "sourceUrl": "https://books.apple.com/us/audiobook/azarinth-healer-book-two-unabridged/id1683012304",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "The publisher bibliography lists volume 2. Its Audible author link leads to an exact product link; the public product API independently matches title, author, series sequence 2, narrator, date, and runtime.",
+      "The exact Audible product webpage returned HTTP 503 in the web reader. Its public product API and Audible US author/series pages remained accessible; those support the audio metadata.",
+      "Apple Books displays 19:23, while Audible US reports 19:22 / 1162 minutes. The stored runtime is specific to the Audible US listing."
+    ],
+    "observedTitle": "Azarinth Healer: Book Two",
+    "descriptionSourceAccess": "public-product-page",
+    "audioIdentityEvidence": {
+      "asin": "B0C2QQNGWT",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0C2QQNGWT?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Azarinth Healer Book Two",
+      "series": "Azarinth Healer",
+      "number": 2,
+      "author": "Rhaegar",
+      "description": "Shaken by the Taleen Praetorians, Ilea travels south to seek a place among the Shadow's Hand. The mercenary order offers experienced fighters, potential companions, and the punishing practice she needs to improve her resistance skills. She hopes this new team will give her time to recover while growing harder to kill. Yet trouble is spreading across Elos, and the dangers awaiting the group may exceed anything their training can prepare them to face.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Andrea Parsneau",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Azarinth-Healer-Book-Two-Audiobook/B0C2QQNGWT",
+          "format": "audiobook",
+          "asin": "B0C2QQNGWT"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "azarinth-healer",
+    "sourceUrl": "https://books.apple.com/us/audiobook/azarinth-healer-book-three-a-litrpg-adventure-unabridged/id1720265105",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "The publisher bibliography lists volume 3. Its Audible author link leads to an exact product link; the public product API independently matches title, author, series sequence 3, narrator, date, and runtime.",
+      "The exact Audible product webpage returned HTTP 503 in the web reader. Its public product API and Audible US author/series pages remained accessible; those support the audio metadata.",
+      "Apple Books displays 29:24, while Audible US reports 29:23 / 1763 minutes. The stored runtime is specific to the Audible US listing."
+    ],
+    "observedTitle": "Azarinth Healer: Book Three",
+    "descriptionSourceAccess": "public-product-page",
+    "audioIdentityEvidence": {
+      "asin": "B0CPQ4Y33K",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0CPQ4Y33K?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Azarinth Healer Book Three",
+      "series": "Azarinth Healer",
+      "number": 3,
+      "author": "Rhaegar",
+      "description": "After the demon invasion, Ilea escorts a mind weaver toward a new home in Riverwatch and catches up with friends. Her return to Ravenhall brings news that someone she cares about is in danger. The search takes her through the Empire and into remote ruins and lands beyond human settlements. Alongside familiar allies and unusual new companions, she must gain strength and confront enemies whose challenges demand more than her usual enthusiasm for a fight.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Andrea Parsneau",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Azarinth-Healer-Book-Three-Audiobook/B0CPQ4Y33K",
+          "format": "audiobook",
+          "asin": "B0CPQ4Y33K"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "azarinth-healer",
+    "sourceUrl": "https://books.apple.com/us/audiobook/azarinth-healer-book-four-a-litrpg-adventure-unabridged/id1779168661",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "The publisher bibliography lists volume 4. Audible's exact product page provides the volume-specific publisher copy, author, narrator, and series position; its US series page and exact public product API agree on date and runtime."
+    ],
+    "observedTitle": "Azarinth Healer: Book Four",
+    "descriptionSourceAccess": "public-product-page",
+    "audioIdentityEvidence": {
+      "asin": "B0DMQ2WP9F",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0DMQ2WP9F?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Azarinth Healer Book Four",
+      "series": "Azarinth Healer",
+      "number": 4,
+      "author": "Rhaegar",
+      "description": "A return to Ravenhall promises Ilea a break after months in the North, though her idea of rest still includes treasure hunting and resistance training. A visit to Riverwatch reconnects her with friends and enemies before Hallowfort calls her back. Corruption is emerging from the Descent, and an expedition has gone missing. Searching for its members leads her into an ancient dungeon, where buried secrets and dangerous opponents test how far her growing abilities can take her.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Andrea Parsneau",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Azarinth-Healer-Book-Four-Audiobook/B0DMQ2WP9F",
+          "format": "audiobook",
+          "asin": "B0DMQ2WP9F"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "azarinth-healer",
+    "sourceUrl": "https://www.audible.com/pd/Azarinth-Healer-Book-Five-Audiobook/B0F2TRCNNC",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "The publisher bibliography lists volume 5. Audible's US series page supplies its exact product link, date, and runtime; the public product API independently matches author, series sequence 5, narrator, date, and runtime.",
+      "The exact audiobook title uses a comma before Book Five. The API author field names Rhaegar but does not include the author ASIN, unlike the other checked Azarinth Healer volumes."
+    ],
+    "observedTitle": "Azarinth Healer, Book Five",
+    "descriptionSourceAccess": "public-product-page",
+    "audioIdentityEvidence": {
+      "asin": "B0F2TRCNNC",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0F2TRCNNC?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Azarinth Healer Book Five",
+      "series": "Azarinth Healer",
+      "number": 5,
+      "author": "Rhaegar",
+      "description": "Ilea returns from the Descent determined to prepare for a third class. In the south, she helps Trian train the first Medic Sentinels, sharing the demanding methods that strengthen her own fighting and resistance skills. Teaching fills her days, while dangerous dungeons provide opportunities to keep advancing. An invitation from a powerful order interrupts this routine and draws her into a kingdom losing a war, where new allies and abilities may be needed to understand the conflict.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Andrea Parsneau",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Azarinth-Healer-Book-Five-Audiobook/B0F2TRCNNC",
+          "format": "audiobook",
+          "asin": "B0F2TRCNNC"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-path-of-ascension",
+    "sourceUrl": "https://books.apple.com/us/audiobook/the-path-of-ascension-2-unabridged/id1670247561",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Aethon's current series page omits volumes 2 through 4. This volume's sequence is instead independently supported by the Audible US author/series listing and the exact public product API, both naming C. Mantis.",
+      "This ASIN identifies the individual English unabridged volume 2, not the Books 1-3.5 bundle, a light-novel subdivision, or another author's similarly named series.",
+      "The exact Audible product webpage returned HTTP 503 in the web reader; its public product API and US author/series listings remained accessible.",
+      "Apple Books displays a storefront release date of 2026-02-13 and a length of 17:39. Those values are not substituted for the Audible US release date 2023-02-07 and runtime 17:38 / 1058 minutes; Apple is the description source only."
+    ],
+    "observedTitle": "The Path of Ascension 2",
+    "descriptionSourceAccess": "public-product-page",
+    "audioIdentityEvidence": {
+      "asin": "B0BTZB2RXY",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0BTZB2RXY?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "The Path of Ascension 2",
+      "series": "The Path of Ascension",
+      "number": 2,
+      "author": "C. Mantis",
+      "description": "Matt, Liz, and Aster head into the expanding frontier with an unexpected temporary teammate. Their next destination is an unexplored planet whose hazards are still unknown to them. As they continue along the Path of Ascension, the group must face the uncertainty of unfamiliar territory and find the persistence to keep advancing. This second installment blends LitRPG adventure with cultivation fantasy.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "J.S. Arquin",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Path-of-Ascension-2-Audiobook/B0BTZB2RXY",
+          "format": "audiobook",
+          "asin": "B0BTZB2RXY"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-path-of-ascension",
+    "sourceUrl": "https://www.audible.com/pd/The-Path-of-Ascension-3-Audiobook/B0C37WLDGX",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Aethon's current series page omits volumes 2 through 4. This volume's sequence is instead independently supported by the Audible US author/series listing and the exact public product API, both naming C. Mantis.",
+      "This ASIN identifies the individual English unabridged volume 3, not the Books 1-3.5 bundle, a light-novel subdivision, or another author's similarly named series.",
+      "The exact Audible product webpage returned HTTP 503 when directly opened. A targeted web search for this title surfaced its full indexed publisher description at the same product URL, including the rival kingdoms and Empire premise. The public product API supports identity, audio metadata, and the opening premise but returns only an abbreviated merchandising summary.",
+      "The synopsis therefore has an explicitly recorded indexed-source limitation for reviewer consideration; no authenticated page, proxy, access-control workaround, or Audible catalog search endpoint was used."
+    ],
+    "observedTitle": "The Path of Ascension 3",
+    "descriptionSourceAccess": "search-indexed-product-copy; direct-page-fetch-returned-http-503",
+    "audioIdentityEvidence": {
+      "asin": "B0C37WLDGX",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0C37WLDGX?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "The Path of Ascension 3",
+      "series": "The Path of Ascension",
+      "number": 3,
+      "author": "C. Mantis",
+      "description": "Matt's search for treasure has already unleashed trouble involving golems and a flying rift. Now he, Liz, and Aster are pulled into war between two kingdoms competing for entry into the Empire. Travelers on the Path are invited to choose a side, gaining experience and rewards through combat. The team's pursuit of advancement becomes entangled with a kingdom's survival, while the struggle unfolds under close scrutiny and may shape the course of their future progress.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "J.S. Arquin",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Path-of-Ascension-3-Audiobook/B0C37WLDGX",
+          "format": "audiobook",
+          "asin": "B0C37WLDGX"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-path-of-ascension",
+    "sourceUrl": "https://books.apple.com/us/audiobook/the-path-of-ascension-4-a-litrpg-adventure-unabridged/id1706389807",
+    "observedAt": "2026-09-19T02:48:59Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Aethon's current series page omits volumes 2 through 4. This volume's sequence is instead independently supported by the Audible US author/series listing and the exact public product API, both naming C. Mantis.",
+      "This ASIN identifies the individual English unabridged volume 4, not a light-novel subdivision or another author's similarly named series.",
+      "The exact Audible product webpage returned HTTP 503 in the web reader. Its public product API and Audible US author/series pages remained accessible; those support the audio metadata.",
+      "Apple Books displays 16:58, while Audible US reports 16:57 / 1017 minutes. The stored runtime is specific to the Audible US listing."
+    ],
+    "observedTitle": "The Path of Ascension 4",
+    "descriptionSourceAccess": "public-product-page",
+    "audioIdentityEvidence": {
+      "asin": "B0CHJZNBY1",
+      "metadataUrl": "https://api.audible.com/1.0/catalog/products/B0CHJZNBY1?response_groups=product_desc,product_attrs,contributors,series,media",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "The Path of Ascension 4",
+      "series": "The Path of Ascension",
+      "number": 4,
+      "author": "C. Mantis",
+      "description": "After the vassal war, Matt, Liz, and Aster begin working under Luna, a manager who expects relentless effort and can end their place on the Path. A Tier 10 tournament adds pressure to prepare, but training is only part of the challenge. The group must also contend with the plans of a Tier 40 figure experienced in producing Ascenders. Their continued advancement depends on surviving demanding supervision and ambitions that extend beyond their own.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "J.S. Arquin",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Path-of-Ascension-4-Audiobook/B0CHJZNBY1",
+          "format": "audiobook",
+          "asin": "B0CHJZNBY1"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Unsouled-Audiobook/B07XTNWRFF",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XTNWRFF",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Unsouled",
+      "series": "Cradle",
+      "number": 1,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Unsouled-Audiobook/B07XTNWRFF",
+          "format": "audiobook",
+          "asin": "B07XTNWRFF"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Soulsmith-Audiobook/B07XLNPMV1",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XLNPMV1",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Soulsmith",
+      "series": "Cradle",
+      "number": 2,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Soulsmith-Audiobook/B07XLNPMV1",
+          "format": "audiobook",
+          "asin": "B07XLNPMV1"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Blackflame-Audiobook/B07XLNPXD7",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XLNPXD7",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Blackflame",
+      "series": "Cradle",
+      "number": 3,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Blackflame-Audiobook/B07XLNPXD7",
+          "format": "audiobook",
+          "asin": "B07XLNPXD7"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Skysworn-Audiobook/B07XTPJ6ND",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XTPJ6ND",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Skysworn",
+      "series": "Cradle",
+      "number": 4,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Skysworn-Audiobook/B07XTPJ6ND",
+          "format": "audiobook",
+          "asin": "B07XTPJ6ND"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Ghostwater-Audiobook/B07XLNQHX5",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XLNQHX5",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Ghostwater",
+      "series": "Cradle",
+      "number": 5,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Ghostwater-Audiobook/B07XLNQHX5",
+          "format": "audiobook",
+          "asin": "B07XLNQHX5"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Underlord-Audiobook/B07XTPGLDN",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XTPGLDN",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Underlord",
+      "series": "Cradle",
+      "number": 6,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Underlord-Audiobook/B07XTPGLDN",
+          "format": "audiobook",
+          "asin": "B07XTPGLDN"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Uncrowned-Audiobook/B07XTNL49R",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B07XTNL49R",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Uncrowned",
+      "series": "Cradle",
+      "number": 7,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Uncrowned-Audiobook/B07XTNL49R",
+          "format": "audiobook",
+          "asin": "B07XTNL49R"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Wintersteel-Audiobook/B08J8BJV3T",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B08J8BJV3T",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Wintersteel",
+      "series": "Cradle",
+      "number": 8,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Wintersteel-Audiobook/B08J8BJV3T",
+          "format": "audiobook",
+          "asin": "B08J8BJV3T"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Bloodline-Audiobook/B08X68FQ46",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B08X68FQ46",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Bloodline",
+      "series": "Cradle",
+      "number": 9,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Bloodline-Audiobook/B08X68FQ46",
+          "format": "audiobook",
+          "asin": "B08X68FQ46"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Reaper-Audiobook/B09JPFLPVX",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B09JPFLPVX",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Reaper",
+      "series": "Cradle",
+      "number": 10,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Reaper-Audiobook/B09JPFLPVX",
+          "format": "audiobook",
+          "asin": "B09JPFLPVX"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Dreadgod-Audiobook/B0B3KV1WLG",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B0B3KV1WLG",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Dreadgod",
+      "series": "Cradle",
+      "number": 11,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Dreadgod-Audiobook/B0B3KV1WLG",
+          "format": "audiobook",
+          "asin": "B0B3KV1WLG"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "cradle",
+    "sourceUrl": "https://www.audible.com/pd/Waybound-Audiobook/B0BXQN4QB9",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index reached through author-linked evidence."
+    ],
+    "bibliographySourceUrl": "https://www.willwight.com/cradle.html",
+    "retailerSeriesUrl": "https://www.audible.com/series/Cradle-Audiobooks/B07GVRN95T",
+    "audioIdentityEvidence": {
+      "asin": "B0BXQN4QB9",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Waybound",
+      "series": "Cradle",
+      "number": 12,
+      "author": "Will Wight",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Waybound-Audiobook/B0BXQN4QB9",
+          "format": "audiobook",
+          "asin": "B0BXQN4QB9"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ripple-system",
+    "sourceUrl": "https://www.audible.com/pd/Shadeslinger-Audiobook/B08V4MTZTP",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index linked from the publisher-selected retailer author page."
+    ],
+    "bibliographySourceUrl": "https://portal-books.com/author/kyle-kirrin/",
+    "retailerSeriesUrl": "https://www.audible.com/series/Ripple-System-Audiobooks/B09GXD7NNN",
+    "audioIdentityEvidence": {
+      "asin": "B08V4MTZTP",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Shadeslinger",
+      "series": "The Ripple System",
+      "number": 1,
+      "author": "Kyle Kirrin",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Shadeslinger-Audiobook/B08V4MTZTP",
+          "format": "audiobook",
+          "asin": "B08V4MTZTP"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ripple-system",
+    "sourceUrl": "https://www.audible.com/pd/Black-Sand-Baron-Audiobook/B09GW6QH6B",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index linked from the publisher-selected retailer author page."
+    ],
+    "bibliographySourceUrl": "https://portal-books.com/author/kyle-kirrin/",
+    "retailerSeriesUrl": "https://www.audible.com/series/Ripple-System-Audiobooks/B09GXD7NNN",
+    "audioIdentityEvidence": {
+      "asin": "B09GW6QH6B",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Black Sand Baron",
+      "series": "The Ripple System",
+      "number": 2,
+      "author": "Kyle Kirrin",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Black-Sand-Baron-Audiobook/B09GW6QH6B",
+          "format": "audiobook",
+          "asin": "B09GW6QH6B"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ripple-system",
+    "sourceUrl": "https://www.audible.com/pd/Gilded-Ghost-Audiobook/B0B91LZ9GB",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index linked from the publisher-selected retailer author page."
+    ],
+    "bibliographySourceUrl": "https://portal-books.com/author/kyle-kirrin/",
+    "retailerSeriesUrl": "https://www.audible.com/series/Ripple-System-Audiobooks/B09GXD7NNN",
+    "audioIdentityEvidence": {
+      "asin": "B0B91LZ9GB",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Gilded Ghost",
+      "series": "The Ripple System",
+      "number": 3,
+      "author": "Kyle Kirrin",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Gilded-Ghost-Audiobook/B0B91LZ9GB",
+          "format": "audiobook",
+          "asin": "B0B91LZ9GB"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ripple-system",
+    "sourceUrl": "https://www.audible.com/pd/Shattersoul-Audiobook/B0C4V86KCK",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index linked from the publisher-selected retailer author page."
+    ],
+    "bibliographySourceUrl": "https://portal-books.com/author/kyle-kirrin/",
+    "retailerSeriesUrl": "https://www.audible.com/series/Ripple-System-Audiobooks/B09GXD7NNN",
+    "audioIdentityEvidence": {
+      "asin": "B0C4V86KCK",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Shattersoul",
+      "series": "The Ripple System",
+      "number": 4,
+      "author": "Kyle Kirrin",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Shattersoul-Audiobook/B0C4V86KCK",
+          "format": "audiobook",
+          "asin": "B0C4V86KCK"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ripple-system",
+    "sourceUrl": "https://www.audible.com/pd/Emperors-End-Audiobook/B0D5DPFBXL",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index linked from the publisher-selected retailer author page."
+    ],
+    "bibliographySourceUrl": "https://portal-books.com/author/kyle-kirrin/",
+    "retailerSeriesUrl": "https://www.audible.com/series/Ripple-System-Audiobooks/B09GXD7NNN",
+    "audioIdentityEvidence": {
+      "asin": "B0D5DPFBXL",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Emperor’s End",
+      "series": "The Ripple System",
+      "number": 5,
+      "author": "Kyle Kirrin",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Emperors-End-Audiobook/B0D5DPFBXL",
+          "format": "audiobook",
+          "asin": "B0D5DPFBXL"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ripple-system",
+    "sourceUrl": "https://www.audible.com/pd/Lunatics-Landing-Audiobook/B0G1NFPC4M",
+    "observedAt": "2026-09-19T02:56:32Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Numbered product entry and exact product link on the Audible series index linked from the publisher-selected retailer author page."
+    ],
+    "bibliographySourceUrl": "https://portal-books.com/author/kyle-kirrin/",
+    "retailerSeriesUrl": "https://www.audible.com/series/Ripple-System-Audiobooks/B09GXD7NNN",
+    "audioIdentityEvidence": {
+      "asin": "B0G1NFPC4M",
+      "requiresExactVerification": true,
+      "marketplace": "US"
+    },
+    "book": {
+      "title": "Lunatic’s Landing",
+      "series": "The Ripple System",
+      "number": 6,
+      "author": "Kyle Kirrin",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "narrator": "Travis Baldree",
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Lunatics-Landing-Audiobook/B0G1NFPC4M",
+          "format": "audiobook",
+          "asin": "B0G1NFPC4M"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "mark-of-the-fool",
+    "sourceUrl": "https://www.reddit.com/r/ProgressionFantasy/comments/1bp4yio/mark_of_the_fool_5_audio_launches_today/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Mark of the Fool 5",
+      "series": "Mark of the Fool",
+      "number": 5,
+      "author": "J.M. Clarke",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0CXFHQGRL",
+          "format": "audiobook",
+          "asin": "B0CXFHQGRL"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/products/the-second-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Second Realm",
+      "series": "The Ten Realms",
+      "number": 2,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B07QGX9ZKW",
+          "format": "audiobook",
+          "asin": "B07QGX9ZKW"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-third-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Third Realm",
+      "series": "The Ten Realms",
+      "number": 3,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B07ZCMCPS4",
+          "format": "audiobook",
+          "asin": "B07ZCMCPS4"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/products/the-fourth-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Fourth Realm",
+      "series": "The Ten Realms",
+      "number": 4,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B08519T1V4",
+          "format": "audiobook",
+          "asin": "B08519T1V4"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-fifth-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Fifth Realm",
+      "series": "The Ten Realms",
+      "number": 5,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0922ZPQ1F",
+          "format": "audiobook",
+          "asin": "B0922ZPQ1F"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-sixth-realm-part-1-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Sixth Realm Part 1",
+      "series": "The Ten Realms",
+      "number": 6,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B095XBBX63",
+          "format": "audiobook",
+          "asin": "B095XBBX63"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-sixth-realm-part-2-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Sixth Realm Part 2",
+      "series": "The Ten Realms",
+      "number": 7,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B098BJKVS1",
+          "format": "audiobook",
+          "asin": "B098BJKVS1"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-seventh-realm-part-1-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Seventh Realm Part 1",
+      "series": "The Ten Realms",
+      "number": 8,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B09J1LL51Y",
+          "format": "audiobook",
+          "asin": "B09J1LL51Y"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-seventh-realm-part-2-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Seventh Realm Part 2",
+      "series": "The Ten Realms",
+      "number": 9,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B09QDNRF7C",
+          "format": "audiobook",
+          "asin": "B09QDNRF7C"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-eighth-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Eighth Realm",
+      "series": "The Ten Realms",
+      "number": 10,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0B1FSN432",
+          "format": "audiobook",
+          "asin": "B0B1FSN432"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-ninth-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Ninth Realm",
+      "series": "The Ten Realms",
+      "number": 11,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0BDMNW8BC",
+          "format": "audiobook",
+          "asin": "B0BDMNW8BC"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-ten-realms",
+    "sourceUrl": "https://michaelchatfield.com/collections/paperback-books/products/the-tenth-realm-book",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Tenth Realm",
+      "series": "The Ten Realms",
+      "number": 12,
+      "author": "Michael Chatfield",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0BSHFYTNZ",
+          "format": "audiobook",
+          "asin": "B0BSHFYTNZ"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Precipice",
+      "series": "Awaken Online",
+      "number": 2,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B06XRQK92M",
+          "format": "audiobook",
+          "asin": "B06XRQK92M"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Retribution",
+      "series": "Awaken Online",
+      "number": 2.5,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B076ZZP3DK",
+          "format": "audiobook",
+          "asin": "B076ZZP3DK"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Evolution",
+      "series": "Awaken Online",
+      "number": 3,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B07DWDD8L9",
+          "format": "audiobook",
+          "asin": "B07DWDD8L9"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Apathy (Side Quest)",
+      "series": "Awaken Online",
+      "number": 3.5,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B07G4FKZN1",
+          "format": "audiobook",
+          "asin": "B07G4FKZN1"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Dominion",
+      "series": "Awaken Online",
+      "number": 4,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B07RGXKC66",
+          "format": "audiobook",
+          "asin": "B07RGXKC66"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Unity",
+      "series": "Awaken Online",
+      "number": 4.5,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B07V81FKZW",
+          "format": "audiobook",
+          "asin": "B07V81FKZW"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Hellion",
+      "series": "Awaken Online",
+      "number": 5,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B096L11M5V",
+          "format": "audiobook",
+          "asin": "B096L11M5V"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Awaken Online: Happy",
+      "series": "Awaken Online",
+      "number": 5.5,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B09PLPF53R",
+          "format": "audiobook",
+          "asin": "B09PLPF53R"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Armageddon",
+      "series": "Awaken Online",
+      "number": 6,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0BK9YTLWM",
+          "format": "audiobook",
+          "asin": "B0BK9YTLWM"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Timeless",
+      "series": "Awaken Online",
+      "number": 7,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0CHBPTY2Q",
+          "format": "audiobook",
+          "asin": "B0CHBPTY2Q"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "awaken-online",
+    "sourceUrl": "https://travisbagwell.com/books/",
+    "observedAt": "2026-09-19T03:15:48.096Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Crucible",
+      "series": "Awaken Online",
+      "number": 8,
+      "author": "Travis Bagwell",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "print",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0GKH62Z52",
+          "format": "audiobook",
+          "asin": "B0GKH62Z52"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "noobtown",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/1774240122?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "observedAt": "2026-09-19T03:33:00.154760+00:00",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Known first volume identified from the publisher bibliography and Apple Books audiobook listing; exact public audio product independently confirms Ryan Rimmel, Noobtown sequence 1, and Johnathan McClain.",
+      "The 2019 Podium and 2026 HarperVoyager products have distinct identifiers and runtimes despite sharing a narrator. Preserve both editions; audio facts are promoted by the exact-product verifier."
+    ],
+    "book": {
+      "title": "The Mayor of Noobtown",
+      "series": "Noobtown",
+      "number": 1,
+      "author": "Ryan Rimmel",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/1774240122",
+          "format": "audiobook",
+          "asin": "1774240122"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "noobtown",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B0HF6NRJ6R?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "observedAt": "2026-09-19T03:33:00.154760+00:00",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Known first volume identified from the publisher bibliography and Apple Books audiobook listing; exact public audio product independently confirms Ryan Rimmel, Noobtown sequence 1, and Johnathan McClain.",
+      "The 2019 Podium and 2026 HarperVoyager products have distinct identifiers and runtimes despite sharing a narrator. Preserve both editions; audio facts are promoted by the exact-product verifier."
+    ],
+    "book": {
+      "title": "The Mayor of Noobtown",
+      "series": "Noobtown",
+      "number": 1,
+      "author": "Ryan Rimmel",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "audiobook",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0HF6NRJ6R",
+          "format": "audiobook",
+          "asin": "B0HF6NRJ6R"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "battle-mage-farmer",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B0C9SNYNLT?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "observedAt": "2026-09-19T03:49:10.574Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Preservation",
+      "series": "Battle Mage Farmer",
+      "number": 6,
+      "author": "Seth Ring",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Preservation-Audiobook/B0C9SNYNLT",
+          "format": "audiobook",
+          "asin": "B0C9SNYNLT"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-legend-of-randidly-ghosthound",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B0GLSXS3NV?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "observedAt": "2026-09-19T03:49:10.574Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Legend of Randidly Ghosthound 13",
+      "series": "The Legend of Randidly Ghosthound",
+      "number": 13,
+      "author": "Noret Flood",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0GLSXS3NV",
+          "format": "audiobook",
+          "asin": "B0GLSXS3NV"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-legend-of-randidly-ghosthound",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B0H7MF1JTR?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "observedAt": "2026-09-19T03:49:10.574Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Legend of Randidly Ghosthound 14",
+      "series": "The Legend of Randidly Ghosthound",
+      "number": 14,
+      "author": "Noret Flood",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Legend-of-Randidly-Ghosthound-14-Audiobook/B0H7MF1JTR",
+          "format": "audiobook",
+          "asin": "B0H7MF1JTR"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B0GK2Y3SHV?response_groups=product_desc,product_attrs,contributors,series,media",
+    "observedAt": "2026-09-19T03:21:54.506Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Dreams of Power",
+      "series": "The Grand Game",
+      "number": 9,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B0GK2Y3SHV",
+          "format": "audiobook",
+          "asin": "B0GK2Y3SHV"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/series/Grand-Game-Audiolibro/B09DCNL8MW",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Grand Game",
+      "series": "The Grand Game",
+      "number": 1,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/The-Grand-Game-Book-1-Audiolibro/B09D8K6HHB",
+          "format": "audiobook",
+          "asin": "B09D8K6HHB"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/series/Grand-Game-Audiolibro/B09DCNL8MW",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Way of the Wolf",
+      "series": "The Grand Game",
+      "number": 2,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/Way-of-the-Wolf-Audiolibro/B0D4RD45MV",
+          "format": "audiobook",
+          "asin": "B0D4RD45MV"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/pd/World-Nexus-Audiolibro/B0D4RCPJF2",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The World Nexus",
+      "series": "The Grand Game",
+      "number": 3,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/World-Nexus-Audiolibro/B0D4RCPJF2",
+          "format": "audiobook",
+          "asin": "B0D4RCPJF2"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/pd/The-Grand-Game-Book-1-Audiolibro/B09D8K6HHB",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "House Wolf",
+      "series": "The Grand Game",
+      "number": 4,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/House-Wolf-Audiolibro/B0D4RD93T6",
+          "format": "audiobook",
+          "asin": "B0D4RD93T6"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/series/Grand-Game-Audiolibro/B09DCNL8MW",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Wolf in the Void",
+      "series": "The Grand Game",
+      "number": 5,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/Wolf-in-the-Void-Audiolibro/B0CN3YP6NG",
+          "format": "audiobook",
+          "asin": "B0CN3YP6NG"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/series/Grand-Game-Audiolibro/B09DCNL8MW",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "A Scion’s Duty",
+      "series": "The Grand Game",
+      "number": 6,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/A-Scions-Duty-Audiolibro/B0D6PLDQN8",
+          "format": "audiobook",
+          "asin": "B0D6PLDQN8"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/series/Grand-Game-Audiolibro/B09DCNL8MW",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Ancient Debts",
+      "series": "The Grand Game",
+      "number": 7,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/Ancient-Debts-Audiolibro/B0DFMYLX4D",
+          "format": "audiobook",
+          "asin": "B0DFMYLX4D"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-grand-game",
+    "sourceUrl": "https://www.audible.com/es_US/series/Grand-Game-Audiolibro/B09DCNL8MW",
+    "observedAt": "2026-09-19T04:04:47.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Lost Reclaimed",
+      "series": "The Grand Game",
+      "number": 8,
+      "author": "Tom Elliot",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/The-Lost-Reclaimed-Audiolibro/B0F3GQFPFC",
+          "format": "audiobook",
+          "asin": "B0F3GQFPFC"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Shade’s First Rule",
+      "series": "Divine Apostasy",
+      "number": 1,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Shades-First-Rule-A-Fantasy-LitRPG-Adventure-Audiobook/B087N77CJ3",
+          "format": "audiobook",
+          "asin": "B087N77CJ3"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Second Betrayal",
+      "series": "Divine Apostasy",
+      "number": 2,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Second-Betrayal-Audiobook/B088FZ1Q1P",
+          "format": "audiobook",
+          "asin": "B088FZ1Q1P"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Uru’s Third Temple",
+      "series": "Divine Apostasy",
+      "number": 3,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Urus-Third-Temple-A-Fantasy-LitRPG-Adventure-Audiobook/B08KWCLHSQ",
+          "format": "audiobook",
+          "asin": "B08KWCLHSQ"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Fourth Secret",
+      "series": "Divine Apostasy",
+      "number": 4,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Fourth-Secret-Audiobook/B093CRF7J4",
+          "format": "audiobook",
+          "asin": "B093CRF7J4"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Legion’s Fifth Vault",
+      "series": "Divine Apostasy",
+      "number": 5,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Legions-Fifth-Vault-Audiobook/B09JGV1P6W",
+          "format": "audiobook",
+          "asin": "B09JGV1P6W"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Sixth Rune",
+      "series": "Divine Apostasy",
+      "number": 6,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Sixth-Rune-Audiobook/B0BD9DSX24",
+          "format": "audiobook",
+          "asin": "B0BD9DSX24"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Shadow’s Seventh Step",
+      "series": "Divine Apostasy",
+      "number": 7,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Shadows-Seventh-Step-Audiobook/B0BWFSGTKC",
+          "format": "audiobook",
+          "asin": "B0BWFSGTKC"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Eighth Harmony",
+      "series": "Divine Apostasy",
+      "number": 8,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Eighth-Harmony-Audiobook/B0CBKVWNGJ",
+          "format": "audiobook",
+          "asin": "B0CBKVWNGJ"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Tarot’s Ninth Harbinger",
+      "series": "Divine Apostasy",
+      "number": 9,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Tarots-Ninth-Harbinger-Audiobook/B0CX9L4XDH",
+          "format": "audiobook",
+          "asin": "B0CX9L4XDH"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Tenth Muse",
+      "series": "Divine Apostasy",
+      "number": 10,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Tenth-Muse-Audiobook/B0DB2M9VKN",
+          "format": "audiobook",
+          "asin": "B0DB2M9VKN"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "Zealot’s Eleventh Crusade",
+      "series": "Divine Apostasy",
+      "number": 11,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Zealots-Eleventh-Crusade-Audiobook/B0DX2LTL1L",
+          "format": "audiobook",
+          "asin": "B0DX2LTL1L"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "divine-apostasy",
+    "sourceUrl": "https://www.audible.com/series/Divine-Apostasy-Audiobooks/B087QDM7M7",
+    "observedAt": "2026-09-19T04:03:28.910Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Twelfth Conclave",
+      "series": "Divine Apostasy",
+      "number": 12,
+      "author": "A. F. Kay",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Twelfth-Conclave-Audiobook/B0FYR3WDN5",
+          "format": "audiobook",
+          "asin": "B0FYR3WDN5"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/ritualist-signed-paperback",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Ritualist",
+    "observedSeriesSequence": 1,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B07BTHWMFF",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Ritualist",
+      "series": "The Completionist Chronicles",
+      "number": 1,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Ritualist-Audiobook/B07BTHWMFF",
+          "format": "audiobook",
+          "asin": "B07BTHWMFF"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/rexus-signed-hardcover-preorder",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Rexus: Side Quest",
+    "observedSeriesSequence": 3,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion.",
+      "The publisher canonical title is Rexus, book 3. The observed retailer title is Rexus: Side Quest, also book 3. Keep Raze at book 4."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B07XF5MS5F",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Rexus",
+      "series": "The Completionist Chronicles",
+      "number": 3,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Rexus-Side-Quest-Audiobook/B07XF5MS5F",
+          "format": "audiobook",
+          "asin": "B07XF5MS5F"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/raze-signed-hardcover-preorder",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Raze",
+    "observedSeriesSequence": 4,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "1977374573",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Raze",
+      "series": "The Completionist Chronicles",
+      "number": 4,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Raze-Audiobook/1977374573",
+          "format": "audiobook",
+          "asin": "1977374573"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/ruthless-signed-hardcover-preorder",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Ruthless",
+    "observedSeriesSequence": 5,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B08D6Z1YMC",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Ruthless",
+      "series": "The Completionist Chronicles",
+      "number": 5,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Ruthless-Audiobook/B08D6Z1YMC",
+          "format": "audiobook",
+          "asin": "B08D6Z1YMC"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/inflame-signed-hardcover-preorder",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Inflame",
+    "observedSeriesSequence": 6,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B08YFM1565",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Inflame",
+      "series": "The Completionist Chronicles",
+      "number": 6,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Inflame-Audiobook/B08YFM1565",
+          "format": "audiobook",
+          "asin": "B08YFM1565"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/invent-signed-hardcover-preorder",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Invent",
+    "observedSeriesSequence": 7,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0B88X9C6L",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Invent",
+      "series": "The Completionist Chronicles",
+      "number": 7,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Invent-Audiobook/B0B88X9C6L",
+          "format": "audiobook",
+          "asin": "B0B88X9C6L"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/implode-signed-hardcover-preorder",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Implode",
+    "observedSeriesSequence": 8,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0BH9CDQ2Q",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Implode",
+      "series": "The Completionist Chronicles",
+      "number": 8,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Implode-Audiobook/B0BH9CDQ2Q",
+          "format": "audiobook",
+          "asin": "B0BH9CDQ2Q"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/tenacity-signed-hardcover",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Tenacity",
+    "observedSeriesSequence": 9,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0CK4ZRWMY",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Tenacity",
+      "series": "The Completionist Chronicles",
+      "number": 9,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Tenacity-Audiobook/B0CK4ZRWMY",
+          "format": "audiobook",
+          "asin": "B0CK4ZRWMY"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/thesaurize-signed-hardcover",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Thesaurize",
+    "observedSeriesSequence": 10,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0CMR1XPQY",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Thesaurize",
+      "series": "The Completionist Chronicles",
+      "number": 10,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Thesaurize-Audiobook/B0CMR1XPQY",
+          "format": "audiobook",
+          "asin": "B0CMR1XPQY"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/thunderplump-signed-hardcover",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Thunderplump",
+    "observedSeriesSequence": 11,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0CPFXSNQL",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Thunderplump",
+      "series": "The Completionist Chronicles",
+      "number": 11,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Thunderplump-Audiobook/B0CPFXSNQL",
+          "format": "audiobook",
+          "asin": "B0CPFXSNQL"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/untapped-book-12-in-the-completionist-chronicles",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Untapped",
+    "observedSeriesSequence": 12,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0FHK88KH1",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Untapped",
+      "series": "The Completionist Chronicles",
+      "number": 12,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Untapped-Audiobook/B0FHK88KH1",
+          "format": "audiobook",
+          "asin": "B0FHK88KH1"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://www.audible.com/series/The-Completionist-Chronicles-Audiobooks/B07FLTRQMM",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/uncapped",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/completionist-chronicles",
+    "observedTitle": "Uncapped",
+    "observedSeriesSequence": 14,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0H3Q88X3K",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Uncapped",
+      "series": "The Completionist Chronicles",
+      "number": 14,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/Uncapped-Audiobook/B0H3Q88X3K",
+          "format": "audiobook",
+          "asin": "B0H3Q88X3K"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-divine-dungeon",
+    "sourceUrl": "https://www.audible.com/es_US/series/Divine-Dungeon-Series-Audiolibro/B0765D8MCN",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/dungeon-calamity-signed-hardcover",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/divine-dungeon",
+    "observedTitle": "Dungeon Calamity",
+    "observedSeriesSequence": 3,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion.",
+      "The observed page uses the Spanish interface on Audible.com (US marketplace). Selected standard-audio listings say English; separately labeled dramatized editions were excluded."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "B0799RFCCK",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Dungeon Calamity",
+      "series": "The Divine Dungeon",
+      "number": 3,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/Dungeon-Calamity-Audiolibro/B0799RFCCK",
+          "format": "audiobook",
+          "asin": "B0799RFCCK"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-divine-dungeon",
+    "sourceUrl": "https://www.audible.com/es_US/series/Divine-Dungeon-Series-Audiolibro/B0765D8MCN",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/dungeon-desolation-signed-hardcover",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/divine-dungeon",
+    "observedTitle": "Dungeon Desolation",
+    "observedSeriesSequence": 4,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion.",
+      "The observed page uses the Spanish interface on Audible.com (US marketplace). Selected standard-audio listings say English; separately labeled dramatized editions were excluded."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "1977385885",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Dungeon Desolation",
+      "series": "The Divine Dungeon",
+      "number": 4,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/Dungeon-Desolation-Audiolibro/1977385885",
+          "format": "audiobook",
+          "asin": "1977385885"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-divine-dungeon",
+    "sourceUrl": "https://www.audible.com/es_US/series/Divine-Dungeon-Series-Audiolibro/B0765D8MCN",
+    "observedAt": "2026-09-19T04:04:06.419Z",
+    "method": "curated-source-summary",
+    "bibliographySourceUrl": "https://www.mountaindalepress.store/products/dungeon-eternium-signed-hardcover",
+    "publisherSeriesUrl": "https://www.mountaindalepress.store/pages/series/divine-dungeon",
+    "observedTitle": "Dungeon Eternium",
+    "observedSeriesSequence": 5,
+    "evidenceNotes": [
+      "Observed the exact US audiobook product link on the selected retailer series page, using the publisher-established volume order. This is a candidate lead; the durable exact-product worker must verify and retain its identity before promotion.",
+      "The observed page uses the Spanish interface on Audible.com (US marketplace). Selected standard-audio listings say English; separately labeled dramatized editions were excluded."
+    ],
+    "audioIdentityEvidence": {
+      "asin": "1977349684",
+      "marketplace": "US",
+      "requiresExactVerification": true
+    },
+    "book": {
+      "title": "Dungeon Eternium",
+      "series": "The Divine Dungeon",
+      "number": 5,
+      "author": "Dakota Krout",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/Dungeon-Eternium-Audiolibro/1977349684",
+          "format": "audiobook",
+          "asin": "1977349684"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-completionist-chronicles",
+    "sourceUrl": "https://books.google.com/books/about/Regicide.html?id=DLBizwEACAAJ",
+    "observedAt": "2026-09-19T04:15:30.001129Z",
+    "method": "curated-source-summary",
+    "evidenceNotes": [
+      "Original research summary of the publisher-supplied description in the Google Books record for the Mountaindale Press edition, ISBN9781637661420. The primary publisher bibliography separately establishes work identity and order. The catalog already holds an independently verified audiobook; this note introduces no edition or release-date claim."
+    ],
+    "book": {
+      "title": "Regicide",
+      "series": "The Completionist Chronicles",
+      "number": 2,
+      "author": "Dakota Krout",
+      "description": "After attracting attention at a magical college, Joe’s growing influence divides his guild. His abilities offer useful bonuses, yet rumors accuse him of sacrificing allies to advance himself. He recruits outsiders whose skills work well with his own and pursues a specialized form of his Ritualist class. His efforts to gain power through rituals take place amid conflicts between rulers, and he must consider whether his choices are helping push them toward war.",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": []
+    }
+  }
+]

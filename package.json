@@ -13,7 +13,9 @@
 		"pipeline:backfill": "npm run pipeline -- backfill",
 		"pipeline:enrich": "node --env-file-if-exists=.env --import tsx scripts/backend/jev/enrich.ts",
 		"pipeline:covers": "node --env-file-if-exists=.env --import tsx scripts/backend/covers/enrich.ts",
+		"pipeline:authors": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/author-cli.ts",
 		"pipeline:backup": "node --env-file-if-exists=.env --import tsx scripts/backend/storage/backup.ts",
+		"pipeline:archive": "node --env-file-if-exists=.env --import tsx scripts/backend/storage/archive.ts",
 		"pipeline:series": "node --env-file-if-exists=.env --import tsx scripts/backend/scrape-series.ts",
 		"build": "vite build",
 		"check:backend": "tsc --project tsconfig.backend.json --noEmit",
@@ -22,7 +24,11 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "vitest run",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"catalog": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/index.ts",
+		"catalog:grind": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/grind.ts",
+		"pipeline:readers": "node --env-file-if-exists=.env --import tsx scripts/backend/catalog/reader-cli.ts",
+		"pipeline:verify-backup": "node --import tsx scripts/backend/storage/verify-backup.ts"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",

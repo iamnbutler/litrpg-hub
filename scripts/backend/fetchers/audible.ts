@@ -32,6 +32,7 @@ export interface AudibleProduct {
   title?: string;
   subtitle?: string;
   merchandising_summary?: string;
+  publisher_summary?: string;
   language?: string;
   release_date?: string;
   publication_datetime?: string;
@@ -74,6 +75,7 @@ function loadSearchConfig(): SearchConfig {
 export function stripHtml(html: string): string {
   return html
     .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<\/(?:p|div|li|h[1-6]|section)>/gi, " ")
     .replace(/<[^>]+>/g, "")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
@@ -83,6 +85,13 @@ export function stripHtml(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/\s{2,}/g, " ")
     .trim();
+}
+
+/** Availability copy is a storefront statement, not part of the work's synopsis. */
+export function productDescription(product: AudibleProduct): string | null {
+  const source=product.publisher_summary?.trim()||product.merchandising_summary?.trim();
+  if(!source)return null;
+  return stripHtml(source).replace(/^This title will be streaming in Audible Plus through [A-Za-z]+ \d{1,2}(?:st|nd|rd|th)?, \d{4}\.\s*/i,'').trim()||null;
 }
 
 function guessSubgenres(product: AudibleProduct): string[] {
@@ -105,9 +114,20 @@ function guessSubgenres(product: AudibleProduct): string[] {
   return subgenres;
 }
 
+/** Placeholder recording values are unknown, including when replaying an older cache. */
+export function recordingNarrator(value: string | null | undefined): string | null {
+  const placeholder = /^(?:T\.?B\.?[DA]\.?|unknown|not (?:yet )?(?:announced|available)|unannounced|to be (?:announced|determined)|pending|n\/?a|none|-)$/i;
+  return (value ?? '').split(',').map(name => name.trim()).filter(name => name && !placeholder.test(name)).join(', ') || null;
+}
+export function recordingRuntime(value: number | null | undefined): number | null {
+  return Number.isSafeInteger(value) && value! > 0 ? value! : null;
+}
+const narratorNames = (product: AudibleProduct) => Array.isArray(product.narrators)
+  ? product.narrators.flatMap(narrator => narrator && typeof narrator.name === 'string' ? [narrator.name] : []).join(', ') : '';
+
 /** Only a source disclosure establishes AI narration. Missing credits are unknown. */
 export function isAiNarrated(p: AudibleProduct): boolean {
-  return narrationSignal((p.narrators ?? []).map(n => n.name).join(', ')).verdict === 'present';
+  return narrationSignal(narratorNames(p)).verdict === 'present';
 }
 
 export function productToBookRow(p: AudibleProduct): BookRow {
@@ -131,15 +151,15 @@ export function productToBookRow(p: AudibleProduct): BookRow {
     title,
     subtitle: p.subtitle ?? null,
     author: (p.authors ?? []).map((a) => a.name).join(", ") || null,
-    narrator: (p.narrators ?? []).map((n) => n.name).join(", ") || null,
+    narrator: recordingNarrator(narratorNames(p)),
     series_name: series?.title ?? null,
     series_number: seriesNumber,
     release_date: validReleaseDate(p.release_date),
     cover_url: p.product_images?.["500"] ?? Object.values(p.product_images ?? {})[0] ?? null,
-    runtime_minutes: p.runtime_length_min ?? null,
+    runtime_minutes: recordingRuntime(p.runtime_length_min),
     rating: rating?.average_rating ?? null,
     rating_count: rating?.num_ratings ?? null,
-    description: p.merchandising_summary ? stripHtml(p.merchandising_summary) : null,
+    description: productDescription(p),
     url: `https://www.audible.com/pd/${p.asin}`,
     is_ai_narrated: isAiNarrated(p),
   };

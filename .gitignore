@@ -18,24 +18,23 @@ Thumbs.db
 !.env.example
 !.env.test
 
-# Database
-/data/covers/
-/data/backups/
-/data/*.db
-/data/*.db-wal
-/data/*.db-shm
+# Private catalog state, raw evidence, research notes, caches, and restore checks.
+# The public read model lives in static/data/ instead.
+/data/
 
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# SQLite database
-/data/*.db
-/data/*.db-journal
-/data/*.db-wal
-
 # Worktrees
 .worktrees
+
+# Local agent handoffs and research leads; reviewed runtime evidence is kept separately.
+/SERIES_UI_CONTRACT.md
+/scripts/backend/catalog/AUTHOR_PROFILES.md
+/scripts/backend/catalog/READER_EVIDENCE.md
+/scripts/backend/catalog/*_HANDOFF.md
+/scripts/backend/config/*.draft.json
 
 # Generated static data (built by pipeline, but committed for backfill data)
 # /static/data/*.json

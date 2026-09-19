@@ -34,8 +34,17 @@ export interface CoverAssessment {
     observations: string[];
     signal: ContentSignal;
 }
+/** Bump when feature meanings change; a model change alone does not invalidate review. */
+export const FEATURE_TAXONOMY_VERSION = 'catalog-features-v1';
+export interface FeatureEvidence { sourceUrl: string; additionalSourceUrls?: string[]; reviewedAt: string; taxonomyVersion: string }
 export interface CatalogBook {
 	id: string;
+	workId?: string;
+	descriptionSource?: { name:string; url:string; checkedAt:string; kind:'editorial-summary'; reviewedAt?:string };
+	/** Positive, source-reviewed features. A missing tag does not establish absence. */
+	features?: string[];
+	featureEvidence?: FeatureEvidence;
+	readerContext?: import('./reader-context.js').ReaderContext;
 	title: string;
 	subtitle: string;
 	series: string;
@@ -51,12 +60,12 @@ export interface CatalogBook {
 	url: string | null;
 	rating: number | null;
 	ratingCount: number;
-	edition: 'audiobook' | 'dramatized' | 'collection';
+	edition: 'audiobook' | 'dramatized' | 'collection' | 'podcast';
 	scope: 'indexed' | 'review';
 	content: { sexualized: ContentSignal; explicit: ContentSignal; harem: ContentSignal; aiNarration: ContentSignal; aiWriting: ContentSignal; quality: ContentSignal };
 	assessment: Assessment | null;
 	coverAssessment?: CoverAssessment | null;
-	sources: { name: string; fetchedAt: string }[];
+	sources: { name: string; fetchedAt: string; url?:string }[];
 	issues: string[];
 }
 export interface Catalog {
@@ -65,6 +74,7 @@ export interface Catalog {
 	sourceSnapshotAt: string | null;
 	stats: { books: number; series: number; assessed: number; needsReview: number; staleSources: number };
 	books: CatalogBook[];
+	series?: import('./series.js').CatalogSeries[];
 }
 export interface ReaderFilters {
 	hideSexualized: boolean;
@@ -151,40 +161,7 @@ export function searchBooks(books: CatalogBook[], query: string): CatalogBook[] 
 }
 export interface Recommendation { book: CatalogBook; score: number; reasons: string[]; method: 'taste' | 'genres' }
 export type TasteWeights = Partial<Record<Taste, number>>;
-export function recommend(seed: CatalogBook, books: CatalogBook[], weights: TasteWeights = {}, limit = 12): Recommendation[] {
-	const candidates = seriesStarters(books).filter(b => b.id !== seed.id && b.seriesKey !== seed.seriesKey);
-	const ranked = candidates.flatMap((book): Recommendation[] => {
-		const shared = book.subgenres.filter(g => seed.subgenres.includes(g));
-		let distance = 0, totalWeight = 0, dimensions = 0;
-		const reasons: { label: string; strength: number }[] = [];
-		for (const key of Object.keys(tasteLabels) as Taste[]) {
-			const a = seed.assessment?.taste[key], b = book.assessment?.taste[key];
-			if (!a || !b || a.confidence < 0.45 || b.confidence < 0.45) continue;
-			// Shared absences (neither book is cozy, for example) should not dominate a match.
-			const weight = (weights[key] ?? 1) * Math.min(a.confidence, b.confidence) * (0.2 + 0.8 * Math.max(a.value, b.value));
-			if (weight <= 0) continue;
-			distance += Math.abs(a.value - b.value) * weight;
-			totalWeight += weight;
-			dimensions++;
-			if (a.value >= 0.5 && b.value >= 0.5) reasons.push({ label: tasteLabels[key], strength: Math.min(a.value, b.value) * weight });
-		}
-		const semantic = dimensions >= 3 && totalWeight > 0 && reasons.length > 0;
-		if (!semantic && shared.length === 0) return [];
-		const genreScore = shared.length / Math.max(new Set([...book.subgenres, ...seed.subgenres]).size, 1);
-		const fit = semantic ? (1 - distance / totalWeight) * 0.85 + genreScore * 0.15 : genreScore * 0.65;
-		const score = fit * 0.96 + Math.min(bookPopularity(book) / 100, 1) * 0.04;
-		return [{ book, score, method: semantic ? 'taste' : 'genres', reasons: semantic && reasons.length
-			? reasons.sort((a,b) => b.strength - a.strength).slice(0,3).map(r => r.label)
-			: shared.slice(0,3).map(g => genreLabels[g] ?? g) }];
-	}).sort((a,b) => b.score - a.score || a.book.id.localeCompare(b.book.id));
-	const authors = new Map<string, number>();
-	return ranked.filter(({ book }) => {
-		const key = normalizeIdentity(book.author), count = authors.get(key) ?? 0;
-		if (count >= 2) return false;
-		authors.set(key, count + 1);
-		return true;
-	}).slice(0, limit);
-}
+export { recommend } from './recommend.js';
 export function displayDate(value: string | null, options: Intl.DateTimeFormatOptions = {}): string {
 	return value ? new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC', ...options }).format(new Date(`${value.slice(0,10)}T12:00:00Z`)) : 'Date to be announced';
 }

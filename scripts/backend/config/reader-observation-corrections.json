@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "corrections": [
+    {
+      "entityType": "work",
+      "entityId": "work-dungeon-crawler-carl-1",
+      "inputHash": "551c54fc43cc443f4ea6eed97a12a5132d310d257fc27a016e10c2ab61196167",
+      "inferenceId": "65cf67106b7fa13372679ca971ea8883faa90c6a3e57246466e97ce9f0ecd9da",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/dungeon-crawler-carl",
+        "https://soundbooththeater.com/shop/audiobooks/dungeon-crawler-carl/"
+      ],
+      "observation": "The sample highlights Carl and Princess Donut's interactions and the audiobook performance. The comedy draws both delight and complaints of crudeness, while one early abandonment specifically cites the focus on game mechanics.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-defiance-of-the-fall-1",
+      "inputHash": "ccbf73040473d45507f68bf8cb0440805ca397adc56fdce4fb807fb1d0f45a2d",
+      "inferenceId": "e222c6fa4ff682f8a0a04cc704d00265e6b46d9c51e1d945a1b1d6fac3bccdc3",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/defiance-of-the-fall"
+      ],
+      "observation": "The sample praises progression and worldbuilding, but also criticizes long solitary stretches, a familiar System, and flat characterization. One reader reports a stronger ending; another wanted more dialogue.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-he-who-fights-with-monsters-1",
+      "inputHash": "8385e911e7f1a317bfc8aa82014caf6b71ab2bd4cd6a6b3af58d2b2a65e44df3",
+      "inferenceId": "7efcb880f854050a0c5cd6d33722d38ace531179e129458f655a728489b3f52c",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/he-who-fights-with-monsters-2021"
+      ],
+      "observation": "Jason's personality is a point of disagreement: comments describe him as witty and enjoyable, or chatty and arrogant. Praise for the worldbuilding sits alongside complaints about the length and repetition, including abandoned reads.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-beware-of-chicken-1",
+      "inputHash": "b7b2bb2427e2dbaf8219868c5b04eb8d8f486e1fd9b88a136c567f910a5b8a54",
+      "inferenceId": "10c76afeac90ce34e507b6f4bddf12478160d118441884cc2d5c97cd6d3b6f82",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/beware-of-chicken"
+      ],
+      "observation": "Comments praise the comforting farming story, animal viewpoints, and light humour. The same emphasis on everyday life feels slow to other readers, with criticism of the quieter second half and uneven flow.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-the-path-of-ascension-1",
+      "inputHash": "23e64f5439a317e5910a359f37d8a54bb04f4015ad36c20ae879cd7bd22ff3e2",
+      "inferenceId": "b40e846113301dce5fad2e5f8dfe814cc276b62cdcc46aa88d429cede28b4a46",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/the-path-of-ascension"
+      ],
+      "observation": "Readers describe a comforting cultivation story with appealing familiar tropes. Criticisms include convenient advantages for the protagonist, inconsistent characterization, and prose needing tighter editing.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-mark-of-the-fool-1",
+      "inputHash": "9e57114bc7127f8ed269e2d2faf4991dca00a0fcb254cdb4e504439083485af2",
+      "inferenceId": "f1900508f0e1bd20d4d70c6d61e81ca4497c29e0fc66d5ce6787f35b76a9783c",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/mark-of-the-fool"
+      ],
+      "observation": "The magic system and school setting draw praise in this sample. Complaints focus on momentum after the opening, with downtime described as slow or padded; other comments enjoy the quieter school life.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-the-perfect-run-1",
+      "inputHash": "84c43f155ab61cd9b39aeca3910b7c1a89fc064e7af30821f62d75b599f3e939",
+      "inferenceId": "c293dea2dcd213e30ac5c3b3b719f64caced5fd4dacada16fd1f9ea17f966871",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/the-perfect-run"
+      ],
+      "observation": "Comments praise the time-loop premise and detailed city and gang dynamics, while the constant wisecracks draw both enjoyment and irritation. The sample includes an abandoned listen and readers won over by the ending.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-the-ripple-system-1",
+      "inputHash": "c3623bd581bad495b67c412bc5f95b3217aa86ac303ea2dea7fbba6ff47709b3",
+      "inferenceId": "fb1fb500e330b20bddc5f9c49c05c19abca171848ce856920ca0158f66f68e9a",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/shadeslinger"
+      ],
+      "observation": "The sample contrasts enjoyment of the MMO mechanics and comic side characters with frustration at the opening cast. One reader found virtual combat low-stakes enough to skim; another liked the game's forgiving death penalties.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-arcane-ascension-1",
+      "inputHash": "01f2302710fd39a86565324fb0d7290b688f1bbe7bb99d6f6e6d65bfa1a7fd2a",
+      "inferenceId": "3bffdf7d23e6a1403df28ac38086a8e089919837deb956bad7082a3a852c950c",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/sufficiently-advanced-magic"
+      ],
+      "observation": "The detailed magic rules and school setting appeal to readers in this sample. Other comments describe too much exposition, weak characterization, or an opening that takes time to engage.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-the-completionist-chronicles-1",
+      "inputHash": "a62496685e102f70c26596d9ce1d668ab9ff26c1c44dcb77495f2358e1ff0afd",
+      "inferenceId": "7d23f9816cdcb4b629fa8dd784829c5539b4320103e73a14728be95841a3f917",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/completionist-chronicles-ritualist"
+      ],
+      "observation": "The ritualist class and game mechanics draw interest in this sample, and one review describes the first book as a satisfying standalone adventure. Characterization drew both praise and criticism.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-awaken-online-1",
+      "inputHash": "4bab4812766e11544c2dc529ea992cd1f24d24733dad454b9b58fa31ccbfe411",
+      "inferenceId": "ac5526b3f20f90ea3dc170a6dfe03314241acba9f2e3e42a656688aff8143662",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/awaken-online-catharsis-2016"
+      ],
+      "observation": "The virtual-world premise and chance to root for a villain draw praise. The sample also includes complaints about predictable victories, repetitive prose, and the real-world school drama, alongside reports of staying up late to keep reading.",
+      "reviewedAt": "2026-09-19T05:06:28.234Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-cradle-1",
+      "inputHash": "4a6bbff585b0632ad6c4e4682df1e208d94686579d077c7fae001f5f5f8b771c",
+      "inferenceId": "d115004fca298a291fd7d49f8cb543bb1e64dd225d17a9e778b2a409ae3e6105",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "sourceUrls": [
+        "https://hardcover.app/books/unsouled"
+      ],
+      "observation": "The underdog story and magic system draw praise in this sample. Comments also describe a slow opening, confusing terminology, and reservations about character depth; reactions to continuing range from eagerness to uncertainty.",
+      "reviewedAt": "2026-09-19T05:17:00.170Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence.",
+      "receiptKind": "reader-observation-wire"
+    }
+  ]
+}
