@@ -4,7 +4,7 @@
 	import { base } from '$app/paths';
 	import { collapsePlaceholderDuplicates, defaultFilters, displayDate, genreLabels, searchBooks, tasteLabels, type Catalog, type CatalogBook, type ReaderFilters, type Taste, type TasteWeights } from '$lib/catalog';
 	import { buildSeriesContentIndex, passesDiscoveryFilters } from '$lib/series-content';
-	import { ADULT_AGE, adultUnlocked, applyAdultGate, isAdult, isGatedFilter, noConsent, parseAdultConsent, parseBirthDate, type AdultConsent } from '$lib/adult';
+	import { adultUnlocked, applyAdultGate, isAdult, isGatedFilter, noConsent, parseAdultConsent, parseBirthDate, type AdultConsent } from '$lib/adult';
 	import {
 		emptyLibrary, followSeries, isFollowing, libraryExport, markSeriesRead, mergeLibraries, migrateLibrary, parseFilters,
 		markReadThrough, parseLibrary, parseLibraryExport, parseSeriesLibrary, seriesProgress, setWorkRating, setWorkStatus, shelfLabels,
@@ -20,7 +20,7 @@
 	import SeriesDetail from '$lib/components/SeriesDetail.svelte';
 	import UpNextRow from '$lib/components/UpNextRow.svelte';
 
-	type View = 'index' | 'series' | 'releases' | 'library' | 'similar';
+	type View = 'index' | 'series' | 'releases' | 'library' | 'similar' | 'settings';
 	const navigation: { id: View; label: string }[] = [
 		{ id: 'index', label: 'Series index' }, { id: 'similar', label: 'Similar series' },
 		{ id: 'releases', label: 'Releases' }, { id: 'library', label: 'My library' }
@@ -188,7 +188,7 @@
 	function readUrl() {
 		const params = new URLSearchParams(window.location.search);
 		const requested = params.get('view') === 'shelf' ? 'library' : params.get('view');
-		view = ['index', 'series', 'releases', 'library', 'similar'].includes(requested ?? '') ? (requested as View) : 'index';
+		view = ['index', 'series', 'releases', 'library', 'similar', 'settings'].includes(requested ?? '') ? (requested as View) : 'index';
 		query = params.get('q') ?? ''; selectedId = params.get('book'); seedId = params.get('like') ?? ''; seriesId = params.get('series') ?? '';
 		visibleCount = 24;
 		healSeriesUrl();
@@ -271,14 +271,14 @@
 		// Confirming an age never switches anything on. Opting in is a separate, deliberate act.
 		void runConsent({ birthDate, attestedAt: nowIso, allowAdult: false }, () => {
 			editingBirthDate = false;
-			announce(isAdult(birthDate, nowIso) ? 'Date of birth confirmed · you can now turn on 18+ content' : 'Date of birth confirmed · adult content stays hidden');
+			announce('Date of birth confirmed');
 		});
 	}
 	function setAllowAdult(value: boolean) {
 		void runConsent({ ...consent, allowAdult: value }, () => announce(value ? '18+ content is now shown' : '18+ content is hidden again'));
 	}
 	function forgetBirthDate() {
-		void runConsent(noConsent(), () => { editingBirthDate = false; birthInput = ''; announce('Date of birth removed · adult content is hidden again'); });
+		void runConsent(noConsent(), () => { editingBirthDate = false; birthInput = ''; announce('Date of birth removed'); });
 	}
 	function resetFilters() { filters = { ...defaultFilters }; genre = 'all'; includeUnclassified = false; persist(storageKeys.filters, filters); }
 	/** The empty state's own action: resetFilters never touched the query, so offering only
@@ -413,6 +413,9 @@
 	<div class="account-controls">
 		{#if account.user && !account.needsLogin}
 			<span class="account-name" title={account.user.displayName}>@{account.user.username}</span>
+		{/if}
+		<button class="subtle-button" class:active={view === 'settings'} aria-current={view === 'settings' ? 'page' : undefined} onclick={() => navigate('settings')}>Settings</button>
+		{#if account.user && !account.needsLogin}
 			<button class="subtle-button" disabled={signingOut} onclick={signOut}>{signingOut ? 'Signing out…' : 'Sign out'}</button>
 		{:else}<button class="secondary-button" disabled={!account.ready} onclick={signIn}>{account.needsLogin ? 'Sign in again' : 'Sign in with GitHub'}</button>{/if}
 	</div>
@@ -420,14 +423,16 @@
 <main id="main" class="main-shell">
 	{#if view !== 'series'}
 		<div class="page-heading">
-			<h1>{view === 'similar' ? 'Similar series' : view === 'releases' ? 'Audiobook releases' : view === 'library' ? 'My library' : 'Series index'}</h1>
+			<h1>{view === 'similar' ? 'Similar series' : view === 'releases' ? 'Audiobook releases' : view === 'library' ? 'My library' : view === 'settings' ? 'Settings' : 'Series index'}</h1>
 			{#if view === 'library'}<span class="small-note" role="status">{account.status}</span><div class="shelf-tools">{#if account.user}<button class="secondary-button" onclick={() => accountSync?.sync()}>Retry sync</button>{/if}<button class="secondary-button" onclick={downloadLibrary}>Export</button><label class="secondary-button import-library-label" for="library-import">Import</label><input class="visually-hidden" type="file" accept="application/json,.json" id="library-import" onchange={importLibrary} aria-label="Import a library backup"/></div>{/if}
 		</div>
 	{/if}
 	{#if storageWarning}<p class="notice" role="status">{storageWarning}</p>{/if}
 	{#if account.canImport}<div class="notice browser-library-notice"><span>You have a library saved in this browser.</span><button class="secondary-button" onclick={() => accountSync?.importGuest()}>Add it to my account</button></div>{/if}
 	{#if account.user && (account.status.includes('paused') || account.status.includes('Could not') || account.needsLogin)}<p class="notice" role="status">{account.status}</p>{/if}
-	{#if error}<div class="empty-state" role="alert"><p>{error}</p><button class="secondary-button" onclick={() => loadCatalog()}>Retry</button></div>
+	{#if view === 'settings'}
+		{@render settingsPage()}
+	{:else if error}<div class="empty-state" role="alert"><p>{error}</p><button class="secondary-button" onclick={() => loadCatalog()}>Retry</button></div>
 	{:else if loading}<p class="loading" role="status">Loading catalog…</p>
 	{:else if view === 'series'}
 		{#if currentSeries}
@@ -521,36 +526,53 @@
 			<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide books we’re unsure about</label>
 			<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include books without a genre</label>
 		</div>
-		{@render adultSettings()}
 		<div class="preference-foot"><span>Filters change what you see here. Your library and reading progress stay complete.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
 	</section>{/if}
 {/snippet}
-{#snippet adultSettings()}
-	<section class="adult-gate" aria-label="Adult content">
-		<h2>Adult content</h2>
-		<p class="small-note">{adultOn
-			? 'Sexualized and explicit titles can appear. The two filters above are yours to set.'
-			: 'Sexualized covers and marketing, and explicit sexual content, are hidden.'}</p>
-		{#if !consent.birthDate || editingBirthDate}
-			<div class="birth-row">
-				<label for="birth-date">Date of birth</label>
-				<input id="birth-date" type="date" max={today} bind:value={birthInput} disabled={consentBusy}/>
-				<button class="secondary-button" disabled={consentBusy} onclick={confirmBirthDate}>Confirm</button>
-				{#if consent.birthDate}<button class="subtle-button" disabled={consentBusy} onclick={() => { editingBirthDate = false; consentError = ''; }}>Cancel</button>{/if}
-			</div>
-			<p class="small-note">Confirm your date of birth to choose whether 18+ titles are shown. GitHub does not tell us your age, so this is your own word for it. The date is kept only to check you are {ADULT_AGE} or over, and nothing else reads it.</p>
-		{:else if verifiedAdult}
-			<label class="checkbox-label"><input type="checkbox" checked={consent.allowAdult} disabled={consentBusy} onchange={(e) => setAllowAdult(e.currentTarget.checked)}/>Show 18+ titles</label>
-			<p class="small-note">Off unless you turn it on. Turning it on adds the two sexual-content filters above so you can set them yourself.</p>
-		{:else}
-			<p class="small-note">The date you confirmed is under {ADULT_AGE}, so 18+ titles stay hidden. The option appears on its own once you are old enough.</p>
+{#snippet settingsPage()}
+	<div class="settings-page">
+		<section class="settings-section">
+			<h2>Account</h2>
+			{#if account.user && !account.needsLogin}
+				<p class="small-note">Signed in as <strong>@{account.user.username}</strong>. Your library syncs across your devices.</p>
+				<div class="birth-row"><button class="secondary-button" onclick={() => accountSync?.sync()}>Sync now</button><button class="secondary-button" disabled={signingOut} onclick={signOut}>{signingOut ? 'Signing out…' : 'Sign out'}</button></div>
+			{:else}
+				<p class="small-note">Not signed in. Your library is saved in this browser only.</p>
+				<div class="birth-row"><button class="secondary-button" disabled={!account.ready} onclick={signIn}>{account.needsLogin ? 'Sign in again' : 'Sign in with GitHub'}</button></div>
+			{/if}
+			{#if account.status}<p class="small-note" role="status">{account.status}</p>{/if}
+		</section>
+		<section class="settings-section">
+			<h2>Your library</h2>
+			<p class="small-note">A backup is a plain JSON file. Importing merges into what you already have rather than replacing it.{#if loading} Loading the catalog before an import can be matched up…{/if}</p>
+			<div class="birth-row"><button class="secondary-button" onclick={downloadLibrary}>Export a backup</button><label class="secondary-button import-library-label" for="settings-import">Import a backup</label><input class="visually-hidden" type="file" accept="application/json,.json" id="settings-import" disabled={loading || !!error} onchange={importLibrary} aria-label="Import a library backup"/></div>
+		</section>
+		<section class="settings-section">
+			<h2>Date of birth</h2>
+			{#if !consent.birthDate || editingBirthDate}
+				<div class="birth-row">
+					<label class="visually-hidden" for="birth-date">Date of birth</label>
+					<input id="birth-date" type="date" max={today} bind:value={birthInput} disabled={consentBusy}/>
+					<button class="secondary-button" disabled={consentBusy} onclick={confirmBirthDate}>Confirm</button>
+					{#if consent.birthDate}<button class="subtle-button" disabled={consentBusy} onclick={() => { editingBirthDate = false; consentError = ''; }}>Cancel</button>{/if}
+				</div>
+				<p class="small-note">Optional. Signing in with GitHub does not tell us your age, so this is your own word for it. It is kept only to check your age, never shown to anyone else, and never included in a library export.</p>
+			{:else}
+				<div class="birth-row"><span>{displayDate(consent.birthDate)}</span><button class="subtle-button" disabled={consentBusy} onclick={() => { birthInput = consent.birthDate ?? ''; consentError = ''; editingBirthDate = true; }}>Change</button><button class="subtle-button" disabled={consentBusy} onclick={forgetBirthDate}>Remove</button></div>
+			{/if}
+			{#if consentError}<p class="notice" role="alert">{consentError}</p>{/if}
+			{#if account.ready && !account.user}<p class="small-note">Saved in this browser only. Sign in to keep it across your devices.</p>{/if}
+		</section>
+		{#if verifiedAdult}
+			<!-- Only ever rendered to a confirmed adult. A reader who has set no date, or a date
+			     under 18, is never told this setting exists anywhere in the app. -->
+			<section class="settings-section">
+				<h2>Adult content</h2>
+				<label class="checkbox-label"><input type="checkbox" checked={consent.allowAdult} disabled={consentBusy} onchange={(e) => setAllowAdult(e.currentTarget.checked)}/>Show 18+ titles</label>
+				<p class="small-note">Off unless you turn it on. Turning it on adds sexual-content filters to the Filters panel so you can set them yourself.</p>
+			</section>
 		{/if}
-		{#if consent.birthDate && !editingBirthDate}
-			<div class="birth-row"><button class="subtle-button" disabled={consentBusy} onclick={() => { birthInput = consent.birthDate ?? ''; consentError = ''; editingBirthDate = true; }}>Change date</button><button class="subtle-button" disabled={consentBusy} onclick={forgetBirthDate}>Remove date</button></div>
-		{/if}
-		{#if consentError}<p class="notice" role="alert">{consentError}</p>{/if}
-		{#if account.ready && !account.user}<p class="small-note">Saved in this browser only. Sign in with GitHub to keep this across your devices.</p>{/if}
-	</section>
+	</div>
 {/snippet}
 {#snippet freshness()}{#if catalog?.sourceSnapshotAt}<span class="freshness">Source snapshot: {displayDate(catalog.sourceSnapshotAt.slice(0, 10))}</span>{/if}{/snippet}
 {#if selectedBook}{#key selectedBook.id}<BookDetail book={selectedBook} series={seriesOf(selectedBook)} books={bookIndex} {library} {today} now={nowIso} entry={entryOf(selectedBook)} rateable={!!works.get(selectedBook.id)} onclose={closeBook} onshelf={setShelf} onrating={rateBook} onlike={findSimilar} onopen={openBook} onseries={openSeries}/>{/key}{/if}
