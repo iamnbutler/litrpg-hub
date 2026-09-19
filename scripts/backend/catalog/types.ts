@@ -6,7 +6,7 @@ export interface SeedSeries {
   publisherCredits?: string[];
   status?: 'ongoing' | 'complete' | 'unknown';
   statusEvidence?: { url: string; observedAt: string; summary: string };
-  genres: string[]; priority: number; sources: { url: string; adapter: 'aethon-series' | 'sbt-series' | 'dinniman' | 'prh-series' | 'podium-series' | 'portal-author' | 'chatfield-series' | 'chatfield-book' | 'bagwell-author' | 'mountaindale-series' | 'grand-game-series' | 'nova-roma-author' | 'apostasy-author' | 'sarah-lin-author' }[];
+  genres: string[]; priority: number; sources: { url: string; adapter: 'aethon-series' | 'sbt-series' | 'dinniman' | 'prh-series' | 'podium-series' | 'portal-author' | 'chatfield-series' | 'chatfield-book' | 'bagwell-author' | 'mountaindale-series' | 'grand-game-series' | 'nova-roma-author' | 'apostasy-author' | 'sarah-lin-author' | 'the-land-book' }[];
 }
 export interface Document { id: string; url: string; content_hash: string; body: string; fetched_at: string; method?:'publisher-page'|'author-page'|'curated-source-summary'|'curated-title-mapping'|'retailer-api'|'retailer-link' }
 export interface WorkRow {
@@ -22,7 +22,7 @@ export interface ExtractedBook {
   audioReleaseDate: string | null; audioRuntimeMinutes: number | null;
   links: { url: string; format: 'ebook' | 'audiobook' | 'print'; asin?: string }[];
 }
-export type Adapter = 'aethon-index' | 'sbt-index' | 'aethon-series' | 'sbt-series' | 'aethon-book' | 'sbt-book' | 'dinniman' | 'prh-series' | 'prh-book' | 'podium-series' | 'podium-book' | 'portal-author' | 'chatfield-series' | 'chatfield-book' | 'bagwell-author' | 'mountaindale-series' | 'mountaindale-book' | 'grand-game-series' | 'grand-game-book' | 'nova-roma-author' | 'apostasy-author' | 'sarah-lin-author';
+export type Adapter = 'aethon-index' | 'sbt-index' | 'aethon-series' | 'sbt-series' | 'aethon-book' | 'sbt-book' | 'dinniman' | 'prh-series' | 'prh-book' | 'podium-series' | 'podium-book' | 'portal-author' | 'chatfield-series' | 'chatfield-book' | 'bagwell-author' | 'mountaindale-series' | 'mountaindale-book' | 'grand-game-series' | 'grand-game-book' | 'nova-roma-author' | 'apostasy-author' | 'sarah-lin-author' | 'the-land-book';
 export interface SourcePayload { url: string; adapter: Adapter; seriesId?: string; number?: number; parentDocumentId?: string }
 export interface AudioPayload { seriesId: string; workId: string; asin: string; sourceUrl: string }
 /** A numbered author-page link with no canonical title yet. The retained document is mandatory. */

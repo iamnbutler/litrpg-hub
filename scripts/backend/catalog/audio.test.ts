@@ -1,10 +1,11 @@
 import Database from 'better-sqlite3';
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { audioProductUrl, importAudioProduct, processAudio, verifyAudioProduct } from './audio.js';
+import { audioProductUrl, importAudioProduct, processAudio, verifyAudioProduct, verifyCanonicalAudioProduct } from './audio.js';
 import { productDescription } from '../fetchers/audible.js';
 import { importWork } from './import.js';
 import { getDocument } from './sources.js';
+import { hash } from './queue.js';
 import { ReviewError, type Document, type ExtractedBook, type SeedSeries, type WorkRow } from './types.js';
 
 const seed: SeedSeries = {id:'test',title:'Test Series',author:'Test Author',authorAliases:['Test Author','Test Pen Name'],aliases:[],genres:['litrpg'],priority:1,sources:[]};
@@ -20,7 +21,141 @@ beforeEach(() => {
 });
 afterEach(() => {vi.unstubAllGlobals();vi.useRealTimers();db.close();});
 
+function importedState() {
+  return Object.fromEntries(['catalog_works','catalog_editions','books','book_sources','book_subgenres','catalog_claims','catalog_jobs']
+    .map(table=>[table,db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all()]));
+}
+function retainedProduct(value:unknown=product,url=audioProductUrl(product.asin),stamp=doc.fetched_at):Document {
+  const body=JSON.stringify({product:value}),content_hash=hash(body),id=hash([url,content_hash]);
+  db.prepare('INSERT OR IGNORE INTO catalog_documents VALUES(?,?,?,?,?)').run(id,url,content_hash,body,stamp);
+  db.prepare('INSERT OR REPLACE INTO catalog_urls(url,document_id,checked_at,next_check_at) VALUES(?,?,?,?)')
+    .run(url,id,stamp,'2099-01-01T00:00:00Z');
+  return {id,url,content_hash,body,fetched_at:stamp};
+}
+
 describe('known audiobook verification', () => {
+  it('rejects an unrelated title despite otherwise matching exact product identity',async()=>{
+    const workId=importWork(db,seed,book,doc),before=importedState();
+    const wrong={...product,title:'An Entirely Different Adventure'};
+    expect(()=>verifyAudioProduct({product:wrong},wrong.asin,seed,book.number,book.author,book.title)).toThrow(/title conflicts/);
+    const request=vi.fn().mockResolvedValue(new Response(JSON.stringify({product:wrong}),{headers:{'content-type':'application/json'}}));
+    vi.stubGlobal('fetch',request);
+    const payload={seriesId:seed.id,workId,asin:wrong.asin,sourceUrl:doc.url};
+    await expect(processAudio(db,payload,[seed])).rejects.toThrow(/title conflicts/);
+    await expect(processAudio(db,payload,[seed])).rejects.toThrow(/title conflicts/);
+    expect(importedState()).toEqual(before);
+    expect(request).toHaveBeenCalledOnce();
+    const retained=db.prepare('SELECT body FROM catalog_documents WHERE url=?').get(audioProductUrl(wrong.asin)) as {body:string};
+    expect(JSON.parse(retained.body).product.title).toBe(wrong.title);
+  });
+  it.each(['Test Series: ','Test Series 1: ','Test Series, Book 1: '])('does not discard a conflicting story title after %s',prefix=>{
+    const expected={...book,title:`${prefix}First Tale`};
+    const workId=importWork(db,seed,expected,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const wrong={...product,title:`${prefix}Second Tale`},before=importedState();
+    expect(()=>verifyAudioProduct({product:wrong},wrong.asin,seed,work.number,work.author,work.title)).toThrow(/title conflicts/);
+    expect(()=>importAudioProduct(db,seed,work,wrong,doc)).toThrow(/title conflicts/);
+    expect(importedState()).toEqual(before);
+  });
+  it('checks title compatibility for a direct import even when no verifier was called first',()=>{
+    const workId=importWork(db,seed,book,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    importAudioProduct(db,seed,work,product,retainedProduct());
+    const before=importedState();
+    expect(()=>importAudioProduct(db,seed,work,{...product,title:'Another Story'},doc)).toThrow(/title conflicts/);
+    expect(importedState()).toEqual(before);
+  });
+  it('does not let a direct caller substitute a different canonical title snapshot',()=>{
+    const workId=importWork(db,seed,book,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const before=importedState();
+    expect(()=>importAudioProduct(db,seed,{...work,title:'A Caller Supplied Title'},{...product,title:'A Caller Supplied Title'},doc)).toThrow(/Canonical work identity changed/);
+    expect(importedState()).toEqual(before);
+  });
+  it('rechecks the current canonical title after a product request was in flight',async()=>{
+    const workId=importWork(db,seed,book,doc);
+    vi.stubGlobal('fetch',vi.fn().mockImplementation(async()=>{
+      db.prepare('UPDATE catalog_works SET title=? WHERE id=?').run('A Corrected Canonical Title',workId);
+      return new Response(JSON.stringify({product}),{headers:{'content-type':'application/json'}});
+    }));
+    await expect(processAudio(db,{seriesId:seed.id,workId,asin:product.asin,sourceUrl:doc.url},[seed])).rejects.toThrow(/Canonical work identity changed/);
+    expect(db.prepare('SELECT title FROM catalog_works WHERE id=?').get(workId)).toEqual({title:'A Corrected Canonical Title'});
+    expect(db.prepare('SELECT * FROM books').all()).toHaveLength(0);
+    expect(db.prepare("SELECT * FROM catalog_editions WHERE format='audiobook'").all()).toHaveLength(0);
+  });
+  it.each([
+    {authors:[{name:'Unexpected Author'}]}, {series:[{title:seed.title,sequence:'2'}]},
+    {series:[{title:'Another Series',sequence:'1'}]}, {format_type:'abridged'}, {language:'german'}
+  ])('a matching title cannot bypass the other identity checks in direct imports: %j',changed=>{
+    const workId=importWork(db,seed,book,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const before=importedState();
+    expect(()=>importAudioProduct(db,seed,work,{...product,...changed},doc)).toThrow(ReviewError);
+    expect(importedState()).toEqual(before);
+  });
+  it.each([
+    ['First Tale','Test Series, Book 1: First Tale'],
+    ['First Tale','First Tale: A Fantasy LitRPG Adventure'],
+    ['Test Series 1','Test Series Book One'],
+    ['Test Series 1','Test Series 1: A Fantasy LitRPG Adventure']
+  ])('accepts the supported canonical/retailer title pair %s / %s', (title,audioTitle)=>{
+    const workId=importWork(db,seed,{...book,title},doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const known={...product,title:audioTitle};
+    expect(()=>verifyAudioProduct({product:known},known.asin,seed,work.number,work.author,work.title)).not.toThrow();
+    importAudioProduct(db,seed,work,known,retainedProduct(known));
+    expect(db.prepare('SELECT title FROM catalog_works WHERE id=?').get(workId)).toEqual({title});
+    expect(db.prepare('SELECT title FROM books WHERE id=?').get(known.asin)).toEqual({title:audioTitle});
+  });
+  it('does not use a bare series-and-volume title as a wildcard for a distinctive work',()=>{
+    const workId=importWork(db,seed,{...book,title:'First Tale'},doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const before=importedState();
+    expect(()=>importAudioProduct(db,seed,work,{...product,title:'Test Series Book 1'},doc)).toThrow(/title conflicts/);
+    expect(importedState()).toEqual(before);
+  });
+  it('verifies a split title/subtitle but rejects a later conflicting distinctive subtitle',()=>{
+    const workId=importWork(db,seed,{...book,title:'First Tale'},doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const split={...product,title:'Test Series Book 1',subtitle:'First Tale: A LitRPG Adventure'};
+    expect(()=>verifyAudioProduct({product:split},split.asin,seed,work.number,work.author,work.title)).not.toThrow();
+    importAudioProduct(db,seed,work,split,retainedProduct(split));
+    const before=importedState();
+    for(const other of [{...split,subtitle:'Second Tale: A LitRPG Adventure'},{...split,title:'Another Story'}]){
+      expect(()=>verifyAudioProduct({product:other},other.asin,seed,work.number,work.author,work.title)).toThrow(/title conflicts/);
+      expect(()=>importAudioProduct(db,seed,work,other,doc)).toThrow(/title conflicts/);
+    }
+    expect(importedState()).toEqual(before);
+  });
+  it('can verify numbered discovery before its title is known, without treating that as a canonical-title match',()=>{
+    const discovered={...product,title:'Newly Discovered Distinct Title'};
+    expect(()=>verifyAudioProduct({product:discovered},discovered.asin,seed,book.number,book.author)).not.toThrow();
+    expect(()=>verifyAudioProduct({product:discovered},discovered.asin,seed,book.number,book.author,book.title)).toThrow(/title conflicts/);
+  });
+  it('requires retained exact product facts for a direct import, not a synthesized product with a source ID',()=>{
+    const workId=importWork(db,seed,book,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const exact=retainedProduct(),before=importedState();
+    expect(()=>importAudioProduct(db,seed,work,product,doc)).toThrow(/exact current retained product document/);
+    expect(()=>importAudioProduct(db,seed,work,product,{...exact,id:'unretained'})).toThrow(/exact current retained product document/);
+    const invented={...product,release_date:'2026-08-01',narrators:[{name:'Invented Narrator'}]};
+    expect(()=>verifyCanonicalAudioProduct(db,{product:invented},product.asin,seed,work,exact)).toThrow(/exact current retained product document/);
+    expect(()=>importAudioProduct(db,seed,work,invented,exact)).toThrow(/exact current retained product document/);
+    const body=JSON.stringify({product:invented});
+    expect(()=>importAudioProduct(db,seed,work,invented,{...exact,body,content_hash:hash(body)})).toThrow(/exact current retained product document/);
+    expect(()=>importAudioProduct(db,seed,work,product,{...exact,fetched_at:'2026-09-20T00:00:00Z'})).toThrow(/exact current retained product document/);
+    expect(importedState()).toEqual(before);
+  });
+  it('rejects a retained product copied from another endpoint or corrupted after retention',()=>{
+    const workId=importWork(db,seed,book,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const other=retainedProduct(product,audioProductUrl('B000000002')),before=importedState();
+    expect(()=>importAudioProduct(db,seed,work,product,other)).toThrow(/exact current retained product document/);
+    const exact=retainedProduct();
+    db.prepare('UPDATE catalog_documents SET body=body||? WHERE id=?').run(' ',exact.id);
+    expect(()=>importAudioProduct(db,seed,work,product,exact)).toThrow(/exact current retained product document/);
+    expect(importedState()).toEqual(before);
+  });
+  it('will not re-import old product proof after a newer query variant has become current',()=>{
+    const workId=importWork(db,seed,book,doc),work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+    const exact=retainedProduct();
+    importAudioProduct(db,seed,work,product,exact);
+    retainedProduct({...product,title:'Different Current Work'},`https://api.audible.com/1.0/catalog/products/${product.asin}?response_groups=series`,'2026-09-19T01:00:00Z');
+    const before=importedState();
+    expect(()=>importAudioProduct(db,seed,work,product,exact)).toThrow(/exact current retained product document/);
+    expect(importedState()).toEqual(before);
+  });
   it('verifies a solo-authored volume in a series with a broader reviewed coauthor roster',async()=>{
     const collaboration={...seed,author:'Test Author, Co Author',authorAliases:[...seed.authorAliases,'Co Author']};
     const workId=importWork(db,collaboration,book,doc);
@@ -55,7 +190,7 @@ describe('known audiobook verification', () => {
     await processAudio(db,payload,[seed]);
     const binding=db.prepare('SELECT identifiers_json FROM catalog_editions WHERE legacy_book_id=?').get(product.asin);
     db.prepare('UPDATE catalog_works SET title=? WHERE id=?').run('Another book at the same number',workId);
-    await expect(processAudio(db,payload,[seed])).rejects.toThrow(/binding needs an explicit review/);
+    await expect(processAudio(db,payload,[seed])).rejects.toThrow(/title conflicts with the selected canonical work/);
     expect(db.prepare('SELECT identifiers_json FROM catalog_editions WHERE legacy_book_id=?').get(product.asin)).toEqual(binding);
     expect(request).toHaveBeenCalledOnce();
   });
@@ -99,12 +234,13 @@ describe('known audiobook verification', () => {
     const workId=importWork(db,seed,book,doc),full=book.description.repeat(4);
     db.prepare('UPDATE catalog_works SET source_url=?,source_description=? WHERE id=?').run(audioProductUrl(product.asin),'A clipped synopsis from the earlier API.',workId);
     let work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
-    importAudioProduct(db,seed,work,{...product,publisher_summary:full},doc);
+    const fullProduct={...product,publisher_summary:full},exact=retainedProduct(fullProduct);
+    importAudioProduct(db,seed,work,fullProduct,exact);
     expect(db.prepare('SELECT source_description FROM catalog_works WHERE id=?').get(workId)).toEqual({source_description:full});
     const preferred=book.description.repeat(3);
     db.prepare('UPDATE catalog_works SET source_url=?,source_description=? WHERE id=?').run(doc.url,preferred,workId);
     work=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
-    importAudioProduct(db,seed,work,{...product,publisher_summary:full},doc);
+    importAudioProduct(db,seed,work,fullProduct,exact);
     expect(db.prepare('SELECT source_description FROM catalog_works WHERE id=?').get(workId)).toEqual({source_description:preferred});
   });
   it('does not reuse a cached identifier stub or send its conditional validators', async () => {

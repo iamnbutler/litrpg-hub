@@ -1,9 +1,13 @@
 import type Database from 'better-sqlite3';
+import { readFileSync } from 'node:fs';
 import { validReleaseDate } from '../../../src/lib/catalog.js';
 import { assessmentHash } from '../jev/assessment.js';
-import { audioProductUrl } from './audio.js';
+import { audioProductUrl, audioWorkIdentity, verifyCanonicalAudioProduct } from './audio.js';
 import { extractionHash, extractionInput, profileInput, seriesExtractionInput } from './inference.js';
-import type { SeedSeries, WorkRow } from './types.js';
+import type { Document, SeedSeries, WorkRow } from './types.js';
+
+// Load the reviewed identities without importing the pipeline's mutation/dispatch graph.
+const configuredSeeds=JSON.parse(readFileSync(new URL('../config/catalog-seeds.json',import.meta.url),'utf8')) as SeedSeries[];
 
 type CacheState = 'current' | 'stale' | 'missing' | 'invalid';
 type JobState = 'pending' | 'running' | 'retry' | 'review' | 'failed' | 'completed';
@@ -71,7 +75,7 @@ const summarizeJobs = (jobs: JobRow[]) => {
 };
 
 /** Read-only, offline coverage of retained evidence. A contiguous list is never proof of completeness. */
-export function auditCatalog(db: Database.Database, now = new Date()) {
+export function auditCatalog(db: Database.Database, now = new Date(), registry:readonly SeedSeries[]=configuredSeeds) {
   const generatedAt = now.toISOString(), today = generatedAt.slice(0, 10);
   return db.transaction(() => {
     const series = db.prepare('SELECT id,title,author,description,metadata_json,status,priority FROM catalog_series ORDER BY priority DESC,id').all() as SeriesRow[];
@@ -129,11 +133,27 @@ export function auditCatalog(db: Database.Database, now = new Date()) {
       const id = claim.entity_type === 'series' ? claim.entity_id : workById.get(claim.entity_id)?.series_id;
       if (id) addSource(id, claim.url);
     }
-    const confirmedAudio = (edition: EditionRow): boolean => {
-      if (!['audiobook', 'dramatized'].includes(edition.format)) return false;
-      const identifiers = parseObject(edition.identifiers_json);
-      return typeof identifiers?.verifiedDocument === 'string' && documentById.has(identifiers.verifiedDocument)
-        || !edition.legacy_book_id && fetched.has(edition.source_url);
+    const confirmedAudio = (edition: EditionRow, work:WorkRow, seed:SeedSeries|undefined): boolean => {
+      // A source-only edition, including a real fetched page, needs an explicit
+      // publisher-proof rule before it can establish confirmation. Research notes
+      // and document presence cannot stand in for verified recording identity.
+      if (!seed || edition.format!=='audiobook' || !edition.legacy_book_id) return false;
+      const identifiers=parseObject(edition.identifiers_json);
+      if(identifiers?.asin!==edition.legacy_book_id||identifiers.marketplace!=='US'
+        ||typeof identifiers.verifiedDocument!=='string'||identifiers.workIdentityHash!==audioWorkIdentity(work))return false;
+      try{
+        const base=`https://api.audible.com/1.0/catalog/products/${edition.legacy_book_id}`;
+        const recorded=db.prepare('SELECT * FROM catalog_documents WHERE id=?').get(identifiers.verifiedDocument) as Document|undefined;
+        if(!recorded||audioSourceIdentity(recorded.url)!==base)return false;
+        // Historical proof does not override a newer retained response at another
+        // response_groups URL. The common verifier also checks the exact raw body.
+        const current=db.prepare(`SELECT d.* FROM catalog_urls u JOIN catalog_documents d ON d.id=u.document_id
+          WHERE u.url=? OR u.url LIKE ? ORDER BY u.checked_at DESC,d.fetched_at DESC,d.id LIMIT 1`).get(base,`${base}?%`) as Document|undefined;
+        const doc=current??recorded;
+        if(audioSourceIdentity(doc.url)!==base)return false;
+        verifyCanonicalAudioProduct(db,JSON.parse(doc.body),edition.legacy_book_id,seed,work,doc);
+        return true;
+      }catch{return false;}
     };
     for (const work of works) addSource(work.series_id, work.source_url);
     for (const edition of editions) {
@@ -145,11 +165,15 @@ export function auditCatalog(db: Database.Database, now = new Date()) {
 
     const reports = series.map(row => {
       const selected = works.filter(work => work.series_id === row.id);
+      const configured=registry.filter(seed=>seed.id===row.id);
+      // A DB-row fallback suffices for inference hashes, never for granting identity
+      // aliases or confirming audio without a selected, unambiguous registry entry.
+      const verificationSeed=configured.length===1?configured[0]:undefined;
       const seed: SeedSeries = { id: row.id, title: row.title, author: row.author, authorAliases: [], aliases: [], genres: [], sources: [], priority: row.priority };
       const details = selected.map(work => {
         const all = editionsByWork.get(work.id) ?? [], audio = all.filter(edition => ['audiobook', 'dramatized'].includes(edition.format));
         const dates = audio.map(edition => validReleaseDate(edition.release_date, now)).filter((date): date is string => !!date).sort();
-        return { work, audio, confirmed: audio.some(confirmedAudio), formats: new Set(all.map(edition => edition.format)),
+        return { work, audio, confirmed: audio.some(edition=>confirmedAudio(edition,work,verificationSeed)), formats: new Set(all.map(edition => edition.format)),
           audioState: !audio.length ? 'none' : !dates.length ? 'undated' : dates[0] <= today ? 'released' : 'upcoming',
           sourceState: !work.source_description.trim() ? 'missing' : work.source_description.trim().length < 100 ? 'thin' : 'sufficient',
           summary: cacheState(work.metadata_json, extractionHash(extractionInput(work)), !!work.description.trim()),
@@ -188,7 +212,7 @@ export function auditCatalog(db: Database.Database, now = new Date()) {
         const matches = details.filter(predicate).map(detail => workReference(detail.work));
         if (matches.length) gaps.push({ code, message, works: matches });
       };
-      addWorkGap('audio-not-confirmed', 'Find a publisher audio edition or verify an observed retailer identifier. Lack of evidence here does not establish that no audiobook exists.', detail => !detail.confirmed);
+      addWorkGap('audio-not-confirmed', 'Verify an observed exact audiobook product against its current work and selected series identity. Source-only records remain unverified; lack of evidence here does not establish that no audiobook exists.', detail => !detail.confirmed);
       addWorkGap('audio-date-missing', 'Confirm an audio-specific release date; print and ebook dates cannot fill this gap.', detail => detail.audioState === 'undated');
       addWorkGap('source-description-missing', 'Find attributable descriptive evidence for these individual works.', detail => detail.sourceState === 'missing');
       addWorkGap('source-description-thin', 'Find a fuller individual-book description before further extraction.', detail => detail.sourceState === 'thin');
@@ -219,8 +243,8 @@ export function auditCatalog(db: Database.Database, now = new Date()) {
     return {
       generatedAt,
       definitions: {
-        confirmedAudio: 'A retained publisher audio document or an independently verified retailer product document establishes the audiobook edition. Matched legacy records without that evidence remain unverified.',
-        audioDates: 'Released, upcoming, and undated counts describe works using retained audio editions only. Unverified legacy audio is counted separately; ebook and print dates are never borrowed.',
+        confirmedAudio: 'An exact retained US full-audiobook product passes the current canonical title, author, series, volume, document, and work-binding checks using a reviewed registry identity. Source-only records and matched legacy rows without that proof remain unverified.',
+        audioDates: 'Released, upcoming, and undated are operational counts of dates on all retained audio editions, including unverified records. They are not reverified release-state totals; ebook and print dates are never borrowed.',
         ebookOnly: 'An ebook is retained and no audio edition is retained. This is a catalog gap, not a claim that an audiobook does not exist.',
         currentCache: 'Promoted summaries and Jev assessments must match the current source, model, and rubric input hash. No inference is performed by this audit.'
       },

@@ -263,14 +263,17 @@ describe('identified audio promotion', () => {
     expect(db.prepare("SELECT * FROM catalog_claims WHERE entity_type='work'").all()).toHaveLength(0);
   });
 
-  it('preserves verified binding history when a later canonical change still resembles the product title', async () => {
+  it.each([
+    {suffix:'Changed Canonical Credit',message:/Two different titles/},
+    {suffix:'A Fantasy LitRPG Adventure',message:/binding needs an explicit review/}
+  ])('preserves verified binding history after the canonical suffix changes to $suffix', async ({suffix,message}) => {
     const lead = payload(); retain(audioProductUrl(ASIN), JSON.stringify({ product }));
     const result = await processIdentifiedAudio(db, lead, [seed]);
     const prior = db.prepare('SELECT identifiers_json FROM catalog_editions').get() as { identifiers_json: string };
     const work = db.prepare('SELECT * FROM catalog_works').get() as WorkRow;
     expect(JSON.parse(prior.identifiers_json).workIdentityHash).toBe(audioWorkIdentity(work));
-    db.prepare('UPDATE catalog_works SET title=? WHERE id=?').run(`${product.title}: Changed Canonical Credit`, result.work);
-    await expect(processIdentifiedAudio(db, lead, [seed])).rejects.toThrow(/binding needs an explicit review/);
+    db.prepare('UPDATE catalog_works SET title=? WHERE id=?').run(`${product.title}: ${suffix}`, result.work);
+    await expect(processIdentifiedAudio(db, lead, [seed])).rejects.toThrow(message);
     expect(db.prepare('SELECT identifiers_json FROM catalog_editions').get()).toEqual(prior);
   });
 });

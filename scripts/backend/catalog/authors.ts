@@ -25,6 +25,7 @@ import { contentAssessmentHash, type ContentAssessment } from '../covers/content
 import { loadContentAssessment } from '../covers/content-cache.js';
 import { evaluate, type JevResponse, type Question } from '../jev/client.js';
 import { enqueue, hash } from './queue.js';
+import { paidJev } from './paid-jev.js';
 import { contentBook } from './inputs.js';
 import { seeds } from './pipeline.js';
 
@@ -511,22 +512,19 @@ export async function processAuthorProfile(db: Database.Database, authorId: stri
   const requestedModel = process.env.JEV_MODEL ?? 'jev-latest';
   const inputHash = authorProfileHash(state, requestedModel);
   const evaluatedAt = new Date().toISOString();
-  let response: JevResponse, cached = false;
+  let response: JevResponse, cached = false, paidUsage = { input_tokens: 0, output_tokens: 0 };
   if ((options.confirm ?? 'jev') === 'evidence') {
     response = { model: DRY_RUN_MODEL, usage: { input_tokens: 0, output_tokens: 0 },
       answers: Object.fromEntries(authorFields.map(f => [f, { type: 'choice' as const,
         choice: summaries[f].eligible ? 'present' : 'unknown', confidence: summaries[f].ceiling,
         probabilities: { present: 0, absent: 0, unknown: 0 } }])) };
   } else {
-    const row = db.prepare('SELECT result_json FROM catalog_inferences WHERE id=?')
-      .get(hash(['author', authorId, 'author-profile', inputHash])) as { result_json: string } | undefined;
-    if (row) { response = JSON.parse(row.result_json) as JevResponse; cached = true; }
-    else {
-      response = await (options.evaluate ?? evaluate)(state, authorQuestions);
-      db.prepare(`INSERT OR IGNORE INTO catalog_inferences(id,entity_type,entity_id,kind,input_hash,requested_model,actual_model,rubric_version,result_json,usage_json,evaluated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)`)
-        .run(hash(['author', authorId, 'author-profile', inputHash]), 'author', authorId, 'author-profile', inputHash,
-          requestedModel, response.model, AUTHOR_RUBRIC_VERSION, JSON.stringify(response), JSON.stringify(response.usage), evaluatedAt);
-    }
+    // Retained before it is judged: see catalog/paid-jev.ts for the replay and refusal rules.
+    const paid = await paidJev(db, state, {
+      entityType: 'author', entity: authorId, kind: 'author-profile', inputHash,
+      rubricVersion: AUTHOR_RUBRIC_VERSION, requestedModel, questions: authorQuestions, evaluate: options.evaluate
+    });
+    response = paid.response; cached = paid.cached; paidUsage = paid.usage;
   }
   const profiles = toAuthorProfiles(evidence, summaries, response, { inputHash, requestedModel, evaluatedAt });
   // A dry run reports what a review would find. It must never write a profile, reserve the
@@ -535,5 +533,5 @@ export async function processAuthorProfile(db: Database.Database, authorId: stri
   if (!dryRun) saveAuthorProfiles(db, evidence, profiles);
   return { ...base, dryRun, recorded: dryRun ? [] : profiles.map(p => p.field),
     present: profiles.filter(p => p.verdict === 'present').map(p => p.field), profiles,
-    cached, input_tokens: cached ? 0 : response.usage.input_tokens, output_tokens: cached ? 0 : response.usage.output_tokens };
+    cached, input_tokens: paidUsage.input_tokens, output_tokens: paidUsage.output_tokens };
 }

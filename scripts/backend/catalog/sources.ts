@@ -1,14 +1,18 @@
 import type Database from 'better-sqlite3';
 import { hash } from './queue.js';
 import { ReviewError, type Document } from './types.js';
+import { THE_LAND_BOOK_URLS, THE_LAND_ORIGIN } from './the-land-adapter.js';
 
-const hosts = new Set(['aethonbooks.com','soundbooththeater.com','mattdinniman.com','www.penguinrandomhouse.com','podiumentertainment.com','www.podiumentertainment.com','portal-books.com','michaelchatfield.com','travisbagwell.com','tomlitrpg.com','jrmathewsauthor.com','afkauthor.com','sarahlinauthor.blogspot.com','www.willwight.com','www.mountaindalepress.store','mountaindalepress.store','api.audible.com']);
+const hosts = new Set(['aethonbooks.com','soundbooththeater.com','mattdinniman.com','www.penguinrandomhouse.com','podiumentertainment.com','www.podiumentertainment.com','portal-books.com','michaelchatfield.com','travisbagwell.com','tomlitrpg.com','jrmathewsauthor.com','afkauthor.com','sarahlinauthor.blogspot.com','www.willwight.com','www.mountaindalepress.store','mountaindalepress.store','www.litrpg.com','api.audible.com']);
 const agent = 'LitRPGHub/0.2 (+https://github.com/iamnbutler/litrpg-hub)';
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve,ms));
 export function sourceUrl(value: string): URL {
   const url = new URL(value);
   if (url.protocol !== 'https:' || !hosts.has(url.hostname) || url.username || url.password || url.port) throw new ReviewError('Source URL is outside the configured publisher/author hosts.');
   if (url.hostname === 'api.audible.com' && !/^\/1\.0\/catalog\/products\/[A-Z0-9]{10}$/.test(url.pathname)) throw new ReviewError('Only an already identified Audible product can be fetched.');
+  if (url.origin === THE_LAND_ORIGIN && value !== `${THE_LAND_ORIGIN}/robots.txt` && !THE_LAND_BOOK_URLS.includes(value)) {
+    throw new ReviewError('Only the eight reviewed Land work pages and their robots policy can be fetched.');
+  }
   if (url.hostname === 'sarahlinauthor.blogspot.com' && !(url.pathname === '/robots.txt' && !url.search
     || /^\/p\/(?:the-weirkey-chronicles|street-cultivation)\.html$/.test(url.pathname) && ['', '?m=0'].includes(url.search))) {
     throw new ReviewError('Only the two reviewed Sarah Lin series pages and their robots policy can be fetched.');

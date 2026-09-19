@@ -7,6 +7,8 @@ import { parseArgs } from 'node:util';
 import { getDb, closeDb } from '../db.js';
 import { runMigrations } from '../migrate.js';
 import { claim, fail, finish } from './queue.js';
+import { PaidResponseStorageError, ReviewError } from './types.js';
+import { JevPaidStorageError, JevReviewError, JevTransactionError } from './paid-jev.js';
 import { authorFields, collectAuthorEvidence, planAuthorJobs, processAuthorProfile, summarizeAuthor } from './authors.js';
 
 try {
@@ -53,9 +55,15 @@ try {
           console.log(`author ${job.entity_id}: ${JSON.stringify(result)}`);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Author profile job failed';
-          fail(db, job, message); errors++;
+          // A rejected answer was still paid for; do not report the run as free.
+          if (error instanceof JevReviewError || error instanceof JevPaidStorageError) {
+            usage.input_tokens += error.usage.input_tokens; usage.output_tokens += error.usage.output_tokens;
+          }
+          // A paid answer that could not be judged parks for review; one that could not be
+          // stored stops the run, because every later job would risk the same lost purchase.
+          fail(db, job, message, error instanceof ReviewError); errors++;
           console.error(`author ${job.entity_id}: ${message}`);
-          if (/HTTP (401|403|429)/.test(message)) break;
+          if (/HTTP (401|403|429)/.test(message) || error instanceof PaidResponseStorageError || error instanceof JevTransactionError) break;
         }
       }
       console.log(JSON.stringify({ completed, errors, tokens: usage }));

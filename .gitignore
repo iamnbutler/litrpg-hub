@@ -38,3 +38,6 @@ vite.config.ts.timestamp-*
 
 # Generated static data (built by pipeline, but committed for backfill data)
 # /static/data/*.json
+
+# Overnight review handoff (not part of the project)
+/PAID_JEV_REVIEW.md

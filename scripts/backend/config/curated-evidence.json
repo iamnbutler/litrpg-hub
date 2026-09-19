@@ -2930,5 +2930,221 @@
       "audioRuntimeMinutes": null,
       "links": []
     }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.litrpg.com/litrpg-original",
+    "observedAt": "2026-09-19T05:07:56.223Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Founding",
+      "series": "Chaos Seeds",
+      "number": 1,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/B071DNLS1F/?source_code=AUDFPWS0223189MWT-BK-ACX0-085321&ref=acx_bty_BK_ACX0_085321_rh_us",
+          "format": "audiobook",
+          "asin": "B071DNLS1F"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://dannagle.com/books/the_land__forging_(book_2)",
+    "observedAt": "2026-09-19T05:20:10.454Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Forging",
+      "series": "Chaos Seeds",
+      "number": 2,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "format": "audiobook",
+          "url": "https://www.audible.com/pd/The-Land-Forging-Audiobook/B072VTTP23",
+          "asin": "B072VTTP23"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.audible.com/es_US/pd/The-Land-Alliances-A-LitRPG-Saga-Audiolibro/B07424XXN2",
+    "observedAt": "2026-09-19T05:10:33.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Alliances: A LitRPG Saga",
+      "series": "Chaos Seeds",
+      "number": 3,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/The-Land-Alliances-A-LitRPG-Saga-Audiolibro/B07424XXN2",
+          "format": "audiobook",
+          "asin": "B07424XXN2"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.audible.com/series/Chaos-Seeds-Audiobooks/B072YW73X4",
+    "observedAt": "2026-09-19T05:10:33.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Catacombs",
+      "series": "Chaos Seeds",
+      "number": 4,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Land-Catacombs-Audiobook/B074V9MCRJ",
+          "format": "audiobook",
+          "asin": "B074V9MCRJ"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.audible.com/es_US/pd/The-Land-Swarm-Audiolibro/B076PPCJRM",
+    "observedAt": "2026-09-19T05:10:33.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Swarm",
+      "series": "Chaos Seeds",
+      "number": 5,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/The-Land-Swarm-Audiolibro/B076PPCJRM",
+          "format": "audiobook",
+          "asin": "B076PPCJRM"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.audible.com/series/Chaos-Seeds-Audiobooks/B072YW73X4",
+    "observedAt": "2026-09-19T05:10:33.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Raiders: A LitRPG Saga",
+      "series": "Chaos Seeds",
+      "number": 6,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Land-Raiders-A-LitRPG-Saga-Audiobook/B078NZ6PFP",
+          "format": "audiobook",
+          "asin": "B078NZ6PFP"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.audible.com/series/Chaos-Seeds-Audiobooks/B072YW73X4",
+    "observedAt": "2026-09-19T05:10:33.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Predators: A LitRPG Saga",
+      "series": "Chaos Seeds",
+      "number": 7,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/pd/The-Land-Predators-A-LitRPG-Saga-Audiobook/B07F3MCHF4",
+          "format": "audiobook",
+          "asin": "B07F3MCHF4"
+        }
+      ]
+    }
+  },
+  {
+    "seriesId": "the-land",
+    "sourceUrl": "https://www.audible.com/es_US/pd/The-Land-Monsters-Audiolibro/B088WZZX2W",
+    "observedAt": "2026-09-19T05:10:33.000Z",
+    "method": "curated-source-summary",
+    "book": {
+      "title": "The Land: Monsters",
+      "series": "Chaos Seeds",
+      "number": 8,
+      "author": "Aleron Kong",
+      "description": "",
+      "coverUrl": null,
+      "releaseDate": null,
+      "publicationStatus": "unknown",
+      "format": "unknown",
+      "narrator": null,
+      "audioReleaseDate": null,
+      "audioRuntimeMinutes": null,
+      "links": [
+        {
+          "url": "https://www.audible.com/es_US/pd/The-Land-Monsters-Audiolibro/B088WZZX2W",
+          "format": "audiobook",
+          "asin": "B088WZZX2W"
+        }
+      ]
+    }
   }
 ]

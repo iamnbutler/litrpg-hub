@@ -4,8 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { auditCatalog } from './audit.js';
 import { assessmentHash } from '../jev/assessment.js';
 import { extractionHash, extractionInput, profileInput } from './inference.js';
-import { audioProductUrl } from './audio.js';
-import type { SeedSeries, WorkRow } from './types.js';
+import { audioProductUrl, audioWorkIdentity } from './audio.js';
+import { hash } from './queue.js';
+import type { Document, SeedSeries, WorkRow } from './types.js';
 
 let db: Database.Database;
 const now = new Date('2026-09-19T12:00:00.000Z');
@@ -25,15 +26,33 @@ function work(number: number, sourceDescription = sourceCopy): string {
     .run(id, seed.id, number, `Volume ${number}`, seed.author, sourceDescription, `https://aethonbooks.com/book/test-${number}/`, '2020-01-01', now.toISOString());
   return id;
 }
-function document(id: string, url: string, fetchedAt = '2026-09-01T12:00:00.000Z') {
-  db.prepare('INSERT INTO catalog_documents(id,url,content_hash,body,fetched_at) VALUES(?,?,?,?,?)').run(id, url, id, 'PRIVATE_RAW_PAGE', fetchedAt);
+function document(id: string, url: string, fetchedAt = '2026-09-01T12:00:00.000Z', body='PRIVATE_RAW_PAGE'):Document {
+  const content_hash=hash(body);
+  db.prepare('INSERT INTO catalog_documents(id,url,content_hash,body,fetched_at) VALUES(?,?,?,?,?)').run(id, url, content_hash, body, fetchedAt);
+  return {id,url,content_hash,body,fetched_at:fetchedAt};
 }
 function edition(id: string, workId: string, format: string, date: string | null, legacyId: string | null = null, verifiedDocument?: string) {
-  const url = `https://soundbooththeater.com/shop/audiobooks/${id}/`;
+  const url = legacyId?`https://www.audible.com/pd/${legacyId}`:`https://soundbooththeater.com/shop/audiobooks/${id}/`;
   if (legacyId) db.prepare('INSERT INTO books(id,title,author,release_date) VALUES(?,?,?,?)').run(legacyId, id, seed.author, date ?? '');
   else document(id, url);
+  const row=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
   db.prepare('INSERT INTO catalog_editions(id,work_id,legacy_book_id,format,title,source_url,source_name,release_date,identifiers_json,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)')
-    .run(id, workId, legacyId, format, id, url, legacyId ? 'Audible' : 'Soundbooth Theater', date, JSON.stringify(verifiedDocument ? { verifiedDocument } : {}), now.toISOString());
+    .run(id, workId, legacyId, format, id, url, legacyId ? 'Audible' : 'Soundbooth Theater', date,
+      JSON.stringify(verifiedDocument ? { verifiedDocument,asin:legacyId,marketplace:'US',workIdentityHash:audioWorkIdentity(row) } : {}), now.toISOString());
+}
+function exactProduct(workId:string,asin:string,changed:Record<string,unknown>={},id=`product-${asin}`,url=audioProductUrl(asin),fetchedAt='2026-09-01T12:00:00.000Z'):Document {
+  const row=db.prepare('SELECT * FROM catalog_works WHERE id=?').get(workId) as WorkRow;
+  const product={asin,title:row.title,language:'english',content_type:'Product',format_type:'unabridged',authors:[{name:row.author}],
+    series:[{title:seed.title,sequence:String(row.number)}],release_date:'2025-01-01',publisher_summary:'PRIVATE_RAW_PAGE',...changed};
+  const doc=document(id,url,fetchedAt,JSON.stringify({product}));
+  db.prepare('INSERT OR REPLACE INTO catalog_urls(url,document_id,checked_at,next_check_at) VALUES(?,?,?,?)')
+    .run(url,id,fetchedAt,'2026-09-25T00:00:00.000Z');
+  return doc;
+}
+function verifiedEdition(id:string,workId:string,date:string|null,asin:string):Document {
+  const doc=exactProduct(workId,asin,{release_date:date??undefined});
+  edition(id,workId,'audiobook',date,asin,doc.id);
+  return doc;
 }
 function job(id: string, kind: string, entity: string, status: string, payload: unknown) {
   db.prepare('INSERT INTO catalog_jobs(id,kind,entity_id,input_hash,payload_json,status,available_at,created_at,updated_at,last_error) VALUES(?,?,?,?,?,?,?,?,?,?)')
@@ -58,11 +77,11 @@ describe('offline catalog coverage audit', () => {
     const one = work(1), three = work(3), four = work(4), five = work(5);
     edition('ebook-1', one, 'ebook', '2020-01-01');
     edition('ebook-3', three, 'ebook', '2020-01-01');
-    edition('audio-3', three, 'audiobook', null);
-    edition('audio-4', four, 'audiobook', '2026-12-01');
-    edition('audio-5', five, 'audiobook', '2025-01-01');
-    edition('audio-5-new-performance', five, 'audiobook', '2027-01-01');
-    const report = auditCatalog(db, now).series[0];
+    verifiedEdition('audio-3', three, null, 'B000000003');
+    verifiedEdition('audio-4', four, '2026-12-01', 'B000000004');
+    verifiedEdition('audio-5', five, '2025-01-01', 'B000000005');
+    verifiedEdition('audio-5-new-performance', five, '2027-01-01', 'B000000015');
+    const report = auditCatalog(db, now, [seed]).series[0];
     expect(report.counts).toMatchObject({ canonicalWorks: 4, audiobookWorks: 3, confirmedAudiobookWorks: 3, ebookOnlyWorks: 1,
       releasedAudioWorks: 1, upcomingAudioWorks: 1, undatedAudioWorks: 1 });
     expect(report.missingIntegerVolumes).toEqual([2]);
@@ -92,9 +111,8 @@ describe('offline catalog coverage audit', () => {
     edition('legacy-1', one, 'audiobook', '2025-01-01', 'B000000001');
     edition('ebook-2', two, 'ebook', '2024-01-01');
     job('audio-lead', 'audio-edition', `${two}--B000000002`, 'pending', { seriesId: seed.id, workId: two, asin: 'B000000002' });
-    document('verified-product', audioProductUrl('B000000003'));
-    edition('legacy-3', three, 'audiobook', null, 'B000000003', 'verified-product');
-    const report = auditCatalog(db, now).series[0];
+    verifiedEdition('legacy-3',three,null,'B000000003');
+    const report = auditCatalog(db, now, [seed]).series[0];
     expect(report.counts).toMatchObject({ audiobookWorks: 2, confirmedAudiobookWorks: 1, unverifiedLegacyAudioWorks: 1, ebookOnlyWorks: 1 });
     expect(report.jobs.audioVerification.pending).toBe(1);
     expect(report.gaps.find(gap => gap.code === 'audio-not-confirmed')?.works?.map(row => row.id)).toEqual([one, two]);
@@ -203,5 +221,111 @@ describe('offline catalog coverage audit', () => {
     for (const privateText of ['PRIVATE_SOURCE_COPY', 'PRIVATE_RAW_PAGE', 'PRIVATE_READER_TEXT', 'PRIVATE_ERROR', 'sk-do-not-output', 'token=', 'secret:']) expect(json).not.toContain(privateText);
     expect(request).not.toHaveBeenCalled();
     expect(() => JSON.parse(json)).not.toThrow();
+  });
+});
+
+describe('current exact audio confirmation',()=>{
+  it('uses reviewed series aliases, author identities, and publisher credits without weakening work authorship',()=>{
+    const id=work(1),asin='B000000001';
+    const selected:SeedSeries={...seed,author:'Test Author, Co Author',aliases:['Test Series Audio'],authorAliases:['Test Author','Pen Name','Co Author'],
+      authorIdentities:[{name:'Test Author',aliases:['Test Author','Pen Name']},{name:'Co Author',aliases:['Co Author']}],publisherCredits:['Synthetic Press']};
+    const doc=exactProduct(id,asin,{series:[{title:'Test Series Audio',sequence:'1'}],authors:[{name:'Pen Name'},{name:'Synthetic Press'}]});
+    edition('verified',id,'audiobook','2025-01-01',asin,doc.id);
+    db.pragma('query_only = ON');
+    expect(auditCatalog(db,now,[selected]).totals.confirmedAudiobookWorks).toBe(1);
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+  });
+
+  it('requires one explicit registry identity; a DB-row fallback never grants audio confirmation',()=>{
+    const id=work(1);verifiedEdition('verified',id,'2025-01-01','B000000001');
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(1);
+    for(const registry of [[],[seed,seed],[{...seed,author:'Another Author',authorAliases:['Another Author']}]] ){
+      expect(auditCatalog(db,now,registry).totals.confirmedAudiobookWorks).toBe(0);
+    }
+    // The synthetic ID deliberately is not in the production config. Other audit
+    // sections still report it; tests must opt into their reviewed synthetic seed.
+    expect(auditCatalog(db,now).series[0]).toMatchObject({id:seed.id,counts:{canonicalWorks:1,confirmedAudiobookWorks:0,unverifiedAudioWorks:1}});
+  });
+
+  it('does not accept a verifiedDocument pointer to a note, generic page, or another product URL',()=>{
+    const id=work(1),asin='B000000001';
+    document('only-a-note',audioProductUrl(asin),'2026-09-01T12:00:00.000Z',JSON.stringify({method:'curated-source-summary',asin}));
+    edition('verified-pointer-only',id,'audiobook','2025-01-01',asin,'only-a-note');
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+    const copied=exactProduct(id,asin,{},'copied-product',audioProductUrl('B000000002'));
+    db.prepare("UPDATE catalog_editions SET identifiers_json=json_set(identifiers_json,'$.verifiedDocument',?)").run(copied.id);
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+  });
+
+  it.each([
+    {title:'Volume 1: Side Quest'}, {authors:[{name:'Somebody Else'}]}, {series:[{title:seed.title,sequence:'2'}]},
+    {series:[{title:'Another Series',sequence:'1'}]}, {language:'german'}, {format_type:'abridged'}
+  ])('rechecks current exact product identity instead of trusting an old verified pointer: %j',change=>{
+    const id=work(1),asin='B000000001';
+    verifiedEdition('verified',id,'2025-01-01',asin);
+    // A retained source-only audio row must not rescue the invalid exact product.
+    edition('publisher-audio-row',id,'audiobook','2025-01-01');
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(1);
+    exactProduct(id,asin,change,'new-current',`https://api.audible.com/1.0/catalog/products/${asin}?response_groups=series`,'2026-09-18T12:00:00.000Z');
+    db.pragma('query_only = ON');
+    const report=auditCatalog(db,now,[seed]);
+    expect(report.series[0].counts).toMatchObject({audiobookWorks:1,confirmedAudiobookWorks:0,unverifiedAudioWorks:1,unverifiedLegacyAudioWorks:1,releasedAudioWorks:1});
+    expect(report.series[0].gaps.find(gap=>gap.code==='audio-not-confirmed')?.works?.map(row=>row.id)).toEqual([id]);
+    expect(report.definitions.audioDates).toContain('including unverified records');
+  });
+
+  it.each([
+    {asin:'B000000002'}, {asin:null}, {marketplace:'UK'}, {marketplace:null},
+    {workIdentityHash:'old-identity'}, {workIdentityHash:null}, {verifiedDocument:'missing-document'}
+  ])('requires the edition binding and marketplace as well as current product identity: %j',change=>{
+    const id=work(1);verifiedEdition('verified',id,'2025-01-01','B000000001');
+    const row=db.prepare('SELECT identifiers_json FROM catalog_editions WHERE id=?').get('verified') as {identifiers_json:string};
+    db.prepare('UPDATE catalog_editions SET identifiers_json=? WHERE id=?').run(JSON.stringify({...JSON.parse(row.identifiers_json),...change}),'verified');
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+  });
+
+  it('rejects a changed canonical work even when normalized title matching would still accept the product',()=>{
+    const id=work(1);verifiedEdition('verified',id,'2025-01-01','B000000001');
+    db.prepare('UPDATE catalog_works SET title=? WHERE id=?').run('Volume 1: A LitRPG Adventure',id);
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+  });
+
+  it('rejects corrupt retained proof and a dramatized row labelled with full-audiobook metadata',()=>{
+    const id=work(1),doc=verifiedEdition('verified',id,'2025-01-01','B000000001');
+    db.prepare("UPDATE catalog_editions SET format='dramatized' WHERE id='verified'").run();
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+    db.prepare("UPDATE catalog_editions SET format='audiobook' WHERE id='verified'").run();
+    db.prepare('UPDATE catalog_documents SET body=body||? WHERE id=?').run(' ',doc.id);
+    expect(auditCatalog(db,now,[seed]).totals.confirmedAudiobookWorks).toBe(0);
+  });
+
+  it.each([
+    ['https://www.audible.com/pd/B000000001',JSON.stringify({method:'curated-source-summary',asin:'B000000001'})],
+    ['https://books.apple.com/us/audiobook/example/id123',JSON.stringify({method:'curated-source-summary',title:'Volume 1'})],
+    ['https://www.reddit.com/r/example/comments/fixture',JSON.stringify({method:'curated-source-summary',text:'PRIVATE_READER_TEXT'})],
+    ['https://soundbooththeater.com/shop/audiobooks/example/','<html><h1>Volume 1 audiobook</h1><p>PRIVATE_RAW_PAGE</p></html>'],
+    ['https://aethonbooks.com/book/example/',JSON.stringify({method:'curated-source-summary',title:'Volume 1',format:'audiobook'})]
+  ])('never treats a retained source-only document at %s as publisher audio proof', (url,body)=>{
+    const id=work(1);edition('source-only-audio',id,'audiobook','2025-01-01');
+    document('source-only-proof',url,now.toISOString(),body);
+    db.prepare('UPDATE catalog_editions SET source_url=?,identifiers_json=? WHERE id=?')
+      .run(url,JSON.stringify({verifiedDocument:'source-only-proof'}),'source-only-audio');
+    db.pragma('query_only = ON');
+    const report=auditCatalog(db,now,[seed]);
+    expect(report.series[0].counts).toMatchObject({audiobookWorks:1,confirmedAudiobookWorks:0,unverifiedAudioWorks:1,unverifiedLegacyAudioWorks:0});
+    expect(report.series[0].gaps.find(gap=>gap.code==='audio-not-confirmed')?.works?.map(row=>row.id)).toEqual([id]);
+    expect(JSON.stringify(report)).not.toContain('PRIVATE_RAW_PAGE');
+    expect(JSON.stringify(report)).not.toContain('PRIVATE_READER_TEXT');
+  });
+
+  it('confirms exact products read-only and exposes neither raw payloads nor source text',()=>{
+    const id=work(1);verifiedEdition('verified',id,'2025-01-01','B000000001');
+    const before={editions:db.prepare('SELECT * FROM catalog_editions').all(),documents:db.prepare('SELECT * FROM catalog_documents').all()};
+    const request=vi.fn();vi.stubGlobal('fetch',request);db.pragma('query_only = ON');
+    const report=auditCatalog(db,now,[seed]);
+    expect(report.totals.confirmedAudiobookWorks).toBe(1);
+    for(const text of ['PRIVATE_RAW_PAGE','PRIVATE_SOURCE_COPY','publisher_summary'])expect(JSON.stringify(report)).not.toContain(text);
+    expect(request).not.toHaveBeenCalled();
+    expect({editions:db.prepare('SELECT * FROM catalog_editions').all(),documents:db.prepare('SELECT * FROM catalog_documents').all()}).toEqual(before);
   });
 });

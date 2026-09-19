@@ -3,6 +3,7 @@ import { normalizeIdentity, validReleaseDate } from '../../../src/lib/catalog.js
 import { hash, enqueue } from './queue.js';
 import { verifyIdentity } from './adapters.js';
 import { sameAuthorCredits } from './author-identity.js';
+import { reusesVerifiedAudioTitleAlias, type AudioTitleAliasReview } from './audio-title-aliases.js';
 import { AUDIO_ADAPTER_VERSION, ReviewError, type Document, type ExtractedBook, type SeedSeries, type WorkRow } from './types.js';
 
 export function sourceName(url:string):string {
@@ -21,27 +22,112 @@ export function retainClaim(db: Database.Database, entityType: string, entityId:
     .run(hash([entityType,entityId,field,json,doc.id]),entityType,entityId,field,json,doc.id,doc.method??'publisher-page',doc.fetched_at);
 }
 interface Legacy { id:string; title:string; subtitle:string|null; series_title:string; series_number:number|null; author:string; release_date:string; cover_url:string|null; narrator:string|null; runtime_minutes:number|null; url:string|null }
-const titleKey=(title:string)=>normalizeIdentity(title.replace(/\([^)]*\)|\[[^\]]*\]/g,'').split(/:|\s[-–]\s/)[0].replace(/^the\s+/i,''));
-const formatSubtitle=(value:string)=>/^(?:an?\s+)?(?:(?:epic|fantasy|military|portal|progression|deck[ -]building|cultivation|cozy|isekai|gamelit|litrpg|lit-rpg)\s*)+(?:(?:adventure|novel|series|saga|story|epic)\s*)*[.!]?$/i.test(value.trim());
-function titleForms(title:string,seed:SeedSeries,number:number):Set<string>{
-  for(const name of [seed.title,...seed.aliases]){
-    const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const suffix=title.match(new RegExp(`^${escaped}\\s*(?:,?\\s*(?:Book\\s+)?${String(number).replace('.','\\.')})?\\s*[:,–-]\\s*(.+)$`,'i'))?.[1];
-    // A series prefix is not a distinctive title. Keeping it as an alternate form
-    // would make "Awaken Online: Precipice" equal "Awaken Online: Evolution".
-    if(suffix&&!formatSubtitle(suffix))return new Set([titleKey(suffix)]);
+const escapeRegex=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const numberWords=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+const ordinalWords=['zeroth','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth','eleventh','twelfth','thirteenth','fourteenth','fifteenth','sixteenth','seventeenth','eighteenth','nineteenth'];
+/** Used only in a structural volume slot, never as a replacement inside a story title. */
+function titleNumber(value:string):number|null {
+  const token=value.trim();
+  if(/^\d+(?:\.\d+)?$/.test(token))return Number(token);
+  const words=token.toLowerCase().split(/[ -]+/), single=Math.max(numberWords.indexOf(words[0]),ordinalWords.indexOf(words[0]));
+  if(words.length===1&&single>=0)return single;
+  const tens=['twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'].indexOf(words[0]);
+  if(tens>=0){
+    if(words.length===1)return (tens+2)*10;
+    const unit=Math.max(numberWords.indexOf(words[1]),ordinalWords.indexOf(words[1]));
+    if(words.length===2&&unit>0&&unit<10)return (tens+2)*10+unit;
   }
-  return new Set([titleKey(title)]);
+  // Only conventional Roman numerals, not arbitrary letters that happen to have values.
+  const roman=token.toUpperCase();
+  if(!/^(?=[MDCLXVI]+$)M{0,3}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$/.test(roman))return null;
+  const values:Record<string,number>={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  return [...roman].reduce((total,c,i)=>total+(values[c]<(values[roman[i+1]]??0)?-values[c]:values[c]),0);
 }
-const sameTitle=(left:string,right:string,seed:SeedSeries,number:number)=>[...titleForms(left,seed,number)].some(t=>titleForms(right,seed,number).has(t));
-export function matchesLegacy(row: Legacy, seed: SeedSeries, book: Pick<ExtractedBook,'title'|'number'|'author'>): boolean {
+
+// Observed marketing subtitles with words outside the deliberately bounded genre grammar.
+const seriesFormatSubtitles:Record<string,readonly string[]>={
+  'heretical-fishing':['A Cozy Guide to Annoying the Cults, Outsmarting the Fish, and Alienating Oneself'],
+  'path-of-the-berserker':['A Daopocalypse Progression Fantasy']
+};
+function formatSubtitle(value:string,seed:SeedSeries):boolean {
+  const subtitle=value.trim().replace(/[.!]$/,'').replace(/\s*\/\s*/g,' ');
+  if((seriesFormatSubtitles[seed.id]??[]).some(known=>known.toLowerCase()===subtitle.toLowerCase()))return true;
+  if(/^(?:unabridged|audiobook)$/i.test(subtitle))return true;
+  return /^(?:an?\s+)?(?:epic|fantasy|military|portal|progression|deck[ -]building|cultivation|cozy|isekai|gamelit|lit-?rpg|xianxia|slice[ -]of[ -]life)(?:\s+(?:epic|fantasy|military|portal|progression|deck[ -]building|cultivation|cozy|isekai|gamelit|lit-?rpg|xianxia|slice[ -]of[ -]life))*(?:\s+(?:adventure|novel|series|saga|story|epic))*$/i.test(subtitle);
+}
+function withoutFormatSubtitles(value:string,seed:SeedSeries):string {
+  let title=value.trim();
+  for(let i=0;i<3;i++){
+    const suffix=title.match(/^(.*?)\s*\(([^()]*)\)$/)??title.match(/^(.*?)\s*\[([^\[\]]*)\]$/)
+      ??title.match(/^(.*?)(?:\s*:\s*|\s+[-–—]\s+)([^:]+)$/);
+    if(!suffix?.[1].trim()||!formatSubtitle(suffix[2],seed))break;
+    title=suffix[1].trim();
+  }
+  return title;
+}
+const storyForm=(value:string):string|null=>{
+  // Initial articles vary between primary and retailer headings. All remaining
+  // words, including internal articles and Part labels, still identify the story.
+  const key=normalizeIdentity(value.replace(/^the\s+/i,''));
+  return key?`story:${key}`:null;
+};
+/** A single identity, rather than alternate truncated prefixes which can mask a conflict. */
+function titleForm(value:string,seed:SeedSeries,number:number):string|null {
+  let title=withoutFormatSubtitles(value,seed);
+  if(!normalizeIdentity(title))return null;
+  let labelled=false;
+  // A terminal explicit volume qualifier is formatting only when it agrees with the work.
+  const terminal=title.match(/^(.*?)\s*\((?:book|volume)\s+([^()]+)\)$/i)
+    ??title.match(/^(.*?)\s*\[(?:book|volume)\s+([^\[\]]+)\]$/i)
+    ??title.match(/^(.*?)(?:\s*[:,–—]\s*|\s+-\s+)(?:book|volume)\s+([^,:–—]+)$/i);
+  if(terminal?.[1].trim()){
+    const volume=titleNumber(terminal[2]);
+    if(volume!==null){if(volume!==number)return null;title=terminal[1].trim();labelled=true;}
+  }
+  for(const name of [...new Set([seed.title,...seed.aliases])].sort((a,b)=>b.length-a.length)){
+    const prefix=title.match(new RegExp(`^${escapeRegex(name).replace(/\s+/g,'\\s+')}(?=$|[\\s,:–—-])`,'i'));
+    if(!prefix)continue;
+    let remainder=title.slice(prefix[0].length).trim();
+    const delimiter=/^[:,–—-]\s*/.test(remainder);
+    if(delimiter)remainder=remainder.replace(/^[:,–—-]\s*/,'');
+    if(!remainder)return labelled||number===1?`series:${number}`:'unqualified-series';
+    const head=remainder.match(/^(.+?)(?:\s*[:,–—]\s*|\s+-\s+)(.+)$/);
+    const volume=titleNumber((head?.[1]??remainder).replace(/^(?:book|volume)\s+/i,''));
+    if(volume!==null){
+      if(volume!==number)return null;
+      remainder=head?.[2].trim()??'';
+      return remainder?storyForm(remainder):`series:${number}`;
+    }
+    // A selected series can prefix a distinctive title, but it cannot replace that title.
+    if(delimiter)return storyForm(remainder);
+  }
+  return storyForm(title);
+}
+const sameTitle=(left:string,right:string,seed:SeedSeries,number:number)=>{
+  const form=titleForm(left,seed,number);
+  return form!==null&&form===titleForm(right,seed,number);
+};
+/** Supplements independently verified author/series/volume identity. A bare numbered
+ * series title needs the distinctive story title in its explicit subtitle field;
+ * it never acts as a wildcard or overrides a conflicting distinctive title. */
+export function matchesCanonicalTitle(title:string,expectedTitle:string,seed:SeedSeries,number:number,retailerSubtitle?:string|null):boolean {
+  const form=titleForm(title,seed,number),expected=titleForm(expectedTitle,seed,number);
+  if(form===null||expected===null)return false;
+  if(form===expected)return true;
+  return form===`series:${number}`&&expected.startsWith('story:')&&typeof retailerSubtitle==='string'
+    &&titleForm(retailerSubtitle,seed,number)===expected;
+}
+function legacyIdentityMatches(row: Legacy, seed: SeedSeries, book: Pick<ExtractedBook,'title'|'number'|'author'>): boolean {
   if (!sameAuthorCredits(seed,row.author,book.author) ||
     ![seed.title,...seed.aliases].some(s=>normalizeIdentity(s)===normalizeIdentity(row.series_title??'')) || row.series_number!==book.number ||
     /\b(collection|omnibus|box(?:ed)? set|dramatized|dramatised|episode|books?\s*\d+\s*[-–]\s*\d+)\b/i.test(`${row.title} ${row.subtitle??''}`)) return false;
-  const bare=normalizeIdentity(row.title.replace(/\([^)]*\)|\[[^\]]*\]/g,''));
-  return sameTitle(row.title,book.title,seed,book.number) || bare===normalizeIdentity(`${seed.title} ${book.number}`) || bare===normalizeIdentity(`${seed.title} Book ${book.number}`);
+  return true;
 }
-export function importWork(db: Database.Database, seed: SeedSeries, book: ExtractedBook, doc: Document): string {
+export function matchesLegacy(row: Legacy, seed: SeedSeries, book: Pick<ExtractedBook,'title'|'number'|'author'>): boolean {
+  return legacyIdentityMatches(row,seed,book)&&matchesCanonicalTitle(row.title,book.title,seed,book.number,row.subtitle);
+}
+export function importWork(db: Database.Database, seed: SeedSeries, book: ExtractedBook, doc: Document,
+  options:{titleAliases?:readonly AudioTitleAliasReview[]}={}): string {
   verifyIdentity(book,seed);
   const id=`work-${seed.id}-${String(book.number).replace('.','_')}`, stamp=new Date().toISOString();
   return db.transaction(()=>{
@@ -59,8 +145,10 @@ export function importWork(db: Database.Database, seed: SeedSeries, book: Extrac
     if(prior && !sameTitle(prior.title,book.title,seed,book.number)) throw new ReviewError('Two different titles claim the same series number; requires review.');
     const rows=db.prepare('SELECT b.*,s.title AS series_title FROM books b LEFT JOIN series s ON s.id=b.series_id').all() as Legacy[];
     const audioAsins=new Set(book.links.filter(l=>l.format==='audiobook'&&l.asin).map(l=>l.asin!));
-    const conflicts=rows.filter(r=>audioAsins.has(r.id)&&!matchesLegacy(r,seed,book));
     const matches=rows.filter(r=>matchesLegacy(r,seed,book));
+    const matchedIds=new Set(matches.map(row=>row.id));
+    const conflicts=rows.filter(row=>audioAsins.has(row.id)&&!matchedIds.has(row.id)
+      &&!(prior&&legacyIdentityMatches(row,seed,book)&&reusesVerifiedAudioTitleAlias(db,seed,prior,row,options.titleAliases)));
     const dates=[book.releaseDate,...matches.map(m=>validReleaseDate(m.release_date))].filter((d):d is string=>!!d).sort();
     const degraded=!!prior?.source_description && prior.source_url===doc.url && (book.description.trim().length<100 || book.description.trim().length<prior.source_description.length*0.35);
     const useDescription=!prior?.source_description || !degraded&&(prior.source_url===doc.url || book.description.length>prior.source_description.length);

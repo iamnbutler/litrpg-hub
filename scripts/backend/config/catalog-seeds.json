@@ -1093,5 +1093,61 @@
         "adapter": "sarah-lin-author"
       }
     ]
+  },
+  {
+    "id": "the-land",
+    "title": "The Land",
+    "author": "Aleron Kong",
+    "authorAliases": [
+      "Aleron Kong"
+    ],
+    "aliases": [
+      "Chaos Seeds",
+      "The Land Saga"
+    ],
+    "genres": [
+      "litrpg"
+    ],
+    "priority": 50,
+    "status": "ongoing",
+    "statusEvidence": {
+      "url": "https://www.litrpg.com/updates-1",
+      "observedAt": "2026-09-19T05:28:00.008704Z",
+      "summary": "The undated official updates page says The Land Book 9, with working title Mayhem, is in progress. This is a story-status observation, not an audiobook announcement or release date."
+    },
+    "sources": [
+      {
+        "url": "https://www.litrpg.com/the-land-founding",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-forging",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-alliances",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-catacombs",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-catacombs-1",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-raiders",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-raiders-1",
+        "adapter": "the-land-book"
+      },
+      {
+        "url": "https://www.litrpg.com/the-land-founding-1",
+        "adapter": "the-land-book"
+      }
+    ]
   }
 ]

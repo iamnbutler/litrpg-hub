@@ -1,11 +1,14 @@
 import type Database from 'better-sqlite3';
+import { isDeepStrictEqual } from 'node:util';
 import { normalizeIdentity, seriesIdentity, validReleaseDate } from '../../../src/lib/catalog.js';
 import { productToBookRow, recordingNarrator, recordingRuntime, type AudibleProduct } from '../fetchers/audible.js';
 import { getDocument } from './sources.js';
 import { enqueue, hash } from './queue.js';
-import { retainClaim } from './import.js';
+import { matchesCanonicalTitle, retainClaim } from './import.js';
 import { creditedAuthorKeys, sameAuthorCredits } from './author-identity.js';
+import { audioWorkIdentity, resolveAudioTitleAlias, verifyAudioIdentity, type AudioTitleAliasReview, type AudioWorkIdentity } from './audio-title-aliases.js';
 import { AUDIO_ADAPTER_VERSION, ReviewError, type AudioPayload, type Document, type SeedSeries, type WorkRow } from './types.js';
+export { audioWorkIdentity } from './audio-title-aliases.js';
 
 export function audioProductUrl(asin: string): string {
   if (!/^[A-Z0-9]{10}$/.test(asin)) throw new ReviewError('Invalid known audiobook identifier.');
@@ -13,26 +16,46 @@ export function audioProductUrl(asin: string): string {
 }
 
 type Product = AudibleProduct & { format_type?: string; content_type?: string; is_vvab?: boolean; publisher_name?: string };
-export function audioWorkIdentity(work: Pick<WorkRow,'id'|'series_id'|'number'|'title'|'author'>): string {
-  return hash([work.id,work.series_id,work.number,normalizeIdentity(work.title),normalizeIdentity(work.author)]);
+type VerifiedProduct = Product & {title:string};
+
+/** An observed buy link is a lead. The product itself must establish the audio identity.
+ * Title may be omitted only while discovering a work that has no canonical title yet. */
+export function verifyAudioProduct(value: unknown, asin: string, seed: SeedSeries, number: number, expectedAuthor?: string, expectedTitle?: string): VerifiedProduct {
+  const product=verifyAudioIdentity(value,asin,seed,number,expectedAuthor);
+  if (expectedTitle !== undefined && !matchesCanonicalTitle(product.title, expectedTitle, seed, number,product.subtitle)) throw new ReviewError('Audiobook title conflicts with the selected canonical work.');
+  return product;
 }
 
-/** An observed buy link is a lead. The product itself must establish the audio identity. */
-export function verifyAudioProduct(value: unknown, asin: string, seed: SeedSeries, number: number, expectedAuthor?: string): Product {
-  const product = (value as { product?: Product } | null)?.product;
-  if (!product || typeof product !== 'object' || !product.asin) throw new Error('Audiobook response contains no product.');
-  if (product.asin !== asin) throw new ReviewError('Audiobook API returned a different identifier.');
-  if (!product.title?.trim()) throw new ReviewError('The API returned no audiobook metadata for this identifier; its identity or marketplace needs review.');
-  if (product.language?.toLowerCase() !== 'english') throw new ReviewError('The identified audiobook is not confirmed to be in English.');
-  if (product.content_type !== 'Product' || product.format_type !== 'unabridged') throw new ReviewError('The identified audio is not a full unabridged audiobook.');
-  if (/\b(collection|omnibus|box(?:ed)?\s*set|summary|summaries|dramatized|dramatised|episode|books?\s*\d+\s*[-–]\s*\d+)\b/i.test(`${product.title} ${product.subtitle ?? ''}`)) {
-    throw new ReviewError('Collection, adaptation, episode, or summary requires an explicit edition mapping.');
-  }
-  const authors = product.authors?.map(a => a.name) ?? [];
-  if (!creditedAuthorKeys(seed,authors)) throw new ReviewError('Audiobook author credits conflict with the selected series.');
-  if (expectedAuthor && !sameAuthorCredits(seed,authors,expectedAuthor)) throw new ReviewError('Audiobook author credits conflict with the selected work.');
-  const series = product.series?.find(s => [seed.title, ...seed.aliases].some(title => normalizeIdentity(title) === normalizeIdentity(s.title)));
-  if (!series || !/^\d+(?:\.\d+)?$/.test(series.sequence ?? '') || Number(series.sequence) !== number) throw new ReviewError('Audiobook series or volume conflicts with the selected work.');
+/** A caller-supplied product is not proof unless those exact facts were retained
+ * from the exact endpoint. Current query variants share one recording identity. */
+function requireProductDocument(db:Database.Database,product:VerifiedProduct,document:Document):void {
+  const fail=()=>new ReviewError('Audiobook verification needs its exact current retained product document.');
+  let url:URL;
+  try{url=new URL(document.url);}catch{throw fail();}
+  if(!/^[A-Z0-9]{10}$/.test(product.asin)||url.origin!=='https://api.audible.com'||url.username||url.password||url.hash
+    ||url.pathname!==`/1.0/catalog/products/${product.asin}`)throw fail();
+  const retained=db.prepare('SELECT * FROM catalog_documents WHERE id=?').get(document.id) as Document|undefined;
+  if(!retained||retained.url!==document.url||retained.content_hash!==document.content_hash||retained.body!==document.body
+    ||retained.fetched_at!==document.fetched_at||hash(retained.body)!==retained.content_hash)throw fail();
+  let value:{product?:unknown}|null;
+  try{value=JSON.parse(retained.body);}catch{throw fail();}
+  if(!isDeepStrictEqual(value?.product,product))throw fail();
+  const base=`https://api.audible.com/1.0/catalog/products/${product.asin}`;
+  const current=db.prepare(`SELECT d.id FROM catalog_urls u JOIN catalog_documents d ON d.id=u.document_id
+    WHERE u.url=? OR u.url LIKE ? ORDER BY u.checked_at DESC,d.fetched_at DESC,d.id LIMIT 1`).get(base,`${base}?%`) as {id:string}|undefined;
+  if(current&&current.id!==document.id)throw fail();
+}
+
+/** Shared known-work gate for import and coverage. The title-less verifier is reserved
+ * for discovery which genuinely has no canonical title; aliases cannot relax its
+ * independent author, selected series, volume, language, or full-audiobook checks. */
+export function verifyCanonicalAudioProduct(db:Database.Database,value:unknown,asin:string,seed:SeedSeries,work:AudioWorkIdentity,
+  document:Document,options:{titleAliases?:readonly AudioTitleAliasReview[]}={}):VerifiedProduct {
+  if(work.series_id!==seed.id)throw new ReviewError('Canonical work identity conflicts with its selected series.');
+  const product=verifyAudioProduct(value,asin,seed,work.number,work.author);
+  const alias=resolveAudioTitleAlias(db,seed,work,asin,product.title,document,options.titleAliases);
+  if(!alias&&!matchesCanonicalTitle(product.title,work.title,seed,work.number,product.subtitle))throw new ReviewError('Audiobook title conflicts with the selected canonical work.');
+  requireProductDocument(db,product,document);
   return product;
 }
 
@@ -74,18 +97,25 @@ function clearRecordingPlaceholders(db: Database.Database, asin: string) {
 }
 
 /** Merge one verified retailer edition, keeping publisher work titles and every saved ID. */
-export function importAudioProduct(db: Database.Database, seed: SeedSeries, work: WorkRow, product: Product, doc: Document): void {
-  if(work.series_id!==seed.id||!creditedAuthorKeys(seed,work.author))
-    throw new ReviewError('Canonical work identity conflicts with its selected series.');
-  if(!sameAuthorCredits(seed,work.author,product.authors?.map(author=>author.name)??[]))
-    throw new ReviewError('Audiobook author credits conflict with the selected work.');
-  const row = productToBookRow({...product, authors: product.authors?.filter(a => !seed.publisherCredits?.some(p => normalizeIdentity(p) === normalizeIdentity(a.name)))}), stamp = new Date().toISOString();
-  const seriesId = seriesIdentity(seed.title, seed.author);
-  const existing = db.prepare('SELECT work_id,identifiers_json FROM catalog_editions WHERE legacy_book_id=?').get(product.asin) as { work_id: string; identifiers_json:string } | undefined;
-  if (existing && existing.work_id !== work.id) throw new ReviewError('Verified audio identifier is already attached to another work.');
-  const previousIdentity=existing?(JSON.parse(existing.identifiers_json) as {workIdentityHash?:string}).workIdentityHash:undefined;
-  if(previousIdentity&&previousIdentity!==audioWorkIdentity(work))throw new ReviewError('Canonical work identity changed after audio verification; its edition binding needs an explicit review.');
+export function importAudioProduct(db: Database.Database, seed: SeedSeries, work: WorkRow, product: Product, doc: Document,
+  options:{titleAliases?:readonly AudioTitleAliasReview[]}={}): void {
   db.transaction(() => {
+    if(work.series_id!==seed.id||!creditedAuthorKeys(seed,work.author))
+      throw new ReviewError('Canonical work identity conflicts with its selected series.');
+    if(!sameAuthorCredits(seed,work.author,product.authors?.map(author=>author.name)??[]))
+      throw new ReviewError('Audiobook author credits conflict with the selected work.');
+    // Re-read inside the write transaction: a supplied snapshot cannot stand in
+    // for a different canonical title or author after a request was in flight.
+    const current=db.prepare('SELECT id,series_id,number,title,author FROM catalog_works WHERE id=?').get(work.id) as AudioWorkIdentity|undefined;
+    if(!current||audioWorkIdentity(current)!==audioWorkIdentity(work))throw new ReviewError('Canonical work identity changed before audio import; its edition binding needs an explicit review.');
+    const existing = db.prepare('SELECT work_id,identifiers_json FROM catalog_editions WHERE legacy_book_id=?').get(product.asin) as { work_id: string; identifiers_json:string } | undefined;
+    if (existing && existing.work_id !== work.id) throw new ReviewError('Verified audio identifier is already attached to another work.');
+    const previousIdentity=existing?(JSON.parse(existing.identifiers_json) as {workIdentityHash?:string}).workIdentityHash:undefined;
+    if(previousIdentity&&previousIdentity!==audioWorkIdentity(work))throw new ReviewError('Canonical work identity changed after audio verification; its edition binding needs an explicit review.');
+    // A direct caller must pass the same complete identity gate as processAudio.
+    verifyCanonicalAudioProduct(db,{product},product.asin,seed,current,doc,options);
+    const row = productToBookRow({...product, authors: product.authors?.filter(a => !seed.publisherCredits?.some(p => normalizeIdentity(p) === normalizeIdentity(a.name)))}), stamp = new Date().toISOString();
+    const seriesId = seriesIdentity(seed.title, seed.author);
     db.prepare('INSERT OR IGNORE INTO series(id,title,author) VALUES(?,?,?)').run(seriesId, seed.title, seed.author);
     db.prepare(`INSERT INTO books(id,title,subtitle,author,series_id,series_number,release_date,cover_url,narrator,runtime_minutes,description,url,rating,rating_count,is_ai_narrated,updated_at)
       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
@@ -111,10 +141,10 @@ export function importAudioProduct(db: Database.Database, seed: SeedSeries, work
     // Upgrade old clipped API descriptions without replacing substantial primary copy.
     if(row.description)retainClaim(db,'edition',product.asin,'description',row.description,{...doc,method:'retailer-api'});
     // Another worker may have enriched this work while the HTTP request was in flight.
-    const current=db.prepare('SELECT source_description,source_url FROM catalog_works WHERE id=?').get(work.id) as Pick<WorkRow,'source_description'|'source_url'>;
-    const length=row.description?.length??0, prior=current.source_description.trim();
-    const priorClaim=db.prepare("SELECT method FROM catalog_claims WHERE entity_type='work' AND entity_id=? AND field='description' AND value_json=? ORDER BY observed_at DESC LIMIT 1").get(work.id,JSON.stringify(current.source_description)) as {method:string}|undefined;
-    const richer=!!product.publisher_summary&&length>prior.length&&(current.source_url.startsWith('https://api.audible.com/')||priorClaim?.method==='curated-source-summary'||prior.length<250&&length>prior.length*1.5);
+    const source=db.prepare('SELECT source_description,source_url FROM catalog_works WHERE id=?').get(work.id) as Pick<WorkRow,'source_description'|'source_url'>;
+    const length=row.description?.length??0, prior=source.source_description.trim();
+    const priorClaim=db.prepare("SELECT method FROM catalog_claims WHERE entity_type='work' AND entity_id=? AND field='description' AND value_json=? ORDER BY observed_at DESC LIMIT 1").get(work.id,JSON.stringify(source.source_description)) as {method:string}|undefined;
+    const richer=!!product.publisher_summary&&length>prior.length&&(source.source_url.startsWith('https://api.audible.com/')||priorClaim?.method==='curated-source-summary'||prior.length<250&&length>prior.length*1.5);
     if (length >= 100 && (!prior || richer)) {
       db.prepare('UPDATE catalog_works SET source_description=?,source_url=?,updated_at=? WHERE id=?').run(row.description, doc.url, stamp, work.id);
       retainClaim(db, 'work', work.id, 'description', row.description, { ...doc, method: 'retailer-api' });
@@ -124,7 +154,7 @@ export function importAudioProduct(db: Database.Database, seed: SeedSeries, work
     db.prepare(`UPDATE catalog_jobs SET status='completed',result_json=?,updated_at=?
       WHERE kind='review-edition' AND entity_id=? AND status='review'`)
       .run(JSON.stringify({resolution:'verified-exact-product',documentId:doc.id,workId:work.id,asin:product.asin}),stamp,`${work.id}--${product.asin}`);
-  })();
+  }).immediate();
 }
 
 export async function processAudio(db: Database.Database, payload: AudioPayload, selected: SeedSeries[]) {
@@ -132,7 +162,7 @@ export async function processAudio(db: Database.Database, payload: AudioPayload,
   const work = db.prepare('SELECT * FROM catalog_works WHERE id=? AND series_id=?').get(payload.workId, payload.seriesId) as WorkRow | undefined;
   if (!seed || !work) throw new ReviewError('Audio job has no selected canonical work.');
   const { document, downloaded } = await getDocument(db, audioProductUrl(payload.asin), { format: 'audible-product', ttlDays: 90 });
-  const product = verifyAudioProduct(JSON.parse(document.body), payload.asin, seed, work.number,work.author);
+  const product = verifyCanonicalAudioProduct(db,JSON.parse(document.body),payload.asin,seed,work,document);
   importAudioProduct(db, seed, work, product, document);
   const release=validReleaseDate(product.release_date??'');
   const recent = !release || Date.parse(release) >= Date.now() - 30 * 86400000;

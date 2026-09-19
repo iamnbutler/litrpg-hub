@@ -14,7 +14,7 @@
  */
 import type Database from 'better-sqlite3';
 import { normalizeIdentity } from '../../../src/lib/catalog.js';
-import { loadSnapshot, saveSnapshot, storeReaderEvidence, voiceDigest, type AcquisitionSnapshot, type ReaderEvidence, type StoredEvidence } from './reader-evidence.js';
+import { hasSpoilerMarkup, loadSnapshot, saveSnapshot, storeReaderEvidence, voiceDigest, type AcquisitionSnapshot, type ReaderEvidence, type StoredEvidence } from './reader-evidence.js';
 import { hash } from './queue.js';
 
 export const HARDCOVER_API = 'https://api.hardcover.app/v1/graphql';
@@ -165,7 +165,9 @@ export function toEvidence(book: HardcoverBook, rows: HardcoverReview[]): Reader
       body, rating: row.rating ?? null, ratingBest: row.rating == null ? null : 5,
       publishedAt: (row.reviewed_at ?? '').slice(0, 10) || null,
       // Hardcover carries a real spoiler flag, so it is used instead of assuming the worst.
-      containsSpoilers: row.review_has_spoilers === true, kind: 'review' as const
+      // The source's flag has been observed reporting false on comments that carry explicit
+      // spoiler markup, so the markup counts too. Same helper the shared trait input uses.
+      containsSpoilers: row.review_has_spoilers === true || hasSpoilerMarkup(body), kind: 'review' as const
     }];
   });
 }

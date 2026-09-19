@@ -18,18 +18,18 @@ import * as cheerio from 'cheerio';
 import { hash, enqueue } from './queue.js';
 import { saveInference } from './inference.js';
 import { PaidResponseStorageError, ReviewError } from './types.js';
+import { paidJev } from './paid-jev.js';
 import { loadCorrections, resolveCorrection, type ReaderCorrection } from './reader-corrections.js';
 
-/** A rejected answer still cost money; the usage travels with the error so a run can report it. */
-/** A caller wrapped us in a transaction, so a receipt could not be committed independently.
- * Raised before any spend, and it stops the worker because every later job has the same problem. */
+/** Refuse before spending if the receipt cannot commit independently; stop the worker
+ * because later jobs on the same database would have the same storage problem. */
 export class ReaderTransactionError extends ReviewError {
-  constructor(when: string) {
-    super(`Refusing to buy a reader observation while a caller transaction is open (${when}): the paid receipt could not be committed independently of it.`);
+  constructor(why: string) {
+    super(`Refusing to buy a reader observation while ${why}: the paid receipt could not be committed independently of it.`);
   }
 }
 
-/** Root's storage failure, carrying what the lost answer cost so a run never reports it free. */
+/** A storage failure carries the lost answer's usage so the run can account for it. */
 export class ReaderPaidStorageError extends PaidResponseStorageError {
   constructor(readonly usage: { input_tokens: number; output_tokens: number }, cause: string) {
     super();
@@ -37,6 +37,7 @@ export class ReaderPaidStorageError extends PaidResponseStorageError {
   }
 }
 
+/** A rejected answer still carries its reported usage. */
 export class ObservationReviewError extends ReviewError {
   constructor(message: string, readonly usage: { input_tokens: number; output_tokens: number }) { super(message); }
 }
@@ -359,6 +360,25 @@ export const readerQuestions: Record<string, Question> = {
  * which is exactly what the consensus and prevalence rules exist to prevent. The match is exact
  * after markup is decoded and whitespace collapsed, so nothing that differs in wording is merged.
  * The per-voice bound still applies first: this only removes repeats across voices. */
+/** A source's spoiler flag is not the only evidence of a spoiler. Hardcover has been observed
+ * reporting `review_has_spoilers: false` on comments that carry explicit spoiler markup, so the
+ * markup counts in its own right.
+ *
+ * Parsed rather than pattern-matched: every element carrying a class is inspected, so a spoiler
+ * later in a comment is still found after an earlier `spoiler-free` block, and multiline or
+ * unquoted attributes parse the same way a browser would read them. The class must carry the
+ * exact whitespace-delimited token `spoiler`, which makes `spoiler-free`, `no-spoilers` and
+ * `review-spoiler` simply different tokens rather than negations to be unpicked. The element
+ * must also contain text once its descendants are decoded, so an empty marker is not a spoiler.
+ * Nothing is inferred from prose, and the raw body is never rewritten. */
+export function hasSpoilerMarkup(body: string): boolean {
+  const $ = cheerio.load(body);
+  return $('[class]').toArray().some(element => {
+    const node = $(element);
+    return String(node.attr('class') ?? '').split(/\s+/).includes('spoiler') && node.text().trim() !== '';
+  });
+}
+
 export const bodyKey = (body: string) => cheerio.load(body).text().replace(/\s+/g, ' ').trim();
 
 export function traitInput(rows: ReturnType<typeof readerEvidenceFor>) {
@@ -371,6 +391,9 @@ export function traitInput(rows: ReturnType<typeof readerEvidenceFor>) {
     // not know, and treating an assumption as a fact would silently delete a whole source's
     // evidence from an aggregate whose output is generated prose that quotes nothing.
     if (row.contains_spoilers && SPOILER_AWARE_SOURCES.has(row.source_name)) continue;
+    // Markup is trusted even when the source's own flag says otherwise, and for every source,
+    // because it is the comment itself declaring the spoiler rather than an assumption.
+    if (hasSpoilerMarkup(row.body)) continue;
     const held = best.get(row.author_key);
     if (!held || row.body.length > held.body.length ||
       (row.body.length === held.body.length && (row.published_at ?? '') < (held.published_at ?? ''))) best.set(row.author_key, row);
@@ -492,16 +515,12 @@ export async function processReaderTraits(db: Database.Database, entityType: 'se
   const state = readerState(rows);
   const requestedModel = process.env.JEV_MODEL ?? 'jev-latest';
   const inputHash = readerTraitHash(state, requestedModel);
-  const cacheId = hash(['reader', `${entityType}:${entityId}`, 'reader-traits', inputHash]);
-  const cachedRow = db.prepare('SELECT result_json FROM catalog_inferences WHERE id=?').get(cacheId) as { result_json: string } | undefined;
   const evaluatedAt = new Date().toISOString();
-  let response: JevResponse;
-  if (cachedRow) response = JSON.parse(cachedRow.result_json) as JevResponse;
-  else {
-    response = await (options.evaluate ?? evaluate)(state, readerQuestions);
-    db.prepare(`INSERT OR IGNORE INTO catalog_inferences(id,entity_type,entity_id,kind,input_hash,requested_model,actual_model,rubric_version,result_json,usage_json,evaluated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)`)
-      .run(cacheId, 'reader', `${entityType}:${entityId}`, 'reader-traits', inputHash, requestedModel, response.model, READER_RUBRIC_VERSION, JSON.stringify(response), JSON.stringify(response.usage), evaluatedAt);
-  }
+  // Retained before it is judged: see catalog/paid-jev.ts for the replay and refusal rules.
+  const { response, usage: paidUsage, cached: fromCache } = await paidJev(db, state, {
+    entityType: 'reader', entity: `${entityType}:${entityId}`, kind: 'reader-traits', inputHash,
+    rubricVersion: READER_RUBRIC_VERSION, requestedModel, questions: readerQuestions, evaluate: options.evaluate
+  });
   const consensusAnswer = response.answers.consensus;
   const consensus = consensusAnswer?.type === 'choice' && ['consistent', 'mixed', 'insufficient'].includes(consensusAnswer.choice)
     ? consensusAnswer.choice : 'insufficient';
@@ -528,8 +547,8 @@ export async function processReaderTraits(db: Database.Database, entityType: 'se
       recorded.push(trait);
     }
   })();
-  return { ...base, recorded, consensus, cached: !!cachedRow,
-    input_tokens: cachedRow ? 0 : response.usage.input_tokens, output_tokens: cachedRow ? 0 : response.usage.output_tokens };
+  return { ...base, recorded, consensus, cached: fromCache,
+    input_tokens: paidUsage.input_tokens, output_tokens: paidUsage.output_tokens };
 }
 
 
@@ -627,7 +646,8 @@ export function validateObservation(value: unknown, sources: string[], sample: {
  * not reporting a cost, and fabricating zeros would claim the call was free. */
 export function normalizeUsage(value: unknown): { input_tokens: number; output_tokens: number } | undefined {
   const usage = value as { input_tokens?: unknown; output_tokens?: unknown } | undefined;
-  const whole = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 0;
+  // Safe integers, matching jev/client.ts: a value the client would reject is not a token count.
+  const whole = (n: unknown): n is number => typeof n === 'number' && Number.isSafeInteger(n) && n >= 0;
   return usage && whole(usage.input_tokens) && whole(usage.output_tokens)
     ? { input_tokens: usage.input_tokens, output_tokens: usage.output_tokens } : undefined;
 }
@@ -691,7 +711,19 @@ export async function processReaderObservation(db: Database.Database, entityType
   const cacheId = hash(['reader', `${entityType}:${entityId}`, 'reader-observation', inputHash]);
   const cached = db.prepare('SELECT result_json FROM catalog_inferences WHERE id=?').get(cacheId) as { result_json: string } | undefined;
   if (cached) {
-    const held = JSON.parse(cached.result_json) as { observation: string; grounded: boolean };
+    // A corrupt row parks: nothing new is bought by reading the same unreadable row again, and
+    // retrying would only burn the job's attempts against it.
+    let held: { observation: string; grounded: boolean };
+    try {
+      const parsed = JSON.parse(cached.result_json) as { observation?: unknown; grounded?: unknown };
+      // Shape only, never prose: `null` or `{}` parses cleanly and would spread into a job that
+      // reports completed while carrying no observation at all, and a numeric observation would
+      // pass too. The exporter owns the prose rules and revalidates them on every read.
+      if (typeof parsed?.observation !== 'string' || typeof parsed.grounded !== 'boolean') throw new Error('The retained reader observation is not a usable answer.');
+      held = { observation: parsed.observation, grounded: parsed.grounded };
+    } catch {
+      throw new ObservationReviewError('The retained reader observation could not be read; retrying would not buy anything new.', { input_tokens: 0, output_tokens: 0 });
+    }
     return { entity: entityId, ...held, cached: true, input_tokens: 0, output_tokens: 0 };
   }
   const sources = selected.map(r => r.body);
@@ -716,11 +748,15 @@ export async function processReaderObservation(db: Database.Database, entityType
     try { raw = parseObservationWire((JSON.parse(heldWire.result_json) as { text: string }).text); }
     catch (error) { throw parked(error, zero); }
   } else if (heldRaw) {
-    raw = { text: (JSON.parse(heldRaw.result_json) as { text: string }).text, model: heldRaw.actual_model };
+    try { raw = { text: (JSON.parse(heldRaw.result_json) as { text: string }).text, model: heldRaw.actual_model }; }
+    catch (error) { throw parked(error, zero); }
   } else {
     // Checked before the call as well as inside the callback: the callback alone would discover
     // the problem only after the answer had already been paid for.
-    if (db.inTransaction) throw new ReaderTransactionError('open before the request');
+    if (db.inTransaction) throw new ReaderTransactionError('a caller transaction is open (open before the request)');
+    // Checked here as well as in the Jev path: on a read-only cache a miss would buy an answer
+    // that SQLITE_READONLY then guarantees we cannot keep. Refused, not sold and then lost.
+    if (db.readonly) throw new ReaderTransactionError('the cache is read-only');
     let archived = false;
     raw = await fetchObservation(state, options.request, (rawText) => {
       const receipt = wireReceipt(rawText, requestedModel);

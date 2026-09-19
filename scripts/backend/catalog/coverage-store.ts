@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import type Database from 'better-sqlite3';
 import { validReleaseDate } from '../../../src/lib/catalog.js';
 import { assessAudioCoverage, type AudioCoverage, type CoverageEdition, type CoverageEvidence, type ReviewedAudioManifest } from './coverage.js';
-import { audioWorkIdentity, verifyAudioProduct } from './audio.js';
+import { audioWorkIdentity, verifyCanonicalAudioProduct } from './audio.js';
 import { hash } from './queue.js';
 import type { Document, SeedSeries } from './types.js';
 
@@ -67,7 +67,8 @@ export function catalogAudioCoverage(db: Database.Database, seed: SeedSeries, no
       const url = new URL(doc.url), observedAt = observation(db, doc);
       if (url.origin !== 'https://api.audible.com' || url.pathname !== `/1.0/catalog/products/${row.legacy_book_id}` || !observedAt) return edition;
       // Check the actual retained product again, not the edition row's copied claims.
-      const product = verifyAudioProduct(JSON.parse(doc.body), row.legacy_book_id, seed, row.number,byId.get(row.work_id)!.author);
+      const work = byId.get(row.work_id)!;
+      const product = verifyCanonicalAudioProduct(db, JSON.parse(doc.body), row.legacy_book_id, seed, work, doc);
       edition.verification = {
         method: 'exact-retailer-product', workId: row.work_id, seriesId: seed.id, number: row.number,
         language: product.language!, marketplace: 'US', format: 'unabridged',

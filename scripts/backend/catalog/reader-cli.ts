@@ -16,6 +16,7 @@ import {
 } from './reader-evidence.js';
 import { CORRECTIONS_CONFIG, CORRECTIONS_DRAFT, isApproved, loadCorrections } from './reader-corrections.js';
 import { PaidResponseStorageError, ReviewError } from './types.js';
+import { JevPaidStorageError, JevReviewError, JevTransactionError } from './paid-jev.js';
 import { importHardcoverReviews, MAX_REVIEWS, RetryableError } from './hardcover-reader.js';
 
 try {
@@ -78,7 +79,10 @@ Reader opinion is never written to a book's content signals.`);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Reader trait job failed';
           // A rejected answer was still paid for; do not report the run as free.
-          if (error instanceof ObservationReviewError || error instanceof ReaderPaidStorageError) {
+          // Trait jobs report through the shared Jev classes and observation jobs through their
+          // own; either way a rejected answer was paid for and the run must not look free.
+          if (error instanceof ObservationReviewError || error instanceof ReaderPaidStorageError
+            || error instanceof JevReviewError || error instanceof JevPaidStorageError) {
             usage.input_tokens += error.usage.input_tokens; usage.output_tokens += error.usage.output_tokens;
           }
           // A source that named a time is deferred to exactly that time, keeping its attempt.
@@ -90,7 +94,7 @@ Reader opinion is never written to a book's content signals.`);
           console.error(`reader ${job.entity_id}: ${message}`);
           // A paid answer that could not be stored stops the run: every further job would risk
           // buying an answer we cannot keep either.
-          if (/HTTP (401|403|429)/.test(message) || error instanceof RetryableError || error instanceof PaidResponseStorageError || error instanceof ReaderTransactionError) break;
+          if (/HTTP (401|403|429)/.test(message) || error instanceof RetryableError || error instanceof PaidResponseStorageError || error instanceof ReaderTransactionError || error instanceof JevTransactionError) break;
         }
       }
       console.log(JSON.stringify({ completed, errors, tokens: usage }));

@@ -3,23 +3,6 @@
   "corrections": [
     {
       "entityType": "work",
-      "entityId": "work-dungeon-crawler-carl-1",
-      "inputHash": "551c54fc43cc443f4ea6eed97a12a5132d310d257fc27a016e10c2ab61196167",
-      "inferenceId": "65cf67106b7fa13372679ca971ea8883faa90c6a3e57246466e97ce9f0ecd9da",
-      "model": "gpt-4.1-mini-2025-04-14",
-      "rubricVersion": "reader-observation-v3",
-      "sourceUrls": [
-        "https://hardcover.app/books/dungeon-crawler-carl",
-        "https://soundbooththeater.com/shop/audiobooks/dungeon-crawler-carl/"
-      ],
-      "observation": "The sample highlights Carl and Princess Donut's interactions and the audiobook performance. The comedy draws both delight and complaints of crudeness, while one early abandonment specifically cites the focus on game mechanics.",
-      "reviewedAt": "2026-09-19T05:06:28.234Z",
-      "reviewedBy": "Codex root source review",
-      "validatorVersion": "reader-validator-v1",
-      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence."
-    },
-    {
-      "entityType": "work",
       "entityId": "work-defiance-of-the-fall-1",
       "inputHash": "ccbf73040473d45507f68bf8cb0440805ca397adc56fdce4fb807fb1d0f45a2d",
       "inferenceId": "e222c6fa4ff682f8a0a04cc704d00265e6b46d9c51e1d945a1b1d6fac3bccdc3",
@@ -180,20 +163,55 @@
     },
     {
       "entityType": "work",
-      "entityId": "work-cradle-1",
-      "inputHash": "4a6bbff585b0632ad6c4e4682df1e208d94686579d077c7fae001f5f5f8b771c",
-      "inferenceId": "d115004fca298a291fd7d49f8cb543bb1e64dd225d17a9e778b2a409ae3e6105",
+      "entityId": "work-dungeon-crawler-carl-1",
+      "inputHash": "1f5f2ee4442fa4594fad53f58b3eb7a952c9ee529d61d190c65bfd1ae30c4bdc",
+      "inferenceId": "c9bbe0d6cb0777b12cce93264d5203543cd21d9eeb68b699f8b0c88b43fc0403",
       "model": "gpt-4.1-mini-2025-04-14",
       "rubricVersion": "reader-observation-v3",
+      "receiptKind": "reader-observation-wire",
+      "sourceUrls": [
+        "https://hardcover.app/books/dungeon-crawler-carl",
+        "https://soundbooththeater.com/shop/audiobooks/dungeon-crawler-carl/"
+      ],
+      "observation": "Comments praise Carl and Princess Donut’s chemistry and the audiobook performance, but reactions to the humor range from enthusiasm to distaste for its crudeness, and one reader abandoned the book over its focus on game mechanics.",
+      "reviewedAt": "2026-09-19T05:55:30.232Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Reviewed the 43 selected comments after explicit spoiler markup exclusion, using their actual model-visible prefixes. Qualitative claims only; no unmeasured per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-cradle-1",
+      "inputHash": "09ae217a01a221b687143cdab1c04d964d1365d01ae9a69578101a4445566f59",
+      "inferenceId": "b0257bb48b717b83442666ac1f6aeb77cdd6d8f836a6b29f51d2fe2087daa8e9",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "receiptKind": "reader-observation-wire",
       "sourceUrls": [
         "https://hardcover.app/books/unsouled"
       ],
-      "observation": "The underdog story and magic system draw praise in this sample. Comments also describe a slow opening, confusing terminology, and reservations about character depth; reactions to continuing range from eagerness to uncertainty.",
-      "reviewedAt": "2026-09-19T05:17:00.170Z",
+      "observation": "The underdog premise and magic system draw praise, while comments describe both brisk pacing and a slow opening, confusion about magical concepts, and reservations about character depth.",
+      "reviewedAt": "2026-09-19T05:55:30.241Z",
       "reviewedBy": "Codex root source review",
       "validatorVersion": "reader-validator-v1",
-      "note": "Independently checked against the selected source comments; qualitative observations do not measure per-aspect prevalence.",
-      "receiptKind": "reader-observation-wire"
+      "note": "Reviewed the 44 selected comments after explicit spoiler markup exclusion, using their actual model-visible prefixes. Qualitative claims only; no unmeasured per-aspect prevalence."
+    },
+    {
+      "entityType": "work",
+      "entityId": "work-the-land-1",
+      "inputHash": "c04446d529e6f9cac5092e16dd5c7f1ae155d3809a8a39cd1a90eea3fbae0f97",
+      "inferenceId": "8d05a68d3492fc759906e2b5cdc38bc7d2b2caf97acff274f396510c140490be",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "rubricVersion": "reader-observation-v3",
+      "receiptKind": "reader-observation",
+      "sourceUrls": [
+        "https://hardcover.app/books/the-land-founding"
+      ],
+      "observation": "Comments criticize repetitive stat passages, slow pacing, and uneven writing. Reactions to the characters range from interest in their development to frustration with the protagonist and supporting cast.",
+      "reviewedAt": "2026-09-19T05:55:30.243Z",
+      "reviewedBy": "Codex root source review",
+      "validatorVersion": "reader-validator-v1",
+      "note": "Reviewed the 10 selected comments after explicit spoiler markup exclusion, using their actual model-visible prefixes. Qualitative claims only; no unmeasured per-aspect prevalence."
     }
   ]
 }

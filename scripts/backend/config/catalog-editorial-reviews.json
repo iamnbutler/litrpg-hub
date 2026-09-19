@@ -1427,5 +1427,33 @@
     ],
     "correctedSynopsis": "In a modern society where qi is valuable and power is a commodity, corporations, martial arts sects, and governments hold control. People at the bottom struggle with second-class status. Rick, a young fighter, wants to improve life for himself and his sister, whose illness is spiritual. His ambition is neither immortality nor supreme strength; it is a better future for the two of them in a difficult, unequal world.",
     "reviewNote": "Qi and martial arts sects support cultivation. The source establishes an unequal modern power economy and a family goal, but not Rick's precise social rank, specific cultivation resources, or transactional mechanics."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-land-1",
+    "inputHash": "d09a7355ac0b7519547107e745e42e1961f41f9a570e8117a60c948ddf8cabce",
+    "evidenceHash": "e32205e88f2cf5ae2f5123badb72927f016189df050b06a2faa78b27b7118a64",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T05:46:12.848Z",
+    "sourceUrl": "https://www.litrpg.com/the-land-founding",
+    "allowedFeatures": [
+      "isekai",
+      "base-building"
+    ],
+    "reviewNote": "Transport into another world and establishing a kingdom support the retained features. The alliance question does not establish politics as a substantial conflict. The synopsis stays within the opening premise."
+  },
+  {
+    "entityType": "series",
+    "entityId": "the-land",
+    "inputHash": "dee4b24e5d9c90af5b7299e012850bc8a30198f7fe7fd7b5b777844a863478f5",
+    "evidenceHash": "d1e45a9cd3d4439f58a134f761a6fc31bce8bc1beeed3c3f898acafe466d552a",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T05:46:12.848Z",
+    "sourceUrl": "https://www.litrpg.com/the-land-founding",
+    "allowedFeatures": [
+      "isekai",
+      "base-building"
+    ],
+    "reviewNote": "The first-book premise establishes transport into another world and kingdom development. Generic adventure dangers do not establish survival as a central feature. The synopsis stays within the starting premise."
   }
 ]

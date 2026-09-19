@@ -1091,5 +1091,69 @@
       }
     ],
     "notes": "Reviewed all four Aethon cards and each linked product’s explicit Book N label. Exact English unabridged US audio is verified as released for all four. Audio dates come from retained exact products, not general publication dates. The reviewed retailer spelling Zaifyr Zaifyr on later products is corroborated by exact audio links on Zaifyr’s publisher pages. No final-audio-list statement was found."
+  },
+  {
+    "id": "the-land-2026-09-19",
+    "seriesId": "the-land",
+    "scope": "numbered-mainline",
+    "language": "English",
+    "marketplaces": [
+      "US"
+    ],
+    "expectedNumbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "reviewedAt": "2026-09-19T05:46:22.302Z",
+    "audioCatalogState": "ongoing",
+    "bibliography": [
+      {
+        "documentId": "1856b4a366969cb8974777cd8580204b91271225cdd298acd1041ada50bc3928",
+        "url": "https://www.litrpg.com/the-land-founding",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "9bffc273aec8923f239b1381a1099ec6176ea885209c8fa63ac028e23a11c7a2",
+        "url": "https://www.litrpg.com/the-land-forging",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "94223c06738de681da8354c5e4f5e89a2ff3dbfba239d24aac2f43158246914f",
+        "url": "https://www.litrpg.com/the-land-alliances",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "819c4ac1b460f01df3a8c2d4c6e855fb22e62230ce9c9e129a6f2ba090940b9c",
+        "url": "https://www.litrpg.com/the-land-catacombs",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "9f19cce585af2c912d14692934cfbc4e407db34520cb942e4e12ba7bba0004f6",
+        "url": "https://www.litrpg.com/the-land-catacombs-1",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "5c2f3b5aa2574e31d242cad88a07c9bd524a9c67ce83d9276ec0e2d88ad75009",
+        "url": "https://www.litrpg.com/the-land-raiders",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "825a41be1b14ba676e7a5c7c67140a39e718037795cceec426a7b548d5170e3a",
+        "url": "https://www.litrpg.com/the-land-raiders-1",
+        "sourceType": "author"
+      },
+      {
+        "documentId": "3a6e159c7d6c4d1b13d75db71830f89f7427461764cd8207fba5850e4c67cf4f",
+        "url": "https://www.litrpg.com/the-land-founding-1",
+        "sourceType": "author"
+      }
+    ],
+    "notes": "All eight current author work pages carry the same complete Land bibliography navigation and independently identify their numbered volumes. Each recording has exact retained US product proof. The series is ongoing; a working ninth-book title is not a released or announced audio edition."
   }
 ]

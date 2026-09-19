@@ -1,10 +1,11 @@
 import Database from 'better-sqlite3';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { claim, fail, finish, hash } from './queue.js';
 import { PaidResponseStorageError, ReviewError } from './types.js';
-import { extractProductReviews, bodyKey, CONSISTENCY_CLAIM, observationInput, ReaderTransactionError, observationStatus, observationCost, normalizeUsage, ReaderPaidStorageError, fetchObservation, GENERIC_DIVISION_OPENER, observationHash, OBSERVATION_VERSION, PREVALENCE_QUANTIFIER, readerState, importReaderEvidence, ObservationReviewError, readerJobKind, readerJobKinds, linkIndex, planReaderTraitJobs, processReaderTraits, validateObservation, verbatimOverlap, readerCeiling, processReaderObservation, readerContext, readerEvidenceFor, readerQuestions, readerState, readerTraitHash, traitInput, readerThresholds, readerTraits, summarizeReaderEvidence, surveyReaderEvidence } from './reader-evidence.js';
+import { extractProductReviews, bodyKey, CONSISTENCY_CLAIM, hasSpoilerMarkup, observationInput, ReaderTransactionError, observationStatus, observationCost, normalizeUsage, ReaderPaidStorageError, fetchObservation, GENERIC_DIVISION_OPENER, observationHash, OBSERVATION_VERSION, PREVALENCE_QUANTIFIER, readerState, importReaderEvidence, ObservationReviewError, readerJobKind, readerJobKinds, linkIndex, planReaderTraitJobs, processReaderTraits, validateObservation, verbatimOverlap, readerCeiling, processReaderObservation, readerContext, readerEvidenceFor, readerQuestions, readerTraitHash, traitInput, readerThresholds, readerTraits, summarizeReaderEvidence, surveyReaderEvidence } from './reader-evidence.js';
 import type { JevResponse } from '../jev/client.js';
 
 const MIGRATIONS = ['001_initial.sql','002_cursor_results_found.sql','003_jev_assessments.sql','004_cover_assessments.sql','005_source_history.sql','006_catalog_pipeline.sql','007_author_profiles.sql','008_reader_evidence.sql','010_reader_trait_honesty.sql'];
@@ -261,6 +262,47 @@ describe('reader aggregation cannot overstate what it knows', () => {
     const evaluateStub = vi.fn();
     expect((await processReaderTraits(db, 'work', 'work-1', { evaluate: evaluateStub as never })).recorded).toEqual([]);
     expect(evaluateStub).not.toHaveBeenCalled();
+  });
+
+  it('drops a comment carrying spoiler markup even when the source says it has none', () => {
+    addWork(PRODUCT_URL);
+    // Hardcover has been observed reporting review_has_spoilers: false on comments like these.
+    addDocument(PRODUCT_URL, page([
+      review('Ann', 'A steady opener with brisk chapters. <span class="spoiler">Carl loses the crown at the end.</span>', 5, '2026-03-01'),
+      review('Bo', 'The pacing sags in the middle but the narration carries it through to the finish.', 4, '2026-03-02'),
+      review('Cy', 'Strong worldbuilding and a wry tone; no spoilers here, just a solid recommendation.', 5, '2026-03-03'),
+      review('Di', '<div class="spoiler-free">A safe summary: the systems are clear and the humour lands.</div>', 4, '2026-03-04')
+    ]));
+    importReaderEvidence(db);
+    const rows = readerEvidenceFor(db, 'work', 'work-1');
+    expect(rows).toHaveLength(4);                       // raw evidence is preserved, never rewritten
+    const selected = traitInput(rows);
+    expect(selected).toHaveLength(3);                   // only the marked-up comment is withheld
+    expect(selected.some(r => r.body.includes('Carl loses'))).toBe(false);
+    // Prose that merely mentions spoilers, and an explicit spoiler-free block, are untouched.
+    expect(selected.some(r => r.body.includes('no spoilers here'))).toBe(true);
+    expect(selected.some(r => r.body.includes('A safe summary'))).toBe(true);
+    // Every count agrees with the selected input, so thresholds and export cannot disagree.
+    const summary = summarizeReaderEvidence('work-1', rows);
+    expect(summary.substantiveVoices).toBe(3);
+    expect(readerState(rows).distinctVoices).toBe(3);
+  });
+
+  it('inspects class tokens rather than pattern-matching the markup', () => {
+    // A spoiler after an earlier spoiler-free block: a first-match pattern misses this one.
+    expect(hasSpoilerMarkup('<div class="spoiler-free">Safe.</div> then <span class="spoiler">Carl loses.</span>')).toBe(true);
+    expect(hasSpoilerMarkup('<span class="spoiler"><b><i>He</i> dies</b></span>')).toBe(true);   // nested
+    expect(hasSpoilerMarkup('<span class="warn spoiler big">Reveal.</span>')).toBe(true);        // one of several
+    expect(hasSpoilerMarkup('<span class=spoiler>Reveal.</span>')).toBe(true);                   // unquoted
+    expect(hasSpoilerMarkup('<span\n  class="spoiler"\n>Reveal.</span>')).toBe(true);            // multiline
+    // Different tokens, not negations to unpick, so none of these is a spoiler.
+    expect(hasSpoilerMarkup('<span class="spoiler-free">Safe summary.</span>')).toBe(false);
+    expect(hasSpoilerMarkup('<div class="no-spoilers">Clean review.</div>')).toBe(false);
+    expect(hasSpoilerMarkup('<div class="review-spoiler">Hyphenated.</div>')).toBe(false);
+    // An empty marker, however nested, reveals nothing.
+    expect(hasSpoilerMarkup('<span class="spoiler">   </span>')).toBe(false);
+    expect(hasSpoilerMarkup('<span class="spoiler"><em></em></span>')).toBe(false);
+    expect(hasSpoilerMarkup('<p>No spoilers here, just a great read about pacing.</p>')).toBe(false);
   });
 
   it('counts the same words once, however many accounts carry them', () => {
@@ -592,9 +634,39 @@ describe('a paid observation is never bought twice', () => {
     db.exec('ROLLBACK');
     // Refused before the spend, not discovered after it.
     expect(refused).toBeInstanceOf(ReaderTransactionError);
+    expect((refused as Error).message).toMatch(/caller transaction is open/);
     expect(refused).toBeInstanceOf(ReviewError);
     expect(calls).toBe(0);
     expect(db.prepare("SELECT COUNT(*) AS n FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").get()).toEqual({ n: 0 });
+  });
+
+  it('refuses to buy on a read-only cache, before making the request', async () => {
+    // A genuinely read-only handle, not a stand-in: populate a file, close it, reopen read-only.
+    const folder = mkdtempSync(join(tmpdir(), 'reader-readonly-'));
+    const file = join(folder, 'catalog.db');
+    const writable = new Database(file);
+    for (const name of MIGRATIONS) writable.exec(readFileSync(join(import.meta.dirname, '../migrations', name), 'utf8'));
+    const original = db;
+    db = writable;
+    addVoices(6);
+    db = original;
+    writable.close();
+
+    const readOnly = new Database(file, { readonly: true });
+    let calls = 0;
+    const request = (async () => { calls++; return reply({ observation: 'x', grounded: true }); }) as typeof fetch;
+    const refused = await processReaderObservation(readOnly, 'work', 'work-1', { request }).catch((e: unknown) => e);
+    const stored = readOnly.prepare("SELECT COUNT(*) AS n FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").get();
+    readOnly.close();
+    rmSync(folder, { recursive: true, force: true });
+
+    // A cache miss here would buy an answer SQLITE_READONLY then guarantees we cannot keep.
+    expect(refused).toBeInstanceOf(ReaderTransactionError);
+    expect(refused).toBeInstanceOf(ReviewError);                    // the runner stops, never retries
+    expect(refused).not.toBeInstanceOf(PaidResponseStorageError);   // nothing was bought to lose
+    expect((refused as Error).message).toMatch(/read-only/);
+    expect(calls).toBe(0);
+    expect(stored).toEqual({ n: 0 });
   });
 
   it('parks an archived body that cannot be parsed, and keeps transport errors transient', async () => {
@@ -667,6 +739,40 @@ describe('a paid observation is never bought twice', () => {
     expect(await work()).toMatchObject({ status: 'review' });
     // Parked, so the runner never claims it again and never re-reads the same dead answer.
     expect(await work()).toBeNull();
+  });
+
+  it('parks a corrupt retained row instead of burning the job\'s attempts on it', async () => {
+    addVoices(6);
+    const corrupt = (kind: string) => {
+      db.prepare("DELETE FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").run();
+      const rows = readerEvidenceFor(db, 'work', 'work-1');
+      db.prepare(`INSERT INTO catalog_inferences(id,entity_type,entity_id,kind,input_hash,requested_model,actual_model,rubric_version,result_json,usage_json,evaluated_at)
+        VALUES(?,'reader','work:work-1',?,?,'m','m',?,'{not json','{}','2026-09-19T00:00:00.000Z')`)
+        .run(hash(['reader', 'work:work-1', kind, observationInput(db, 'work', 'work-1', rows).inputHash]), kind,
+          observationInput(db, 'work', 'work-1', rows).inputHash, OBSERVATION_VERSION);
+    };
+    const never = (() => { throw new Error('must not be called'); }) as typeof fetch;
+    // Valid JSON of the wrong shape parses cleanly and used to spread into a job reporting
+    // completed while carrying no observation at all.
+    for (const body of ['null', '{}', '{"observation":42,"grounded":true}', '{"observation":"A fine line about pacing.","grounded":"yes"}']) {
+      db.prepare("DELETE FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").run();
+      const rows = readerEvidenceFor(db, 'work', 'work-1');
+      db.prepare(`INSERT INTO catalog_inferences(id,entity_type,entity_id,kind,input_hash,requested_model,actual_model,rubric_version,result_json,usage_json,evaluated_at)
+        VALUES(?,'reader','work:work-1','reader-observation',?,'m','m',?,?,'{}','2026-09-19T00:00:00.000Z')`)
+        .run(hash(['reader', 'work:work-1', 'reader-observation', observationInput(db, 'work', 'work-1', rows).inputHash]),
+          observationInput(db, 'work', 'work-1', rows).inputHash, OBSERVATION_VERSION, body);
+      const parked = await processReaderObservation(db, 'work', 'work-1', { request: never }).catch((e: unknown) => e);
+      expect(parked, body).toBeInstanceOf(ObservationReviewError);
+      expect((parked as ObservationReviewError).usage, body).toEqual({ input_tokens: 0, output_tokens: 0 });
+    }
+    // Both the normalized cache hit and the legacy raw archive: neither can be read, and neither
+    // is worth retrying, so both park instead of failing transiently.
+    for (const kind of ['reader-observation', 'reader-observation-raw']) {
+      corrupt(kind);
+      const parked = await processReaderObservation(db, 'work', 'work-1', { request: never }).catch((e: unknown) => e);
+      expect(parked, kind).toBeInstanceOf(ReviewError);
+      expect((parked as ObservationReviewError).usage, kind).toEqual({ input_tokens: 0, output_tokens: 0 });
+    }
   });
 
   it('promotes a valid answer and then serves it from cache', async () => {

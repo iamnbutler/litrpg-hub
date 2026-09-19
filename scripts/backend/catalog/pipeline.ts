@@ -14,6 +14,7 @@ import { resolveAudioLink } from './audio-links.js';
 import { enqueueAudio } from './audio.js';
 import { parseDivineApostasy } from './apostasy-adapter.js';
 import { enqueueIdentifiedAudioLeads } from './identified-audio.js';
+import { parseTheLandBook, THE_LAND_BOOK_URLS } from './the-land-adapter.js';
 
 export const seeds=JSON.parse(readFileSync(new URL('../config/catalog-seeds.json',import.meta.url),'utf8')) as SeedSeries[];
 export function enqueueSource(db:Database.Database,payload:SourcePayload,priority=0) {
@@ -74,10 +75,17 @@ function discover(db:Database.Database,doc:Document,adapter:SourcePayload['adapt
   return links.length;
 }
 export async function processSource(db:Database.Database,payload:SourcePayload,registry:readonly SeedSeries[]=seeds) {
-  const {document:doc,downloaded}=await getDocument(db,payload.url,{ttlDays:payload.adapter.endsWith('index')||payload.adapter.endsWith('series')||payload.adapter.endsWith('author')?7:90});
+  if(payload.adapter==='the-land-book'&&!THE_LAND_BOOK_URLS.includes(payload.url))throw new ReviewError('The Land source job requires one of the eight reviewed work URLs.');
+  const {document:doc,downloaded}=await getDocument(db,payload.url,{ttlDays:payload.adapter==='the-land-book'||payload.adapter.endsWith('index')||payload.adapter.endsWith('series')||payload.adapter.endsWith('author')?7:90});
   if(payload.adapter.endsWith('index')) return {downloaded,candidates:discover(db,doc,payload.adapter)};
   const seed=registry.find(s=>s.id===payload.seriesId);
   if(!seed) throw new ReviewError('Source job has no selected series identity.');
+  if(payload.adapter==='the-land-book'){
+    if(doc.url!==payload.url)throw new ReviewError('The retained Land document does not match the requested source.');
+    const book=parseTheLandBook(doc.body,seed,doc.url);
+    if(payload.number!==undefined&&payload.number!==book.number)throw new ReviewError('The Land source job conflicts with the explicit page volume.');
+    return {downloaded,work:importWork(db,seed,book,{...doc,method:'author-page'}),number:book.number,title:book.title};
+  }
   if(payload.adapter==='sarah-lin-author') return {downloaded,...enqueueIdentifiedAudioLeads(db,seed,doc)};
   if(payload.adapter==='portal-author'||payload.adapter==='bagwell-author'||payload.adapter==='nova-roma-author'||payload.adapter==='apostasy-author'){
     const books=payload.adapter==='apostasy-author'?parseDivineApostasy(doc.body,seed,doc.url):payload.adapter==='nova-roma-author'?parseNovaRoma(doc.body,seed):payload.adapter==='bagwell-author'?parseBagwellBooks(doc.body,seed):parsePortalAuthor(doc.body,seed);

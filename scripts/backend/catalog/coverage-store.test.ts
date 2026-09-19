@@ -81,4 +81,9 @@ describe('source-backed coverage export', () => {
     db.prepare("UPDATE catalog_works SET title='Different book with the same number'").run();
     expect(assess().issues.map(issue=>issue.code)).toContain('missing-verified-audio');
   });
+  it('withholds completeness when the current product changes title despite matching series and number', () => {
+    document('audio-new', audioUrl, JSON.stringify({ product: { ...product.product, title: 'An Unrelated Adventure' } }));
+    expect(assess().status).toBe('incomplete');
+    expect(assess().issues.map(issue => issue.code)).toContain('missing-verified-audio');
+  });
 });
