@@ -42,31 +42,41 @@ try {
       process.on('SIGINT', () => { stopped = true; console.log('Stopping after the active job; remaining jobs are saved.'); });
       // One scan of the catalog serves the whole bounded run.
       const evidence = collectAuthorEvidence(db);
-      const usage = { input_tokens: 0, output_tokens: 0 };
+      // Tracked beside the token totals: a paid response that never said what it cost must not
+      // be summarised as a free one.
+      const usage = { input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0 };
       let completed = 0, errors = 0;
-      for (let i = 0; i < limit && !stopped; i++) {
-        const job = claim(db, ['author-profile']);
-        if (!job) break;
-        try {
-          const result = await processAuthorProfile(db, job.entity_id, { evidence, confirm: values.confirm as 'jev' | 'evidence' });
-          finish(db, job, result);
-          completed++;
-          usage.input_tokens += result.input_tokens; usage.output_tokens += result.output_tokens;
-          console.log(`author ${job.entity_id}: ${JSON.stringify(result)}`);
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Author profile job failed';
-          // A rejected answer was still paid for; do not report the run as free.
-          if (error instanceof JevReviewError || error instanceof JevPaidStorageError) {
-            usage.input_tokens += error.usage.input_tokens; usage.output_tokens += error.usage.output_tokens;
+      try {
+        for (let i = 0; i < limit && !stopped; i++) {
+          const job = claim(db, ['author-profile']);
+          if (!job) break;
+          try {
+            const result = await processAuthorProfile(db, job.entity_id, { evidence, confirm: values.confirm as 'jev' | 'evidence' });
+            // The result already exists even if marking its queue job complete fails.
+            usage.input_tokens += result.input_tokens; usage.output_tokens += result.output_tokens;
+            usage.unknownUsageResponses += result.unknownUsageResponses;
+            finish(db, job, result);
+            completed++;
+            console.log(`author ${job.entity_id}: ${JSON.stringify(result)}`);
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Author profile job failed';
+            // A rejected answer was still paid for; do not report the run as free.
+            if (error instanceof JevReviewError || error instanceof JevPaidStorageError) {
+              usage.input_tokens += error.usage.input_tokens; usage.output_tokens += error.usage.output_tokens;
+              usage.unknownUsageResponses += error.unknownUsageResponses;
+            }
+            // A paid answer that could not be judged parks for review; one that could not be
+            // stored stops the run, because every later job would risk the same lost purchase.
+            errors++;
+            fail(db, job, message, error instanceof ReviewError);
+            console.error(`author ${job.entity_id}: ${message}`);
+            if (/HTTP (401|403|429)/.test(message) || error instanceof PaidResponseStorageError || error instanceof JevTransactionError) break;
           }
-          // A paid answer that could not be judged parks for review; one that could not be
-          // stored stops the run, because every later job would risk the same lost purchase.
-          fail(db, job, message, error instanceof ReviewError); errors++;
-          console.error(`author ${job.entity_id}: ${message}`);
-          if (/HTTP (401|403|429)/.test(message) || error instanceof PaidResponseStorageError || error instanceof JevTransactionError) break;
         }
+      } finally {
+        // Even a queue write failure must not suppress the cost of a response already received.
+        console.log(JSON.stringify({ completed, errors, tokens: usage }));
       }
-      console.log(JSON.stringify({ completed, errors, tokens: usage }));
     } else if (command === 'status') {
       console.log(JSON.stringify({
         jobs: db.prepare("SELECT status,COUNT(*) AS count FROM catalog_jobs WHERE kind='author-profile' GROUP BY status").all(),

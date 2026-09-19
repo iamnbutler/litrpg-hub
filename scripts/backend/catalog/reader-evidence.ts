@@ -18,7 +18,7 @@ import * as cheerio from 'cheerio';
 import { hash, enqueue } from './queue.js';
 import { saveInference } from './inference.js';
 import { PaidResponseStorageError, ReviewError } from './types.js';
-import { paidJev } from './paid-jev.js';
+import { accountFor, normalizeUsage, paidJev, type PaidAccount } from './paid-jev.js';
 import { loadCorrections, resolveCorrection, type ReaderCorrection } from './reader-corrections.js';
 
 /** Refuse before spending if the receipt cannot commit independently; stop the worker
@@ -31,7 +31,7 @@ export class ReaderTransactionError extends ReviewError {
 
 /** A storage failure carries the lost answer's usage so the run can account for it. */
 export class ReaderPaidStorageError extends PaidResponseStorageError {
-  constructor(readonly usage: { input_tokens: number; output_tokens: number }, cause: string) {
+  constructor(readonly usage: { input_tokens: number; output_tokens: number }, cause: string, readonly unknownUsageResponses = 0) {
     super();
     this.message = `${this.message} Cause: ${cause}`;
   }
@@ -39,7 +39,7 @@ export class ReaderPaidStorageError extends PaidResponseStorageError {
 
 /** A rejected answer still carries its reported usage. */
 export class ObservationReviewError extends ReviewError {
-  constructor(message: string, readonly usage: { input_tokens: number; output_tokens: number }) { super(message); }
+  constructor(message: string, readonly usage: { input_tokens: number; output_tokens: number }, readonly unknownUsageResponses = 0) { super(message); }
 }
 import type { ReaderContext as SharedReaderContext } from '../../../src/lib/reader-context.js';
 import { evaluate, type JevResponse, type Question } from '../jev/client.js';
@@ -495,7 +495,7 @@ export function planReaderTraitJobs(db: Database.Database, entityType: 'series' 
   return added;
 }
 
-export interface ReaderTraitResult { entity: string; voices: number; samples: number; eligible: boolean; recorded: ReaderTrait[]; consensus: string | null; cached: boolean; input_tokens: number; output_tokens: number; skipped?: string }
+export interface ReaderTraitResult { entity: string; voices: number; samples: number; eligible: boolean; recorded: ReaderTrait[]; consensus: string | null; cached: boolean; input_tokens: number; output_tokens: number; unknownUsageResponses: number; skipped?: string }
 /**
  * Aggregate reader comments into traits. Refuses anything thinner than the threshold rather
  * than letting a handful of one-liners become a consensus, and records disagreement instead of
@@ -510,14 +510,14 @@ export async function processReaderTraits(db: Database.Database, entityType: 'se
   // non-spoiler, capped selection and `samples` is its size.
   const base = { entity: entityId, voices: summary.substantiveVoices, samples: traitInput(rows).length,
     eligible: summary.eligible, recorded: [] as ReaderTrait[], consensus: null as string | null };
-  if (!summary.eligible) return { ...base, cached: false, input_tokens: 0, output_tokens: 0, skipped: summary.reason };
+  if (!summary.eligible) return { ...base, cached: false, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0, skipped: summary.reason };
   const substantive = traitInput(rows);
   const state = readerState(rows);
   const requestedModel = process.env.JEV_MODEL ?? 'jev-latest';
   const inputHash = readerTraitHash(state, requestedModel);
   const evaluatedAt = new Date().toISOString();
   // Retained before it is judged: see catalog/paid-jev.ts for the replay and refusal rules.
-  const { response, usage: paidUsage, cached: fromCache } = await paidJev(db, state, {
+  const { response, usage: paidUsage, cached: fromCache, unknownUsageResponses } = await paidJev(db, state, {
     entityType: 'reader', entity: `${entityType}:${entityId}`, kind: 'reader-traits', inputHash,
     rubricVersion: READER_RUBRIC_VERSION, requestedModel, questions: readerQuestions, evaluate: options.evaluate
   });
@@ -525,30 +525,36 @@ export async function processReaderTraits(db: Database.Database, entityType: 'se
   const consensus = consensusAnswer?.type === 'choice' && ['consistent', 'mixed', 'insufficient'].includes(consensusAnswer.choice)
     ? consensusAnswer.choice : 'insufficient';
   const ceiling = readerCeiling(summary.substantiveVoices);
-  const sampling = samplingFor(db, entityType, entityId);
   const recorded: ReaderTrait[] = [];
-  db.transaction(() => {
-    for (const trait of readerTraits) {
-      const answer = response.answers[trait];
-      if (answer?.type !== 'choice') continue;
-      const value = ['present', 'absent', 'unknown'].includes(answer.choice) ? answer.choice : 'unknown';
-      // The model's own certainty. Nothing here classifies individual commenters, so no
-      // supporting or dissenting READER count exists and none is invented.
-      const modelConfidence = Math.round((answer.probabilities?.[answer.choice] ?? answer.confidence) * 1000) / 1000;
-      db.prepare(`INSERT OR IGNORE INTO catalog_reader_traits
-        (id,entity_type,entity_id,trait,value,confidence,model_confidence,consensus,summary,voices,samples,evidence_json,input_hash,requested_model,model,rubric_version,evaluated_at)
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
-          hash([entityType, entityId, trait, inputHash]), entityType, entityId, trait, value,
-          Math.round(Math.min(ceiling, answer.confidence) * 1000) / 1000, modelConfidence, consensus,
-          traitSummary(trait, value, summary, consensus, Math.min(ceiling, answer.confidence), sampling), summary.substantiveVoices, substantive.length,
-          // Evidence ids only. Reader text never leaves catalog_reader_evidence.
-          JSON.stringify({ evidenceIds: substantive.map(r => r.id), consensus, sampling, sources: [...new Set(rows.map(r => r.source_name))] }),
-          inputHash, requestedModel, response.model, READER_RUBRIC_VERSION, evaluatedAt);
-      recorded.push(trait);
-    }
-  })();
+  // Promotion is after the purchase, so a failure here must still report what was bought. The
+  // paid answer is already retained, so a later run replays it for nothing.
+  try {
+    const sampling = samplingFor(db, entityType, entityId);
+    db.transaction(() => {
+      for (const trait of readerTraits) {
+        const answer = response.answers[trait];
+        if (answer?.type !== 'choice') continue;
+        const value = ['present', 'absent', 'unknown'].includes(answer.choice) ? answer.choice : 'unknown';
+        // The model's own certainty. Nothing here classifies individual commenters, so no
+        // supporting or dissenting READER count exists and none is invented.
+        const modelConfidence = Math.round((answer.probabilities?.[answer.choice] ?? answer.confidence) * 1000) / 1000;
+        db.prepare(`INSERT OR IGNORE INTO catalog_reader_traits
+          (id,entity_type,entity_id,trait,value,confidence,model_confidence,consensus,summary,voices,samples,evidence_json,input_hash,requested_model,model,rubric_version,evaluated_at)
+          VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+            hash([entityType, entityId, trait, inputHash]), entityType, entityId, trait, value,
+            Math.round(Math.min(ceiling, answer.confidence) * 1000) / 1000, modelConfidence, consensus,
+            traitSummary(trait, value, summary, consensus, Math.min(ceiling, answer.confidence), sampling), summary.substantiveVoices, substantive.length,
+            // Evidence ids only. Reader text never leaves catalog_reader_evidence.
+            JSON.stringify({ evidenceIds: substantive.map(r => r.id), consensus, sampling, sources: [...new Set(rows.map(r => r.source_name))] }),
+            inputHash, requestedModel, response.model, READER_RUBRIC_VERSION, evaluatedAt);
+        recorded.push(trait);
+      }
+    })();
+  } catch (error) {
+    throw new ReaderPaidStorageError(paidUsage, `reader traits could not be recorded: ${error instanceof Error ? error.message : 'unknown database error'}`, unknownUsageResponses);
+  }
   return { ...base, recorded, consensus, cached: fromCache,
-    input_tokens: paidUsage.input_tokens, output_tokens: paidUsage.output_tokens };
+    input_tokens: paidUsage.input_tokens, output_tokens: paidUsage.output_tokens, unknownUsageResponses };
 }
 
 
@@ -644,13 +650,8 @@ export function validateObservation(value: unknown, sources: string[], sample: {
 /** Fetch only. The answer is retained before it is judged, so a paid call is never lost. */
 /** Token counts we are willing to record. A provider that reports a fraction or a negative is
  * not reporting a cost, and fabricating zeros would claim the call was free. */
-export function normalizeUsage(value: unknown): { input_tokens: number; output_tokens: number } | undefined {
-  const usage = value as { input_tokens?: unknown; output_tokens?: unknown } | undefined;
-  // Safe integers, matching jev/client.ts: a value the client would reject is not a token count.
-  const whole = (n: unknown): n is number => typeof n === 'number' && Number.isSafeInteger(n) && n >= 0;
-  return usage && whole(usage.input_tokens) && whole(usage.output_tokens)
-    ? { input_tokens: usage.input_tokens, output_tokens: usage.output_tokens } : undefined;
-}
+// One definition of what counts as a reportable token count, shared with the Jev path.
+export { accountFor, normalizeUsage } from './paid-jev.js';
 
 /** Turns one raw OpenAI body into the model's answer. Split out so a replayed wire receipt is
  * read by exactly the same rules as a live response. */
@@ -686,7 +687,12 @@ export async function fetchObservation(state: unknown, request: typeof fetch = f
         instructions: observationInstructions, input: JSON.stringify(state),
         text: { format: { type: 'json_schema', name: 'reader_observation', strict: true, schema: observationSchema } } }) });
   } catch { throw new Error('OpenAI could not be reached for the reader observation.'); }
-  const rawText = await response.text();
+  let rawText: string;
+  try { rawText = await response.text(); }
+  catch {
+    if (response.ok) throw new ReaderPaidStorageError({ input_tokens: 0, output_tokens: 0 }, 'OpenAI returned a successful status, but its response body could not be read.', 1);
+    throw new Error(`OpenAI returned HTTP ${response.status}.`);
+  }
   // Durable before it is judged, because a refused, truncated or malformed body was still paid
   // for. Only a 2xx body was: archiving a 401, 403 or 429 would poison the replay, so that a
   // fixed key or a lifted rate limit would read the stored error back forever.
@@ -699,14 +705,16 @@ export async function requestObservation(state: { sample?: { consensus?: string;
 }
 
 export const observationHash = (state: unknown) => hash({ version: OBSERVATION_VERSION, model: observationModel(), instructions: observationInstructions, state });
-export interface ObservationResult { entity: string; observation: string | null; grounded: boolean; cached: boolean; input_tokens: number; output_tokens: number; skipped?: string }
+/** `unknownUsageResponses` counts paid 2xx responses that declined to report a cost. Only a
+ * fresh purchase can raise it; a replay, a skip and a refusal all leave it at zero. */
+export interface ObservationResult { entity: string; observation: string | null; grounded: boolean; cached: boolean; input_tokens: number; output_tokens: number; unknownUsageResponses: number; skipped?: string }
 /** One short original note per entity, cached by its evidence exactly like every other inference. */
 export async function processReaderObservation(db: Database.Database, entityType: 'series' | 'work', entityId: string, options: {
   request?: typeof fetch;
 } = {}): Promise<ObservationResult> {
   const rows = readerEvidenceFor(db, entityType, entityId);
   const summary = summarizeReaderEvidence(entityId, rows);
-  if (!summary.eligible) return { entity: entityId, observation: null, grounded: false, cached: false, input_tokens: 0, output_tokens: 0, skipped: summary.reason };
+  if (!summary.eligible) return { entity: entityId, observation: null, grounded: false, cached: false, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0, skipped: summary.reason };
   const { state, selected, inputHash } = observationInput(db, entityType, entityId, rows);
   const cacheId = hash(['reader', `${entityType}:${entityId}`, 'reader-observation', inputHash]);
   const cached = db.prepare('SELECT result_json FROM catalog_inferences WHERE id=?').get(cacheId) as { result_json: string } | undefined;
@@ -724,7 +732,7 @@ export async function processReaderObservation(db: Database.Database, entityType
     } catch {
       throw new ObservationReviewError('The retained reader observation could not be read; retrying would not buy anything new.', { input_tokens: 0, output_tokens: 0 });
     }
-    return { entity: entityId, ...held, cached: true, input_tokens: 0, output_tokens: 0 };
+    return { entity: entityId, ...held, cached: true, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0 };
   }
   const sources = selected.map(r => r.body);
   const entity = `${entityType}:${entityId}`;
@@ -737,12 +745,12 @@ export async function processReaderObservation(db: Database.Database, entityType
   const heldWire = read('reader-observation-wire');
   const heldRaw = read('reader-observation-raw');
   let raw: { text: string; model: string };
-  let paid = zero;
+  let account: PaidAccount = { tokens: zero, unknownUsageResponses: 0 };
   // Once a receipt exists the answer is bought and final: a body that cannot be parsed is a
   // review item, never a transient failure the queue should keep retrying.
-  const parked = (error: unknown, usage: { input_tokens: number; output_tokens: number }) => {
+  const parked = (error: unknown, usage: { input_tokens: number; output_tokens: number }, unpriced = 0) => {
     const why = error instanceof Error ? error.message : 'The response could not be read.';
-    return new ObservationReviewError(`${why} The paid response is archived; re-judging it will not cost anything.`, usage);
+    return new ObservationReviewError(`${why} The paid response is archived; re-judging it will not cost anything.`, usage, unpriced);
   };
   if (heldWire) {
     try { raw = parseObservationWire((JSON.parse(heldWire.result_json) as { text: string }).text); }
@@ -760,18 +768,19 @@ export async function processReaderObservation(db: Database.Database, entityType
     let archived = false;
     raw = await fetchObservation(state, options.request, (rawText) => {
       const receipt = wireReceipt(rawText, requestedModel);
-      // Unknown usage is recorded as unknown; the run tally can only report what it knows.
-      paid = normalizeUsage(receipt.usage) ?? zero;
+      // The receipt keeps unknown usage as {}; the run summary cannot, so it counts the response
+      // as unpriced rather than reporting a purchase of unknown size as free.
+      account = accountFor(receipt.usage);
       // Rechecked here rather than before the call: a caller may open a transaction while we
       // await the response, and a receipt written inside it disappears on their rollback after
       // the answer has already been paid for.
-      if (db.inTransaction) throw new ReaderPaidStorageError(paid, 'a caller opened a transaction while the request was in flight');
+      if (db.inTransaction) throw new ReaderPaidStorageError(account.tokens, 'a caller opened a transaction while the request was in flight', account.unknownUsageResponses);
       try {
         saveInference(db, 'reader', entity, 'reader-observation-wire', inputHash, requestedModel, receipt.model, OBSERVATION_VERSION, { text: rawText }, receipt.usage);
       } catch (error) {
         // Never handed back as a retryable database error: the queue would retry and buy the
         // same answer again. This stops the worker instead.
-        throw new ReaderPaidStorageError(paid, error instanceof Error ? error.message : 'unknown database error');
+        throw new ReaderPaidStorageError(account.tokens, error instanceof Error ? error.message : 'unknown database error', account.unknownUsageResponses);
       }
       archived = true;
     }, requestedModel).catch((error: unknown) => {
@@ -779,7 +788,7 @@ export async function processReaderObservation(db: Database.Database, entityType
       // 403 and 429 keep their own semantics and stay retryable. Only a parse failure after the
       // body was archived becomes a review item.
       if (error instanceof ReviewError || !archived) throw error;
-      throw parked(error, paid);
+      throw parked(error, account.tokens, account.unknownUsageResponses);
     });
   }
   let result: { observation: string; grounded: boolean };
@@ -787,10 +796,15 @@ export async function processReaderObservation(db: Database.Database, entityType
     result = validateObservation(JSON.parse(raw.text), sources, state.sample);
   } catch (error) {
     const why = error instanceof Error ? error.message : 'Reader observation was invalid.';
-    throw new ObservationReviewError(`${why} The paid answer is archived; re-judging it will not cost anything.`, paid);
+    throw new ObservationReviewError(`${why} The paid answer is archived; re-judging it will not cost anything.`, account.tokens, account.unknownUsageResponses);
   }
-  saveInference(db, 'reader', entity, 'reader-observation', inputHash, requestedModel, raw.model, OBSERVATION_VERSION, result, zero);
-  return { entity: entityId, ...result, cached: !!(heldWire || heldRaw), input_tokens: paid.input_tokens, output_tokens: paid.output_tokens };
+  try { saveInference(db, 'reader', entity, 'reader-observation', inputHash, requestedModel, raw.model, OBSERVATION_VERSION, result, zero); }
+  catch (error) {
+    throw new ReaderPaidStorageError(account.tokens, `reader observation could not be recorded: ${error instanceof Error ? error.message : 'unknown database error'}`, account.unknownUsageResponses);
+  }
+  return { entity: entityId, ...result, cached: !!(heldWire || heldRaw),
+    input_tokens: account.tokens.input_tokens, output_tokens: account.tokens.output_tokens,
+    unknownUsageResponses: account.unknownUsageResponses };
 }
 /**
  * The observation a context may publish, or null.

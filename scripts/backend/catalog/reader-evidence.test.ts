@@ -148,6 +148,17 @@ const readerStub = (traits: Record<string, [string, number]>, consensus = 'consi
     consensus: answer(consensus, 0.8, ['consistent','mixed','insufficient']) }
 });
 const ALL_UNKNOWN = Object.fromEntries(readerTraits.map(t => [t, ['unknown', 0.3] as [string, number]]));
+
+it.each([true, false])('reports purchase usage when reader trait promotion fails (known=%s)', async known => {
+  addVoices(6);
+  const response = { ...readerStub(ALL_UNKNOWN), usage: known ? { input_tokens: 120, output_tokens: 30 } : undefined };
+  db.exec("CREATE TRIGGER no_traits BEFORE INSERT ON catalog_reader_traits BEGIN SELECT RAISE(ABORT,'disk full'); END");
+  const failed = await processReaderTraits(db, 'work', 'work-1', { evaluate: (async () => response) as never }).catch((error: unknown) => error);
+  expect(failed).toBeInstanceOf(ReaderPaidStorageError);
+  expect(failed).toMatchObject({ usage: known ? response.usage : { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: known ? 0 : 1 });
+  expect(db.prepare('SELECT COUNT(*) AS n FROM catalog_reader_traits').get()).toEqual({ n: 0 });
+  expect(db.prepare("SELECT COUNT(*) AS n FROM catalog_inferences WHERE kind='reader-traits'").get()).toEqual({ n: 1 });
+});
 function addVoices(count: number, body = (n: string) => `A substantive comment from ${n} about pacing, narration and the world.`) {
   addWork(PRODUCT_URL);
   addDocument(PRODUCT_URL, page(Array.from({ length: count }, (_, i) => review(`Reader${i}`, body(`Reader${i}`), 5, `2026-03-0${i + 1}`))));
@@ -772,6 +783,86 @@ describe('a paid observation is never bought twice', () => {
       expect(parked, kind).toBeInstanceOf(ReviewError);
       expect((parked as ObservationReviewError).usage, kind).toEqual({ input_tokens: 0, output_tokens: 0 });
     }
+  });
+
+  it.each([200, 401])('accounts for an unreadable observation body after HTTP %i', async status => {
+    addVoices(6);
+    const request = vi.fn(async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error('stream interrupted')); } }), { status }));
+    const failed = await processReaderObservation(db, 'work', 'work-1', { request }).catch((error: unknown) => error);
+    if (status === 200) {
+      expect(failed).toBeInstanceOf(ReaderPaidStorageError);
+      expect(failed).toMatchObject({ usage: { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: 1 });
+    } else {
+      expect(failed).not.toBeInstanceOf(ReaderPaidStorageError);
+      expect(failed).not.toHaveProperty('unknownUsageResponses');
+    }
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(db.prepare("SELECT COUNT(*) AS n FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").get()).toEqual({ n: 0 });
+  });
+
+  it.each(['reader-observation-wire', 'reader-observation'])('retains unknown usage on a failed %s save', async kind => {
+    addVoices(6);
+    let calls = 0;
+    const request = (async () => {
+      calls++;
+      return new Response(JSON.stringify({ status: 'completed', model: 'gpt-4.1-mini-test', output: [{ content: [{ type: 'output_text',
+        text: JSON.stringify({ observation: 'Short chapters and steady progression drew comment, while the middle act divided opinion on pacing.', grounded: true }) }] }] }), { status: 200 });
+    }) as typeof fetch;
+    db.exec(`CREATE TRIGGER no_observation BEFORE INSERT ON catalog_inferences WHEN NEW.kind='${kind}' BEGIN SELECT RAISE(ABORT,'disk full'); END`);
+    const failed = await processReaderObservation(db, 'work', 'work-1', { request }).catch((error: unknown) => error);
+    expect(failed).toBeInstanceOf(ReaderPaidStorageError);
+    expect(failed).toMatchObject({ usage: { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: 1 });
+    db.exec('DROP TRIGGER no_observation');
+    if (kind === 'reader-observation') {
+      expect(await processReaderObservation(db, 'work', 'work-1', { request }))
+        .toMatchObject({ cached: true, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0 });
+      expect(calls).toBe(1);
+    }
+  });
+
+  it('counts an unpriced prose purchase, and nothing for a replay or a skip', async () => {
+    addVoices(6);
+    const text = 'Short chapters and steady progression drew comment, while the middle act divided opinion on pacing.';
+    const unpriced = () => new Response(JSON.stringify({ status: 'completed', model: 'gpt-4.1-mini-test',
+      output: [{ content: [{ type: 'output_text', text: JSON.stringify({ observation: text, grounded: true }) }] }] }), { status: 200 });
+    let calls = 0;
+    const request = (async () => { calls++; return unpriced(); }) as typeof fetch;
+
+    // A 2xx with no usage block: bought, unpriceable, and counted as such rather than as free.
+    const fresh = await processReaderObservation(db, 'work', 'work-1', { request });
+    expect(fresh).toMatchObject({ grounded: true, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 1 });
+    const wire = db.prepare("SELECT usage_json FROM catalog_inferences WHERE kind='reader-observation-wire'").get() as { usage_json: string };
+    expect(JSON.parse(wire.usage_json)).toEqual({});   // the receipt keeps saying unknown, not zero
+
+    // The replay buys nothing, so it reports nothing — free, not unpriced.
+    expect(await processReaderObservation(db, 'work', 'work-1', { request }))
+      .toMatchObject({ cached: true, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0 });
+    expect(calls).toBe(1);
+
+    // A below-threshold entity never reaches a purchase at all.
+    addWork('https://example.com/thin', 'work-thin');
+    addDocument('https://example.com/thin', page([review('Solo', 'A single substantive comment about the pacing and the tone of it.', 5, '2026-03-01')]));
+    importReaderEvidence(db);
+    expect(await processReaderObservation(db, 'work', 'work-thin', { request }))
+      .toMatchObject({ unknownUsageResponses: 0, input_tokens: 0 });
+    expect(calls).toBe(1);
+  });
+
+  it('counts an unpriced purchase that was rejected, and none for a transport failure', async () => {
+    addVoices(6);
+    // Bought, unpriceable, and then rejected by the prose rules: still not a free run.
+    const overclaiming = (async () => new Response(JSON.stringify({ status: 'completed', model: 'gpt-4.1-mini-test',
+      output: [{ content: [{ type: 'output_text', text: JSON.stringify({ observation: 'Readers consistently praise the brisk pacing and the memorable supporting cast here.', grounded: true }) }] }] }), { status: 200 })) as typeof fetch;
+    const rejected = await processReaderObservation(db, 'work', 'work-1', { request: overclaiming }).catch((e: unknown) => e);
+    expect(rejected).toBeInstanceOf(ObservationReviewError);
+    expect((rejected as ObservationReviewError).unknownUsageResponses).toBe(1);
+
+    // A non-2xx bought nothing, so it counts nothing and stays retryable.
+    db.prepare("DELETE FROM catalog_inferences WHERE kind LIKE 'reader-observation%'").run();
+    const limited = await processReaderObservation(db, 'work', 'work-1',
+      { request: (async () => new Response('{}', { status: 429 })) as typeof fetch }).catch((e: unknown) => e);
+    expect(limited).not.toBeInstanceOf(ReviewError);
+    expect('unknownUsageResponses' in (limited as object)).toBe(false);
   });
 
   it('promotes a valid answer and then serves it from cache', async () => {

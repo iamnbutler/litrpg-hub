@@ -61,43 +61,52 @@ Reader opinion is never written to a book's content signals.`);
       if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new Error('--limit must be between 1 and 50.');
       let stopped = false;
       process.on('SIGINT', () => { stopped = true; console.log('Stopping after the active job; remaining jobs are saved.'); });
-      const usage = { input_tokens: 0, output_tokens: 0 };
+      // Tracked beside the token totals: a paid response that never said what it cost must not
+      // be summarised as a free one.
+      const usage = { input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0 };
       let completed = 0, errors = 0;
       // Scope is in the kind, so claim filters it in SQL and nothing out of scope is ever held.
-      for (let i = 0; i < limit && !stopped; i++) {
-        const job = claim(db, readerJobKinds(scope));
-        if (!job) break;
-        const payload = JSON.parse(job.payload_json) as { entityType: 'series' | 'work'; entityId: string };
-        try {
-          const result = job.kind.startsWith('reader-observation')
-            ? await processReaderObservation(db, payload.entityType, payload.entityId)
-            : await processReaderTraits(db, payload.entityType, payload.entityId);
-          finish(db, job, result);
-          completed++;
-          usage.input_tokens += result.input_tokens; usage.output_tokens += result.output_tokens;
-          console.log(`reader ${job.entity_id}: ${JSON.stringify(result)}`);
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Reader trait job failed';
-          // A rejected answer was still paid for; do not report the run as free.
-          // Trait jobs report through the shared Jev classes and observation jobs through their
-          // own; either way a rejected answer was paid for and the run must not look free.
-          if (error instanceof ObservationReviewError || error instanceof ReaderPaidStorageError
-            || error instanceof JevReviewError || error instanceof JevPaidStorageError) {
-            usage.input_tokens += error.usage.input_tokens; usage.output_tokens += error.usage.output_tokens;
+      try {
+        for (let i = 0; i < limit && !stopped; i++) {
+          const job = claim(db, readerJobKinds(scope));
+          if (!job) break;
+          const payload = JSON.parse(job.payload_json) as { entityType: 'series' | 'work'; entityId: string };
+          try {
+            const result = job.kind.startsWith('reader-observation')
+              ? await processReaderObservation(db, payload.entityType, payload.entityId)
+              : await processReaderTraits(db, payload.entityType, payload.entityId);
+            // The result already exists even if marking its queue job complete fails.
+            usage.input_tokens += result.input_tokens; usage.output_tokens += result.output_tokens;
+            usage.unknownUsageResponses += result.unknownUsageResponses;
+            finish(db, job, result);
+            completed++;
+            console.log(`reader ${job.entity_id}: ${JSON.stringify(result)}`);
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Reader trait job failed';
+            // A rejected answer was still paid for; do not report the run as free.
+            // Trait jobs report through the shared Jev classes and observation jobs through their
+            // own; either way a rejected answer was paid for and the run must not look free.
+            if (error instanceof ObservationReviewError || error instanceof ReaderPaidStorageError
+              || error instanceof JevReviewError || error instanceof JevPaidStorageError) {
+              usage.input_tokens += error.usage.input_tokens; usage.output_tokens += error.usage.output_tokens;
+              usage.unknownUsageResponses += error.unknownUsageResponses;
+            }
+            // A source that named a time is deferred to exactly that time, keeping its attempt.
+            // An archived answer that still fails validation is a review item: retrying it would
+            // re-judge the same bytes and reach the same verdict.
+            errors++;
+            if (error instanceof RetryableError) defer(db, job, message, new Date(Date.now() + error.retryAfterMs));
+            else fail(db, job, message, error instanceof ReviewError);
+            console.error(`reader ${job.entity_id}: ${message}`);
+            // A paid answer that could not be stored stops the run: every further job would risk
+            // buying an answer we cannot keep either.
+            if (/HTTP (401|403|429)/.test(message) || error instanceof RetryableError || error instanceof PaidResponseStorageError || error instanceof ReaderTransactionError || error instanceof JevTransactionError) break;
           }
-          // A source that named a time is deferred to exactly that time, keeping its attempt.
-          // An archived answer that still fails validation is a review item: retrying it would
-          // re-judge the same bytes and reach the same verdict.
-          if (error instanceof RetryableError) defer(db, job, message, new Date(Date.now() + error.retryAfterMs));
-          else fail(db, job, message, error instanceof ReviewError);
-          errors++;
-          console.error(`reader ${job.entity_id}: ${message}`);
-          // A paid answer that could not be stored stops the run: every further job would risk
-          // buying an answer we cannot keep either.
-          if (/HTTP (401|403|429)/.test(message) || error instanceof RetryableError || error instanceof PaidResponseStorageError || error instanceof ReaderTransactionError || error instanceof JevTransactionError) break;
         }
+      } finally {
+        // Even a queue write failure must not suppress the cost of a response already received.
+        console.log(JSON.stringify({ completed, errors, tokens: usage }));
       }
-      console.log(JSON.stringify({ completed, errors, tokens: usage }));
     } else if (command === 'status') {
       console.log(JSON.stringify({
         jobs: db.prepare("SELECT kind,status,COUNT(*) AS count FROM catalog_jobs WHERE kind LIKE 'reader-%' GROUP BY kind,status").all(),

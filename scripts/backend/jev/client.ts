@@ -6,6 +6,10 @@ export type Answer = { type: 'noul'; noul: number } |
 	{ type: 'choice'; choice: string; confidence: number; probabilities: Record<string, number> } |
 	{ type: 'score'; score: number; confidence: number; probabilities?: Record<string, number> };
 export interface JevResponse { model: string; answers: Record<string, Answer>; usage: { input_tokens: number; output_tokens: number } }
+/** A successful HTTP status arrived, but its paid body and usage could not be recovered. */
+export class JevResponseReadError extends Error {
+	constructor() { super('Jev returned a successful status, but its response body could not be read.'); }
+}
 const bounded = (value: unknown, max = 1): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= max;
 
 export function validateResponse(data: unknown, questions: Record<string, Question>): JevResponse {
@@ -59,7 +63,7 @@ export async function evaluate(state: unknown, questions: Record<string, Questio
 		}
 		if (response.ok) {
 			let text: string;
-			try { text = await response.text(); } catch { throw new Error('Jev response could not be read.'); }
+			try { text = await response.text(); } catch { throw new JevResponseReadError(); }
 			// Saving/validation errors are deliberately outside the network retry block.
 			await options.onResponse?.(text);
 			return parseResponseText(text, questions);

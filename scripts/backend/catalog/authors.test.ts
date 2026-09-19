@@ -14,6 +14,7 @@ import { buildCatalog } from '../exporters/catalog.js';
 import { hash } from './queue.js';
 import { defaultFilters, passesFilters, seriesIdentity, type CatalogBook, type ContentSignal } from '../../../src/lib/catalog.js';
 import type { JevResponse } from '../jev/client.js';
+import { JevPaidStorageError } from './paid-jev.js';
 
 const MIGRATIONS = ['001_initial.sql','002_cursor_results_found.sql','003_jev_assessments.sql','004_cover_assessments.sql','005_source_history.sql','006_catalog_pipeline.sql','007_author_profiles.sql'];
 let db: Database.Database;
@@ -284,6 +285,36 @@ describe('confidence reflects consistency and breadth', () => {
 });
 
 describe('a stored profile stops applying once it stops being true', () => {
+  it.each([true, false])('reports purchase usage when profile promotion fails (known=%s)', async known => {
+    addCatalog('Ana Author', 6, HAREM);
+    const response = { ...jevStub(PRESENT_HAREM), usage: known ? { input_tokens: 120, output_tokens: 30 } : undefined };
+    db.exec("CREATE TRIGGER no_profile BEFORE INSERT ON catalog_author_profiles BEGIN SELECT RAISE(ABORT,'disk full'); END");
+    const failed = await processAuthorProfile(db, 'anaauthor', { evaluate: (async () => response) as never }).catch((error: unknown) => error);
+    expect(failed).toBeInstanceOf(JevPaidStorageError);
+    expect(failed).toMatchObject({ usage: known ? response.usage : { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: known ? 0 : 1 });
+    expect(db.prepare('SELECT COUNT(*) AS n FROM catalog_author_profiles').get()).toEqual({ n: 0 });
+    const receipt = db.prepare("SELECT usage_json FROM catalog_inferences WHERE kind='author-profile'").get() as { usage_json: string };
+    expect(JSON.parse(receipt.usage_json)).toEqual(known ? response.usage : {});
+  });
+
+  it('reports an unpriced author review as unpriced, not as free', async () => {
+    addCatalog('Ana Author', 6, HAREM);
+    // A response that never says what it cost: priced at nothing, counted as one unpriced call.
+    const silent = { ...jevStub(PRESENT_HAREM), usage: undefined } as unknown as JevResponse;
+    const unpriced = await processAuthorProfile(db, 'anaauthor', { evaluate: (async () => silent) as never });
+    expect(unpriced).toMatchObject({ input_tokens: 0, output_tokens: 0, unknownUsageResponses: 1 });
+
+    // A priced one reports its tokens and counts nothing unpriced.
+    db.prepare("DELETE FROM catalog_inferences WHERE kind LIKE 'author-profile%'").run();
+    db.prepare('DELETE FROM catalog_author_profiles').run();
+    expect(await reviewed('anaauthor')).toMatchObject({ input_tokens: 120, output_tokens: 30, unknownUsageResponses: 0 });
+    // Replaying it buys nothing at all.
+    expect(await reviewed('anaauthor')).toMatchObject({ cached: true, input_tokens: 0, unknownUsageResponses: 0 });
+    // A below-threshold author never reaches a purchase.
+    addCatalog('Thin Writer', 2, HAREM);
+    expect(await reviewed('thinwriter')).toMatchObject({ unknownUsageResponses: 0, input_tokens: 0 });
+  });
+
   it('lets a newer review revoke an older pattern', async () => {
     addCatalog('Ana Author', 6, HAREM);
     await reviewed('anaauthor');

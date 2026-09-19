@@ -31,6 +31,23 @@ beforeEach(() => {
 afterEach(() => { if (db.inTransaction) db.exec('ROLLBACK'); db.close(); vi.unstubAllEnvs(); });
 
 describe('a paid Jev answer is never bought twice', () => {
+  it.each([200, 401])('accounts for an unreadable body after HTTP %i without retrying a purchase', async status => {
+    vi.stubEnv('TYPESAFE_API_KEY', 'test-key');
+    const fetchStub = vi.fn(async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error('stream interrupted')); } }), { status }));
+    const evaluate = ((state: unknown, q: Record<string, Question>, options: { onResponse?: (t: string) => void }) =>
+      import('../jev/client.js').then(m => m.evaluate(state, q, { ...options, fetch: fetchStub }))) as never;
+    const failed = await paidJev(db, {}, request(evaluate)).catch((error: unknown) => error);
+    if (status === 200) {
+      expect(failed).toBeInstanceOf(JevPaidStorageError);
+      expect(failed).toMatchObject({ usage: { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: 1 });
+    } else {
+      expect(failed).not.toBeInstanceOf(JevPaidStorageError);
+      expect(failed).not.toHaveProperty('unknownUsageResponses');
+    }
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+    expect(rows('author-profile-wire')).toHaveLength(0);
+  });
+
   it('retains the body before judging it, and counts the cost once', async () => {
     vi.stubEnv('TYPESAFE_API_KEY', 'test-key');
     let calls = 0;
@@ -220,6 +237,91 @@ describe('a paid Jev answer is never bought twice', () => {
       .toEqual({ input_tokens: Number.MAX_SAFE_INTEGER, output_tokens: 1 });
     expect(retainedUsage('{"usage":{"input_tokens":9007199254740993,"output_tokens":1}}')).toEqual({});
     expect(retainedUsage('{"usage":{"input_tokens":1e308,"output_tokens":1}}')).toEqual({});
+  });
+
+  it('counts a paid response that never said what it cost, and only a fresh one', async () => {
+    vi.stubEnv('TYPESAFE_API_KEY', 'test-key');
+    const unpriced = { ...answer, usage: undefined };
+    let calls = 0;
+    const fetchStub = (async () => { calls++; return respond(unpriced); }) as typeof fetch;
+    const evaluate = ((state: unknown, q: Record<string, Question>, options: { onResponse?: (t: string) => void }) =>
+      import('../jev/client.js').then(m => m.evaluate(state, q, { ...options, fetch: fetchStub }))) as never;
+
+    // validateResponse requires usage, so this 2xx is bought and then unusable: counted once,
+    // priced at nothing, and explicitly flagged as unpriced rather than reported as free.
+    const parked = await paidJev(db, {}, request(evaluate)).catch((e: unknown) => e);
+    expect(parked).toBeInstanceOf(JevReviewError);
+    expect((parked as JevReviewError).unknownUsageResponses).toBe(1);
+    expect((parked as JevReviewError).usage).toEqual({ input_tokens: 0, output_tokens: 0 });
+    expect(JSON.parse((rows('author-profile-wire')[0]).usage_json)).toEqual({});   // receipt stays honest
+
+    // Replaying that same retained body buys nothing, so it counts nothing.
+    const replayed = await paidJev(db, {}, request(evaluate)).catch((e: unknown) => e);
+    expect((replayed as JevReviewError).unknownUsageResponses).toBe(0);
+    expect(calls).toBe(1);
+  });
+
+  it('prices a known response and leaves replays and refusals at zero', async () => {
+    vi.stubEnv('TYPESAFE_API_KEY', 'test-key');
+    const fetchStub = (async () => respond(answer)) as typeof fetch;
+    const evaluate = ((state: unknown, q: Record<string, Question>, options: { onResponse?: (t: string) => void }) =>
+      import('../jev/client.js').then(m => m.evaluate(state, q, { ...options, fetch: fetchStub }))) as never;
+    const fresh = await paidJev(db, {}, request(evaluate));
+    expect(fresh).toMatchObject({ usage: { input_tokens: 90, output_tokens: 7 }, unknownUsageResponses: 0 });
+    // A replay is free and unpriced-free, not unpriced-unknown.
+    expect(await paidJev(db, {}, request(evaluate))).toMatchObject({ cached: true, unknownUsageResponses: 0 });
+
+    // A replay under an open transaction is still fine: it buys nothing, so there is no receipt
+    // to lose, and it reports no cost and no unpriced response.
+    db.exec('BEGIN');
+    expect(await paidJev(db, {}, request(evaluate))).toMatchObject({ cached: true, unknownUsageResponses: 0 });
+    db.exec('ROLLBACK');
+
+    // A miss under one is refused before the spend, so no response is bought to count at all.
+    db.prepare("DELETE FROM catalog_inferences WHERE kind LIKE 'author-profile%'").run();
+    db.exec('BEGIN');
+    const refused = await paidJev(db, {}, request(evaluate)).catch((e: unknown) => e);
+    db.exec('ROLLBACK');
+    expect(refused).toBeInstanceOf(JevTransactionError);
+    expect('unknownUsageResponses' in (refused as object)).toBe(false);
+  });
+
+  it('counts an unpriced response whose receipt could not be stored', async () => {
+    vi.stubEnv('TYPESAFE_API_KEY', 'test-key');
+    const fetchStub = (async () => respond({ ...answer, usage: { input_tokens: -1, output_tokens: 2 } })) as typeof fetch;
+    const evaluate = ((state: unknown, q: Record<string, Question>, options: { onResponse?: (t: string) => void }) =>
+      import('../jev/client.js').then(m => m.evaluate(state, q, { ...options, fetch: fetchStub }))) as never;
+    db.exec("CREATE TRIGGER no_wire BEFORE INSERT ON catalog_inferences WHEN NEW.kind='author-profile-wire' BEGIN SELECT RAISE(ABORT,'disk is full'); END");
+    const failed = await paidJev(db, {}, request(evaluate)).catch((e: unknown) => e);
+    db.exec('DROP TRIGGER no_wire');
+    // Bought, unpriceable, and unstorable: the worst case must still not read as a free run.
+    expect(failed).toBeInstanceOf(JevPaidStorageError);
+    expect((failed as JevPaidStorageError).unknownUsageResponses).toBe(1);
+    expect((failed as JevPaidStorageError).usage).toEqual({ input_tokens: 0, output_tokens: 0 });
+  });
+
+  it.each([true, false])('keeps purchase accounting when normalized storage fails (wire=%s)', async wire => {
+    for (const known of [true, false]) {
+      db.prepare('DELETE FROM catalog_inferences').run();
+      let calls = 0;
+      const evaluate = (async (_state: unknown, _questions: unknown, options: { onResponse?: (text: string) => void }) => {
+        calls++;
+        if (wire) options.onResponse?.(JSON.stringify({ ...answer, usage: known ? answer.usage : undefined }));
+        return known || wire ? answer : { ...answer, usage: undefined };
+      }) as never;
+      db.exec("CREATE TRIGGER no_normalized BEFORE INSERT ON catalog_inferences WHEN NEW.kind='author-profile' BEGIN SELECT RAISE(ABORT,'disk full'); END");
+      const failed = await paidJev(db, {}, request(evaluate)).catch((error: unknown) => error);
+      db.exec('DROP TRIGGER no_normalized');
+      expect(failed).toBeInstanceOf(JevPaidStorageError);
+      expect(failed).toMatchObject({ usage: known ? answer.usage : { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: known ? 0 : 1 });
+      expect(rows('author-profile-wire')).toHaveLength(wire ? 1 : 0);
+      expect(rows('author-profile')).toHaveLength(0);
+      if (wire) {
+        const replay = await paidJev(db, {}, request(evaluate)).catch((error: unknown) => error);
+        expect(replay).toMatchObject({ usage: { input_tokens: 0, output_tokens: 0 }, unknownUsageResponses: 0 });
+        expect(calls).toBe(1);
+      }
+    }
   });
 
   it('records unknown cost as unknown rather than as free', () => {

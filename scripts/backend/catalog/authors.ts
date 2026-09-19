@@ -25,7 +25,7 @@ import { contentAssessmentHash, type ContentAssessment } from '../covers/content
 import { loadContentAssessment } from '../covers/content-cache.js';
 import { evaluate, type JevResponse, type Question } from '../jev/client.js';
 import { enqueue, hash } from './queue.js';
-import { paidJev } from './paid-jev.js';
+import { JevPaidStorageError, JevReviewError, paidJev } from './paid-jev.js';
 import { contentBook } from './inputs.js';
 import { seeds } from './pipeline.js';
 
@@ -490,7 +490,9 @@ export function planAuthorJobs(db: Database.Database, options: { evidence?: Map<
 export interface AuthorProfileResult {
   authorId: string; name: string; works: number; eligible: AuthorField[]; recorded: AuthorField[];
   present: AuthorField[]; profiles?: AuthorProfile[]; dryRun?: boolean;
-  cached: boolean; input_tokens: number; output_tokens: number; skipped?: string;
+  cached: boolean; input_tokens: number; output_tokens: number;
+  /** Paid 2xx responses that declined to report a cost. A replay, a skip or a refusal adds none. */
+  unknownUsageResponses: number; skipped?: string;
 }
 /**
  * Confirm an author pattern and store it. `confirm: 'evidence'` records the deterministic
@@ -506,13 +508,13 @@ export async function processAuthorProfile(db: Database.Database, authorId: stri
   const summaries = summarizeAuthor(evidence);
   const eligible = authorFields.filter(f => summaries[f].eligible);
   const base = { authorId, name: evidence.name, works: evidence.works.length, eligible, recorded: [] as AuthorField[], present: [] as AuthorField[] };
-  if (!eligible.length) return { ...base, cached: false, input_tokens: 0, output_tokens: 0, skipped: 'Evidence does not meet the author-profile threshold.' };
+  if (!eligible.length) return { ...base, cached: false, input_tokens: 0, output_tokens: 0, unknownUsageResponses: 0, skipped: 'Evidence does not meet the author-profile threshold.' };
 
   const state = authorState(evidence);
   const requestedModel = process.env.JEV_MODEL ?? 'jev-latest';
   const inputHash = authorProfileHash(state, requestedModel);
   const evaluatedAt = new Date().toISOString();
-  let response: JevResponse, cached = false, paidUsage = { input_tokens: 0, output_tokens: 0 };
+  let response: JevResponse, cached = false, paidUsage = { input_tokens: 0, output_tokens: 0 }, unpriced = 0;
   if ((options.confirm ?? 'jev') === 'evidence') {
     response = { model: DRY_RUN_MODEL, usage: { input_tokens: 0, output_tokens: 0 },
       answers: Object.fromEntries(authorFields.map(f => [f, { type: 'choice' as const,
@@ -524,14 +526,23 @@ export async function processAuthorProfile(db: Database.Database, authorId: stri
       entityType: 'author', entity: authorId, kind: 'author-profile', inputHash,
       rubricVersion: AUTHOR_RUBRIC_VERSION, requestedModel, questions: authorQuestions, evaluate: options.evaluate
     });
-    response = paid.response; cached = paid.cached; paidUsage = paid.usage;
+    response = paid.response; cached = paid.cached; paidUsage = paid.usage; unpriced = paid.unknownUsageResponses;
   }
-  const profiles = toAuthorProfiles(evidence, summaries, response, { inputHash, requestedModel, evaluatedAt });
+  let profiles: AuthorProfile[];
+  try { profiles = toAuthorProfiles(evidence, summaries, response, { inputHash, requestedModel, evaluatedAt }); }
+  catch (error) {
+    throw new JevReviewError(`Author profile could not be interpreted: ${error instanceof Error ? error.message : 'invalid response'}`, paidUsage, unpriced);
+  }
   // A dry run reports what a review would find. It must never write a profile, reserve the
   // paid cache key, or leave a row that a later export could apply as if it had been reviewed.
   const dryRun = response.model === DRY_RUN_MODEL;
-  if (!dryRun) saveAuthorProfiles(db, evidence, profiles);
+  if (!dryRun) {
+    try { saveAuthorProfiles(db, evidence, profiles); }
+    catch (error) {
+      throw new JevPaidStorageError(paidUsage, `author profiles could not be recorded: ${error instanceof Error ? error.message : 'unknown database error'}`, unpriced);
+    }
+  }
   return { ...base, dryRun, recorded: dryRun ? [] : profiles.map(p => p.field),
     present: profiles.filter(p => p.verdict === 'present').map(p => p.field), profiles,
-    cached, input_tokens: paidUsage.input_tokens, output_tokens: paidUsage.output_tokens };
+    cached, input_tokens: paidUsage.input_tokens, output_tokens: paidUsage.output_tokens, unknownUsageResponses: unpriced };
 }
