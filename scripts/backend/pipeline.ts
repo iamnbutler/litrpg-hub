@@ -18,9 +18,10 @@ import { runMigrations, getMigrationVersion } from "./migrate.js";
 import { AudibleFetcher } from "./fetchers/audible.js";
 import { HardcoverFetcher } from "./fetchers/hardcover.js";
 import { RoyalRoadScraper } from "./fetchers/royalroad.js";
-import { closeDb } from "./db.js";
-import { getMultiSourceBookIds, remergeBook, getAllBooks, setBookSubgenresWithMeta } from "./db/index.js";
+import { closeDb, getDb } from "./db.js";
+import { getMultiSourceBookIds, remergeBook, getAllBooks, setBookSubgenresWithMeta, repairSeriesIdentities } from "./db/index.js";
 import { classifyBook } from "./classifiers/subgenre.js";
+import { narrationSignal } from './classifiers/content.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -123,7 +124,7 @@ const stageFetch: StageFn = async (ctx) => {
         `audible ${year}: ${result.booksNew} new, ${result.booksUpdated} updated`
       );
       if (result.errors.length > 0) {
-        parts.push(`  (${result.errors.length} errors)`);
+        throw new Error(result.errors.join('; '));
       }
     }
   }
@@ -145,12 +146,13 @@ const stageFetch: StageFn = async (ctx) => {
 };
 
 const stageCorrect: StageFn = async (_ctx) => {
+  const repaired = repairSeriesIdentities();
   // Re-merge all books that have data from multiple sources,
   // replaying the field-level priority strategy so that higher-priority
   // sources win per-field.
   const multiSourceIds = getMultiSourceBookIds();
   if (multiSourceIds.length === 0) {
-    return "no multi-source books to merge";
+    return `${repaired} series identities repaired; no multi-source books to merge`;
   }
 
   let mergedCount = 0;
@@ -209,13 +211,28 @@ const stageClassify: StageFn = async (_ctx) => {
 };
 
 const stageDetect: StageFn = async (_ctx) => {
-  // AI narration detection not yet implemented (#37)
-  return "not yet implemented";
+  const books = getAllBooks();
+  const statement = getDb().prepare('UPDATE books SET is_ai_narrated=? WHERE id=?');
+  let disclosed = 0;
+  getDb().transaction(() => {
+    for (const book of books) {
+      const detected = narrationSignal(book.narrator).verdict === 'present';
+      statement.run(detected ? 1 : 0, book.id);
+      if (detected) disclosed++;
+    }
+  })();
+  return `${disclosed} disclosed AI narrator credits; missing credits remain unknown in the catalog`;
 };
 
 const stageScore: StageFn = async (_ctx) => {
-  // Quality scoring not yet implemented (#38)
-  return "not yet implemented";
+  // Metadata completeness is useful for repair queues; it is never a verdict on prose or authorship.
+  getDb().prepare(`UPDATE books SET quality_score = (
+    (CASE WHEN length(COALESCE(description,'')) >= 60 THEN 1 ELSE 0 END) +
+    (CASE WHEN length(COALESCE(author,'')) > 0 THEN 1 ELSE 0 END) +
+    (CASE WHEN length(COALESCE(narrator,'')) > 0 THEN 1 ELSE 0 END) +
+    (CASE WHEN length(COALESCE(cover_url,'')) > 0 THEN 1 ELSE 0 END)
+  ) / 4.0`).run();
+  return 'metadata completeness updated; Jev listing-quality assessments are run explicitly with pipeline:enrich';
 };
 
 const stageExport: StageFn = async (ctx) => {
@@ -245,7 +262,7 @@ const stageExport: StageFn = async (ctx) => {
 // ---------------------------------------------------------------------------
 
 const ALL_STAGES: StageDefinition[] = [
-  { name: "MIGRATE", fn: stageMigrate, critical: false },
+  { name: "MIGRATE", fn: stageMigrate, critical: true },
   { name: "FETCH", fn: stageFetch, critical: true },
   { name: "CORRECT", fn: stageCorrect, critical: false },
   { name: "CLASSIFY", fn: stageClassify, critical: false },
@@ -295,6 +312,10 @@ export async function runPipeline(
 
   console.log("Pipeline started");
 
+  if (options.dryRun) {
+    return { stages: stagesToRun.map(stage => ({ name: stage.name, duration: 0, result: 'success', details: 'dry run — planned, no reads from external sources or database writes' })), totalDuration: 0, booksProcessed: 0, booksExported: 0 };
+  }
+
   const results: StageResult[] = [];
 
   for (const stage of stagesToRun) {
@@ -322,6 +343,7 @@ export async function runPipeline(
     }
 
     results.push(result);
+    if (result.result === 'error') break; // Preserve the last good export after a failed fetch.
   }
 
   closeDb();

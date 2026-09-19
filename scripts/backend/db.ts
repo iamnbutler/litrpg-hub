@@ -1,12 +1,12 @@
 import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, "..", "..");
-const DB_DIR = join(PROJECT_ROOT, "data");
-const DB_PATH = join(DB_DIR, "books.db");
+export const DB_PATH = resolve(PROJECT_ROOT, process.env.CATALOG_DB_PATH || 'data/books.db');
+const DB_DIR = dirname(DB_PATH);
 
 let db: Database.Database | null = null;
 

@@ -19,7 +19,7 @@ import type { BookRow } from "../db/index.js";
 // Source priority per field (lower index = higher priority)
 // ---------------------------------------------------------------------------
 
-type SourceName = "manual" | "audible" | "hardcover" | "royalroad";
+type SourceName = "manual" | "audible" | "audible-series" | "hardcover" | "royalroad";
 
 /**
  * For each book field, the ordered list of sources from highest to lowest
@@ -35,7 +35,7 @@ const FIELD_PRIORITY: Record<string, SourceName[]> = {
   cover_url: ["audible", "hardcover"],
   rating: ["audible"],
   rating_count: ["audible"],
-  description: ["audible", "hardcover"],
+  description: ["manual", "audible-series", "audible", "hardcover"],
   url: ["audible"],
   series_name: ["manual", "audible", "hardcover"],
   series_number: ["manual", "audible", "hardcover"],

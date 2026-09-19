@@ -202,7 +202,7 @@ export class HardcoverFetcher {
         }
 
         // Store raw response
-        upsertBookSource(book.id, "hardcover", JSON.stringify(match));
+        upsertBookSource(book.id, "hardcover", JSON.stringify(match), String(match.id));
 
         // Enrich subgenres from community tags
         if (match.taggings?.length) {

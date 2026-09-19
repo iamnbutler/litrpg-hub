@@ -9,9 +9,12 @@ import {
   completeFetchRun,
   upsertSearchCursor,
   getSearchCursor,
+  getBook,
   type BookRow,
 } from "../db/index.js";
 import type { Fetcher, FetcherResult } from "./types.js";
+import { narrationSignal } from '../classifiers/content.js';
+import { validReleaseDate } from '../../../src/lib/catalog.js';
 
 const AUDIBLE_API = "https://api.audible.com/1.0/catalog/products";
 const RESPONSE_GROUPS =
@@ -24,7 +27,7 @@ const CURSOR_EMPTY_RETRY_DAYS = 1;
 /** How many days before an exhausted cursor with results is re-checked */
 const CURSOR_EXHAUSTED_DAYS = 30;
 
-interface AudibleProduct {
+export interface AudibleProduct {
   asin: string;
   title?: string;
   subtitle?: string;
@@ -41,7 +44,7 @@ interface AudibleProduct {
   category_ladders?: { ladder: { id: string; name: string }[] }[];
 }
 
-interface AudibleResponse {
+export interface AudibleResponse {
   products?: AudibleProduct[];
   total_results?: number;
 }
@@ -68,7 +71,7 @@ function loadSearchConfig(): SearchConfig {
   return JSON.parse(readFileSync(configPath, "utf-8"));
 }
 
-function stripHtml(html: string): string {
+export function stripHtml(html: string): string {
   return html
     .replace(/<br\s*\/?>/gi, " ")
     .replace(/<[^>]+>/g, "")
@@ -102,16 +105,12 @@ function guessSubgenres(product: AudibleProduct): string[] {
   return subgenres;
 }
 
-/** Detect AI narration: "Virtual Voice", voice replicas/clones, or no narrator. */
-function isAiNarrated(p: AudibleProduct): boolean {
-  const narrators = p.narrators ?? [];
-  if (narrators.length === 0) return true;
-  return narrators.some((n) =>
-    /virtual\s*voice|voice\s*replica|voice\s*clone|ai[\s-]*narrat/i.test(n.name)
-  );
+/** Only a source disclosure establishes AI narration. Missing credits are unknown. */
+export function isAiNarrated(p: AudibleProduct): boolean {
+  return narrationSignal((p.narrators ?? []).map(n => n.name).join(', ')).verdict === 'present';
 }
 
-function productToBookRow(p: AudibleProduct): BookRow {
+export function productToBookRow(p: AudibleProduct): BookRow {
   const series = p.series?.[0];
   let seriesNumber: number | null = null;
   if (series?.sequence) {
@@ -135,8 +134,8 @@ function productToBookRow(p: AudibleProduct): BookRow {
     narrator: (p.narrators ?? []).map((n) => n.name).join(", ") || null,
     series_name: series?.title ?? null,
     series_number: seriesNumber,
-    release_date: p.release_date ?? null,
-    cover_url: p.product_images?.["500"] ?? null,
+    release_date: validReleaseDate(p.release_date),
+    cover_url: p.product_images?.["500"] ?? Object.values(p.product_images ?? {})[0] ?? null,
     runtime_minutes: p.runtime_length_min ?? null,
     rating: rating?.average_rating ?? null,
     rating_count: rating?.num_ratings ?? null,
@@ -144,6 +143,18 @@ function productToBookRow(p: AudibleProduct): BookRow {
     url: `https://www.audible.com/pd/${p.asin}`,
     is_ai_narrated: isAiNarrated(p),
   };
+}
+
+export class IncompleteCatalogError extends Error {
+  constructor() { super('Audible returned an incomplete catalog page (possible soft rate limit). Cursor not advanced; stopping this source.'); }
+}
+export function catalogPage(data: AudibleResponse, page: number): { products: AudibleProduct[]; exhausted: boolean } {
+  if (!Array.isArray(data.products)) throw new IncompleteCatalogError();
+  const total = data.total_results;
+  if (data.products.length === 0 && (total == null || total > (page - 1) * 50)) throw new IncompleteCatalogError();
+  // A partial page with remaining advertised results is not a successful end of the catalog.
+  if (data.products.length > 0 && data.products.length < 50 && total != null && total > (page - 1) * 50 + data.products.length) throw new IncompleteCatalogError();
+  return { products: data.products, exhausted: total != null ? page * 50 >= total : data.products.length < 50 };
 }
 
 function isCursorFresh(
@@ -175,8 +186,8 @@ export class AudibleFetcher implements Fetcher {
   private http: HttpClient;
   private staleDays: number;
 
-  constructor(options?: { staleDays?: number }) {
-    this.http = createHttpClient({ timeoutMs: 15000, maxRetries: 3, minDelayMs: 300 });
+  constructor(options?: { staleDays?: number; http?: HttpClient }) {
+    this.http = options?.http ?? createHttpClient({ timeoutMs: 15000, maxRetries: 3, minDelayMs: 300 });
     this.staleDays = options?.staleDays ?? CURSOR_STALE_DAYS;
   }
 
@@ -206,19 +217,9 @@ export class AudibleFetcher implements Fetcher {
     sort?: string,
     attempts = 3
   ): Promise<AudibleProduct[]> {
-    const byAsin = new Map<string, AudibleProduct>();
-    for (let i = 0; i < attempts; i++) {
-      try {
-        const data = await this.fetchPage(keywords, page, sort);
-        for (const p of data.products ?? []) {
-          if (!byAsin.has(p.asin)) byAsin.set(p.asin, p);
-        }
-        if ((data.products?.length ?? 0) >= 50) break;
-      } catch {
-        // retry
-      }
-    }
-    return [...byAsin.values()];
+    // Repeating semantic failures increases throttling and used to turn errors into success.
+    const data = await this.fetchPage(keywords, page, sort);
+    return catalogPage(data, page).products;
   }
 
   private async fetchCategoryPage(
@@ -245,11 +246,12 @@ export class AudibleFetcher implements Fetcher {
   ): { isNew: boolean } | null {
     if (seen.has(product.asin)) return null;
     // English only
-    if (product.language !== "english") return null;
-    if (!product.release_date) return null;
+    const existing = getBook(product.asin);
+    if (product.language?.toLowerCase() !== "english" && !(existing && !product.language)) return null;
+    if (!existing && (!product.title || !product.authors?.length)) return null;
     // Year filter (skipped for series searches — store in actual release year)
     if (!options?.skipYearFilter) {
-      const releaseYear = new Date(product.release_date).getFullYear();
+      const releaseYear = Number(validReleaseDate(product.release_date)?.slice(0, 4));
       if (releaseYear !== year) return null;
     }
     // No content filtering at fetch time — store everything
@@ -298,7 +300,7 @@ export class AudibleFetcher implements Fetcher {
       try {
         for (let page = 1; page <= category.maxPages; page++) {
           const data = await this.fetchCategoryPage(category.id, page, "-ReleaseDate");
-          const products = data.products ?? [];
+          const { products, exhausted } = catalogPage(data, page);
           pagesFetched++;
           resultsFound += products.length;
 
@@ -323,7 +325,7 @@ export class AudibleFetcher implements Fetcher {
             break;
           }
 
-          if (products.length < 50) {
+          if (exhausted) {
             isExhausted = true;
             break;
           }
@@ -332,6 +334,8 @@ export class AudibleFetcher implements Fetcher {
         const msg = `Category browse "${category.name}" failed: ${err instanceof Error ? err.message : err}`;
         console.error(`  ${msg}`);
         errors.push(msg);
+        completeFetchRun(runId, pagesFetched, resultsFound, 'failed');
+        return { source: this.name, booksFound, booksNew, booksUpdated, errors };
       }
 
       completeFetchRun(runId, pagesFetched, resultsFound);
@@ -359,7 +363,7 @@ export class AudibleFetcher implements Fetcher {
       try {
         for (let page = 1; page <= 15; page++) {
           const data = await this.fetchPage(keyword, page, "-ReleaseDate");
-          const products = data.products ?? [];
+          const { products, exhausted } = catalogPage(data, page);
           pagesFetched++;
           resultsFound += products.length;
 
@@ -384,7 +388,7 @@ export class AudibleFetcher implements Fetcher {
             break;
           }
 
-          if (products.length < 50) {
+          if (exhausted) {
             isExhausted = true;
             break;
           }
@@ -393,6 +397,8 @@ export class AudibleFetcher implements Fetcher {
         const msg = `Genre search "${keyword}" failed: ${err instanceof Error ? err.message : err}`;
         console.error(`  ${msg}`);
         errors.push(msg);
+        completeFetchRun(runId, pagesFetched, resultsFound, 'failed');
+        return { source: this.name, booksFound, booksNew, booksUpdated, errors };
       }
 
       completeFetchRun(runId, pagesFetched, resultsFound);
@@ -446,6 +452,8 @@ export class AudibleFetcher implements Fetcher {
         const msg = `Series search "${keyword}" failed: ${err instanceof Error ? err.message : err}`;
         console.error(`  ${msg}`);
         errors.push(msg);
+        completeFetchRun(runId, pagesFetched, resultsFound, 'failed');
+        return { source: this.name, booksFound, booksNew, booksUpdated, errors };
       }
 
       completeFetchRun(runId, pagesFetched, resultsFound);

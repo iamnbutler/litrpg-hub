@@ -1,17 +1,22 @@
 {
-	"name": "litrpg-chart",
+	"name": "litrpg-hub",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"pipeline": "tsx scripts/backend/index.ts",
-		"pipeline:fetch": "tsx scripts/backend/index.ts fetch",
-		"pipeline:export": "tsx scripts/backend/index.ts export",
-		"pipeline:classify": "tsx scripts/backend/index.ts classify",
-		"pipeline:build": "tsx scripts/backend/index.ts build",
-		"pipeline:backfill": "tsx scripts/backend/index.ts backfill",
-		"build": "npm run pipeline:build && vite build",
+		"pipeline": "node --env-file-if-exists=.env --import tsx scripts/backend/index.ts",
+		"pipeline:fetch": "npm run pipeline -- fetch",
+		"pipeline:export": "node --env-file-if-exists=.env --import tsx scripts/backend/exporters/json.ts",
+		"pipeline:classify": "npm run pipeline -- classify",
+		"pipeline:build": "npm run pipeline -- build",
+		"pipeline:backfill": "npm run pipeline -- backfill",
+		"pipeline:enrich": "node --env-file-if-exists=.env --import tsx scripts/backend/jev/enrich.ts",
+		"pipeline:covers": "node --env-file-if-exists=.env --import tsx scripts/backend/covers/enrich.ts",
+		"pipeline:backup": "node --env-file-if-exists=.env --import tsx scripts/backend/storage/backup.ts",
+		"pipeline:series": "node --env-file-if-exists=.env --import tsx scripts/backend/scrape-series.ts",
+		"build": "vite build",
+		"check:backend": "tsc --project tsconfig.backend.json --noEmit",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -33,6 +38,7 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
-		"better-sqlite3": "^12.8.0"
+		"better-sqlite3": "^12.8.0",
+		"cheerio": "^1.2.0"
 	}
 }

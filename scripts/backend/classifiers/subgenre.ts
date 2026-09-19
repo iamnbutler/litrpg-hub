@@ -45,8 +45,8 @@ const TAG_MAP: Record<string, string> = {
   "game-lit": "litrpg",
   cultivation: "cultivation",
   xianxia: "cultivation",
-  "progression-fantasy": "litrpg",
-  "progression fantasy": "litrpg",
+  "progression-fantasy": "progression",
+  "progression fantasy": "progression",
   "dungeon-core": "dungeon",
   "dungeon core": "dungeon",
   isekai: "isekai",
@@ -55,7 +55,6 @@ const TAG_MAP: Record<string, string> = {
   "tower defense": "tower-climbing",
   "system-apocalypse": "system-apocalypse",
   "system apocalypse": "system-apocalypse",
-  apocalypse: "system-apocalypse",
   "base-building": "base-building",
   "base building": "base-building",
   "kingdom-building": "base-building",
@@ -74,7 +73,6 @@ const TAG_MAP: Record<string, string> = {
   "monster mc": "monster-mc",
   "monster evolution": "monster-mc",
   wuxia: "wuxia",
-  "martial arts": "wuxia",
 };
 
 // ---------------------------------------------------------------------------

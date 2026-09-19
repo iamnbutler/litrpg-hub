@@ -19,6 +19,8 @@ Thumbs.db
 !.env.test
 
 # Database
+/data/covers/
+/data/backups/
 /data/*.db
 /data/*.db-wal
 /data/*.db-shm

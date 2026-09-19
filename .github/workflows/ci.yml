@@ -30,4 +30,6 @@ jobs:
         run: npm test
 
       - name: Build frontend
-        run: npx vite build
+        run: npm run build
+        env:
+          BASE_PATH: /litrpg-hub

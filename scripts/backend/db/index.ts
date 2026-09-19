@@ -3,7 +3,9 @@
  * Uses the connection from ../db.ts and writes to the schema from migrations/001_initial.sql.
  */
 import { getDb } from "../db.js";
+import { seriesIdentity } from "../../../src/lib/catalog.js";
 import { mergeBook, mergeAllSources, type SourceBlob } from "../matchers/merger.js";
+import { retainSource } from "../storage/history.js";
 
 export interface BookRow {
   id: string; // ASIN
@@ -29,7 +31,7 @@ export interface BookRow {
  */
 function upsertSeries(name: string, author: string | null): string {
   const db = getDb();
-  const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const id = seriesIdentity(name, author ?? '');
   db.prepare(
     `INSERT INTO series (id, title, author)
      VALUES (?, ?, ?)
@@ -42,27 +44,31 @@ function upsertSeries(name: string, author: string | null): string {
 
 export function upsertBook(book: BookRow): boolean {
   const db = getDb();
+  const existing = db.prepare('SELECT id, author FROM books WHERE id = ?').get(book.id) as { id: string; author: string } | undefined;
 
   // Handle series normalization
   let seriesId: string | null = null;
   if (book.series_name) {
-    seriesId = upsertSeries(book.series_name, book.author);
+    seriesId = upsertSeries(book.series_name, book.author || existing?.author || null);
   }
-
-  const existing = db
-    .prepare("SELECT id FROM books WHERE id = ?")
-    .get(book.id);
 
   if (existing) {
     db.prepare(
       `UPDATE books SET
-        title = @title, subtitle = @subtitle, author = @author,
-        narrator = @narrator, series_id = @series_id,
-        series_number = @series_number, release_date = @release_date,
-        cover_url = @cover_url, runtime_minutes = @runtime_minutes,
-        rating = @rating, rating_count = @rating_count,
-        description = @description, url = @url,
-        is_ai_narrated = @is_ai_narrated,
+        title = COALESCE(NULLIF(NULLIF(@title, ''), 'Untitled'), title),
+        subtitle = COALESCE(NULLIF(@subtitle, ''), subtitle),
+        author = COALESCE(NULLIF(@author, ''), author),
+        narrator = COALESCE(NULLIF(@narrator, ''), narrator),
+        series_id = COALESCE(@series_id, series_id),
+        series_number = COALESCE(@series_number, series_number),
+        release_date = COALESCE(NULLIF(@release_date, ''), release_date),
+        cover_url = COALESCE(NULLIF(@cover_url, ''), cover_url),
+        runtime_minutes = COALESCE(@runtime_minutes, runtime_minutes),
+        rating = COALESCE(@rating, rating), rating_count = COALESCE(@rating_count, rating_count),
+        description = CASE WHEN length(COALESCE(@description, '')) >= length(COALESCE(description, ''))
+          THEN COALESCE(@description, description) ELSE description END,
+        url = COALESCE(NULLIF(@url, ''), url),
+        is_ai_narrated = CASE WHEN NULLIF(@narrator, '') IS NULL THEN is_ai_narrated ELSE @is_ai_narrated END,
         updated_at = datetime('now')
       WHERE id = @id`
     ).run({ ...book, series_id: seriesId, is_ai_narrated: book.is_ai_narrated ? 1 : 0 });
@@ -75,9 +81,25 @@ export function upsertBook(book: BookRow): boolean {
       VALUES (@id, @title, @subtitle, @author, @narrator, @series_id,
         @series_number, @release_date, @cover_url, @runtime_minutes,
         @rating, @rating_count, @description, @url, @is_ai_narrated)`
-    ).run({ ...book, series_id: seriesId, is_ai_narrated: book.is_ai_narrated ? 1 : 0 });
+    ).run({ ...book, author: book.author ?? '', release_date: book.release_date ?? '', series_id: seriesId, is_ai_narrated: book.is_ai_narrated ? 1 : 0 });
     return true; // new
   }
+}
+
+/** Repair legacy title-only grouping without changing book IDs or raw sources. */
+export function repairSeriesIdentities(): number {
+  const db = getDb();
+  const rows = db.prepare('SELECT b.id, b.author, b.series_id, s.title FROM books b JOIN series s ON s.id=b.series_id').all() as { id: string; author: string; series_id: string; title: string }[];
+  return db.transaction(() => {
+    let changed = 0;
+    const update = db.prepare('UPDATE books SET series_id=? WHERE id=?');
+    for (const row of rows) {
+      const id = upsertSeries(row.title, row.author);
+      if (id !== row.series_id) { update.run(id, row.id); changed++; }
+    }
+    db.prepare('UPDATE series SET book_count=(SELECT COUNT(*) FROM books WHERE series_id=series.id)').run();
+    return changed;
+  })();
 }
 
 // ---------------------------------------------------------------------------
@@ -398,16 +420,18 @@ export function getAllBooks(): BookRow[] {
 export function upsertBookSource(
   bookId: string,
   source: string,
-  rawData: string
+  rawData: string,
+  sourceId: string = bookId
 ): void {
   const db = getDb();
-  db.prepare(
-    `INSERT INTO book_sources (book_id, source, source_id, raw_data)
-     VALUES (?, ?, ?, ?)
-     ON CONFLICT(book_id, source) DO UPDATE SET
-       raw_data = excluded.raw_data,
-       fetched_at = datetime('now')`
-  ).run(bookId, source, bookId, rawData);
+  db.transaction(() => {
+    const previous = db.prepare('SELECT book_id,source,source_id,raw_data,fetched_at FROM book_sources WHERE book_id=? AND source=?').get(bookId,source) as Parameters<typeof retainSource>[1] | undefined;
+    if (previous?.raw_data) retainSource(db,previous);
+    const fetchedAt = new Date().toISOString();
+    retainSource(db,{ book_id:bookId, source, source_id:sourceId, raw_data:rawData, fetched_at:fetchedAt });
+    db.prepare(`INSERT INTO book_sources (book_id,source,source_id,raw_data,fetched_at) VALUES (?,?,?,?,?)
+      ON CONFLICT(book_id,source) DO UPDATE SET source_id=excluded.source_id,raw_data=excluded.raw_data,fetched_at=excluded.fetched_at`).run(bookId,source,sourceId,rawData,fetchedAt);
+  })();
 }
 
 export function setBookSubgenres(bookId: string, subgenres: string[]): void {
@@ -452,13 +476,14 @@ export function insertFetchRun(
 export function completeFetchRun(
   runId: number,
   pagesFetched: number,
-  resultsFound: number
+  resultsFound: number,
+  status: 'completed' | 'failed' | 'partial' = 'completed'
 ): void {
   const db = getDb();
   db.prepare(
     `UPDATE fetch_runs SET pages_fetched = ?, results_found = ?,
-     completed_at = datetime('now'), status = 'completed' WHERE id = ?`
-  ).run(pagesFetched, resultsFound, runId);
+     completed_at = datetime('now'), status = ? WHERE id = ?`
+  ).run(pagesFetched, resultsFound, status, runId);
 }
 
 export function upsertSearchCursor(

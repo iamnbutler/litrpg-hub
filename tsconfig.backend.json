@@ -10,7 +10,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"outDir": "dist/backend",
-		"rootDir": "scripts/backend",
+		"rootDir": ".",
 		"declaration": true
 	},
 	"include": ["scripts/backend/**/*.ts"],

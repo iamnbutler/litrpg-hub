@@ -1,38 +1,31 @@
-# LitRPG Chart
+# LitRPG Hub
 
-## Audible API Quirks
+## Product and UI
 
-The Audible catalog API (`https://api.audible.com/1.0/catalog/products`) has several undocumented behaviors that affect data fetching:
+This is a browsing and reading tool. Open directly into the cover grid, with an optional compact list. Preserve the warm, book-focused visual character; do not flatten it into a generic data table. Keep search, filters, shelf actions, and release dates immediately accessible. Book covers supply the visual interest. Use compact app headings and restrained book typography. Do not add marketing heroes, slogans, oversized headline layouts, promotional sections, or a landing page.
 
-### Rate Limiting
-- Returns HTTP 200 with **empty `products: []`** when rate-limited (no 429 status).
-- `total_results` field still shows the correct count even when products are empty.
-- Kicks in after ~500-1000 requests. Recovery time is unclear (hours).
-- The fetcher's `fetchPageMerged` best-of-3 retry doesn't help since all attempts get the same empty response.
+## Source integrity
 
-### Series Filter Doesn't Work
-- The `series=<ASIN>` parameter does NOT filter by series. It returns the entire catalog (~73K results) with no actual filtering.
-- To find all books in a series, the reliable approach is:
-  1. Scrape the Audible series webpage to get book ASINs
-  2. Look up each ASIN individually via `/catalog/products/<ASIN>`
+- The Audible catalog API may return HTTP 200 with an empty product array and a positive total when throttled. Treat this as failure; do not advance the successful cursor or replace the catalog.
+- The catalog `series` query parameter does not reliably filter by series. Use a verified series webpage, parse its actual product containers, then verify each product's series ASIN and author. Do not scrape arbitrary `/pd/` links, which include recommendations.
+- Preserve longer descriptions and nonempty metadata when merging partial responses. Missing dates and narrator names remain unknown. Never invent ASINs to fill series gaps.
+- Series identity includes the primary author. Keep editions with different narrators separate. Raw source rows are retained; reader filters do not delete books.
+- Run the bounded `pipeline:series` command for a refresh. A blocked or incomplete source stops the job and keeps the existing snapshot.
 
-### Keyword Search Limitations
-- Searches for unique titles (e.g. "Carl's Doomsday Scenario") often return 0 results.
-- Numbered series titles (e.g. "Primal Hunter 2") work better but are still inconsistent.
-- Adding author names to search terms sometimes reduces results to 0.
+## Inference
 
-### Recommended Approach for Complete Series Backfill
-1. Find the series page URL: `https://www.audible.com/series/<Name>-Audiobooks/<SERIES_ASIN>`
-2. Scrape ASINs from the HTML: look for `/pd/<slug>/<ASIN>` patterns
-3. Fetch each ASIN individually: `GET /catalog/products/<ASIN>?response_groups=product_attrs,contributors,series,media,rating,category_ladders`
-4. Filter results to only products belonging to the target series via `product.series[].title`
+- Jev profiles reading traits and metadata. OpenAI observes covers; Jev combines these observations with the listing.
+- Sexualized marketing, on-page explicit content, harem, AI narration, disclosed AI writing, and listing quality are separate. Covers cannot establish story content or AI authorship.
+- All inference is explicit offline work. Cache by inputs, image hash, model, and rubric. Never put API keys in browser code or committed files.
+- Use bounded runs and inspect token usage. Do not scale a new rubric before checking positive, negative, and ambiguous examples.
 
-### Manual Backfill Script
-`scripts/backend/manual-backfill.ts` — inserts known book data directly when the API is unavailable. Ratings/covers will be populated on the next successful API fetch. Use this for critical series where gaps are unacceptable.
+## Commands
 
-## Pipeline
+- `npm run dev` — run the static UI using the committed catalog.
+- `npm run pipeline:series -- --series dungeon-crawler-carl --limit 20` — verified series refresh.
+- `npm run pipeline:enrich -- --limit 24` — Jev reading profiles.
+- `npm run pipeline:covers -- --limit 24` — cover observations and content decisions.
+- `npm run pipeline:export` — export the local SQLite snapshot.
+- `npm run check`, `npm run check:backend`, `npm test`, `npm run build` — verification.
 
-- `npm run pipeline:fetch` — fetches from Audible (respects search_cursors for dedup)
-- `npm run pipeline:build` — full pipeline: fetch + classify + score + export
-- `npm run pipeline:export` — just re-export static JSON from existing DB data
-- `npx tsx scripts/backend/manual-backfill.ts` — manual series backfill
+The independent upstream is LitRPG Chart. Deployment is manual; builds never fetch or call inference APIs.
