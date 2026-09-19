@@ -12,8 +12,11 @@ let db: Database.Database;
 beforeEach(() => {
   db = new Database(':memory:');
   for (const name of MIGRATIONS) db.exec(readFileSync(join(import.meta.dirname, '../migrations', name), 'utf8'));
+  // The production auth check runs before any request, so a fake fetch is not reached without a
+  // key. Stubbed here so these tests pass on a machine with no .env, and never on a real key.
+  vi.stubEnv('OPENAI_API_KEY', 'test-key-not-a-real-credential');
 });
-afterEach(() => db.close());
+afterEach(() => { vi.unstubAllEnvs(); db.close(); });
 
 const PRODUCT_URL = 'https://soundbooththeater.com/shop/audiobooks/a-series-book-1/';
 const review = (author: string, body: string, rating = 5, date = '2026-03-01') => ({
