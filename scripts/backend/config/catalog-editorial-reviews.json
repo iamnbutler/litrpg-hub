@@ -1455,5 +1455,210 @@
       "base-building"
     ],
     "reviewNote": "The first-book premise establishes transport into another world and kingdom development. Generic adventure dangers do not establish survival as a central feature. The synopsis stays within the starting premise."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-cradle-2",
+    "inputHash": "61655e5bd5f565abecfcfbdceed9aacf173c7498c9a9508116f28b8417acdbec",
+    "evidenceHash": "051500b332c021d463fb0e993c8c699a3f5c6df878e9f16b094699bdd4f362b6",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B07XLNPMV1?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "allowedFeatures": [
+      "cultivation",
+      "crafting"
+    ],
+    "correctedSynopsis": "Lindon’s Copper advancement leaves him badly outmatched beyond Sacred Valley. As rival groups fight over treasures in newly exposed ruins, a family from the Blackflame Empire prepares to seize the site. Lindon turns to Soulsmithing, learning to make weapons from souls as a way to advance. Those gains bring fresh hostility, including a confrontation with a sect of Golds.",
+    "reviewNote": "Copper advancement and the Soulsmith profession directly support cultivation and crafting. The revised synopsis removes an unsupported claim about when the confrontation occurs."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-cradle-3",
+    "inputHash": "a347621853151b1aa208f73794bab4a30f6eca0b59a8bec718ccd2664df1e44b",
+    "evidenceHash": "c19692dbe16c1eaefc119428c893222598f0ea9cd9aa3809eeea0177c65ec67a",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B07XLNPXD7?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "allowedFeatures": [
+      "team-adventure"
+    ],
+    "reviewNote": "Lindon and Yerin cooperate in their journey and training. The revised synopsis preserves Lindon’s poor odds without describing his opponent as universally unbeatable. The receipt does not establish another feature under the current definitions.",
+    "correctedSynopsis": "With a duel only a year away, Lindon needs to rebuild his training to survive an opponent he is not expected to defeat. He and Yerin head to the Blackflame Empire to study techniques preserved from a fallen clan. Reviving that power could give Lindon the chance he needs, but brings opposition from people who want those arts to stay lost."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-cradle-4",
+    "inputHash": "1243724de752a1305f07053b15cdd0f5cb790cd98169f8291cb93fd69f8d8432",
+    "evidenceHash": "6eb77078f80394a30edf47eac3503b614f712f88c921d6e6eaf7021e5673c0a0",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://api.audible.com/1.0/catalog/products/B07XTPJ6ND?response_groups=product_desc,product_attrs,product_extended_attrs,contributors,series,media,rating",
+    "allowedFeatures": [],
+    "reviewNote": "The source supports captivity, the pending duel, and a possible role with the Skysworn. The revised synopsis removes an invented motive for joining. No receipt feature is supported; omitted tags remain unknown.",
+    "correctedSynopsis": "The Skysworn have jailed Lindon, judging his Blackflame power too dangerous to leave unchecked before his duel with Jai Long. Meanwhile, a Dreadgod is stirring sooner than expected, threatening the Blackflame Empire. The same guardians holding Lindon captive are its defense against the approaching disaster, and he may be forced to join them."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-he-who-fights-with-monsters-2",
+    "inputHash": "4b7e0afad90fe5916b4297deefe60a8f6f889f45cac6cb9cb7f93259ce75f4f3",
+    "evidenceHash": "f9c5215c13627a52738d48c8cbb2f24073b5032135ff83ec76f116fa7727513d",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-2/",
+    "allowedFeatures": [
+      "team-adventure"
+    ],
+    "correctedSynopsis": "A contest in Greenstone puts Jason Asano up against elite young adventurers, making a team essential. Beyond the competition, the city’s leadership uncovers betrayal and a dangerous enemy. Jason has already encountered that threat without realizing it. As his connections bring him toward another encounter, his attempt to settle into an adventurer’s life becomes tangled in a conflict far larger than the contest.",
+    "reviewNote": "Forming a band of companions directly supports team-adventure. The revised synopsis distinguishes the unknowing prior encounter from the approaching one and omits sales comparisons."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-he-who-fights-with-monsters-3",
+    "inputHash": "b973cad13da0a85338a6f364840f46b1bb0b33134fef610e02f230a72e88ad26",
+    "evidenceHash": "08f1e30ca012a4b26f045087718f983e2ee0d2bb57a278ee47e56cb37e98f5fe",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://podiumentertainment.com/titles/6256/he-who-fights-with-monsters-3-a-litrpg-adventure",
+    "allowedFeatures": [
+      "team-adventure"
+    ],
+    "reviewNote": "The volume describes companions fighting together. The revised synopsis does not turn their need to grow stronger into an unsupported requirement to surpass the enemy’s strength.",
+    "correctedSynopsis": "Success has left Jason with influence and resources, but also adversaries preparing to strike. He and his companions face mounting threats to Jason’s new home, while a powerful enemy holds one final advantage. With no help available, the team must fight monsters and keep advancing with more than their own lives at stake. Survival and victory may no longer mean the same thing."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-he-who-fights-with-monsters-4",
+    "inputHash": "6fdb76a2fe4bdd74990c557e5779d9061e4bd675765679f1d7d8110c135447a5",
+    "evidenceHash": "84e500c30bef54e9957213d6e07e038befc34b4ee1ffbe2cb18f2c15b677fe7d",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/he-who-fights-with-monsters-4/",
+    "allowedFeatures": [],
+    "correctedSynopsis": "Jason’s unexpected return home leaves him unsure where he belongs. His experiences away have changed him, while the world he remembers turns out to have concealed secrets throughout his life. Investigating those secrets offers a different view of his homecoming: the changes that make him feel out of place may also make him suited to what his old world needs.",
+    "reviewNote": "All three feature citations refer to the series footer rather than this volume’s premise. They are omitted at work level; the separately reviewed series context remains available. The revised synopsis removes progression mechanics drawn only from that footer."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-dungeon-crawler-carl-2",
+    "inputHash": "999f86bf05962c007430ba9a6b214927ecd5ebb7c391c43bdae767e85e33cc19",
+    "evidenceHash": "6e07741f5653da65b8770d1dbb48997f46b73e07f4004e976b0e5423b7ecce2a",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/carls-doomsday-scenario-dungeon-crawler-carl-book-2/",
+    "allowedFeatures": [
+      "dungeon",
+      "team-adventure",
+      "survival"
+    ],
+    "reviewNote": "Carl and Donut’s continuing cooperation meets the team-adventure definition, which includes recurring companions without requiring a larger party. The dungeon and sustained survival constraints are explicit. The revised synopsis distinguishes the approaching revelation of a spell’s purpose from fulfillment of that purpose.",
+    "correctedSynopsis": "Carl and Princess Donut face another deadly stretch of Dungeon Crawler World in the Over City, a metropolis devastated by a mysterious disaster. The ruins hold an undead circus, falling bodies and an ancient spell whose hidden purpose is about to emerge. Surviving the dungeon’s escalating hazards demands continued cooperation from the pair, even as the spectacle attracts an eager audience."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-dungeon-crawler-carl-3",
+    "inputHash": "3cf9317e1e2526100f8773be62c7795845dae9bb55272ece5dbd8734d7a40f54",
+    "evidenceHash": "06facc6a5ae0148dde716315a7884f4bdf3de9c72d22b00374d66026e69716a5",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/the-dungeon-anarchists-cookbook-dungeon-crawler-carl-book-3/",
+    "allowedFeatures": [
+      "dungeon",
+      "team-adventure"
+    ],
+    "reviewNote": "The fourth dungeon floor and cooperation among crawlers directly support both receipt features. Synopsis checked against the volume’s source, including the uncertain role of the book."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-dungeon-crawler-carl-4",
+    "inputHash": "40f130c94fa188d73c99ae0850fa263e68999bede58c778cd1a8c06100719417",
+    "evidenceHash": "c1eb89f612aa3ea5900105dc07454d63df1851e2b21b5df84a78d8c925d566ee",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://soundbooththeater.com/shop/audiobooks/the-gate-of-the-feral-gods-dungeon-crawler-carl-book-4/",
+    "allowedFeatures": [
+      "dungeon",
+      "team-adventure"
+    ],
+    "reviewNote": "The dungeon challenge and reliance on other crawlers directly support both features. The revised synopsis avoids inferring a sequence from the introductory achievement message.",
+    "correctedSynopsis": "On the dungeon’s fifth floor, Carl and his team have fifteen days to capture four strongholds and open the way onward. Their targets range from a floating gnome fortress to a submarine protected by malfunctioning machines. Completing the challenge requires help from lower-level crawlers confined to the same bubble, leaving Carl’s group dependent on allies whose reliability is uncertain."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-primal-hunter-2",
+    "inputHash": "3de850d8fcd35bc214a46beb6d0c12bfa374f096e378c6cdd0783ebe53d25a7f",
+    "evidenceHash": "58c1663972b17eb0ae394b8c79a65a5507cd5abc8f9cc19b68114eaff57d9216",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/the-primal-hunter-2/",
+    "allowedFeatures": [
+      "dungeon"
+    ],
+    "correctedSynopsis": "Jake’s next quest demands victories over three more Beast Lords before he can challenge the King of the Forest. He hunts through dungeons to grow stronger as the Tutorial approaches its end. Elsewhere, a devastating battle has killed nearly all the humans in one region. The Metal Mage William survives, but whether he wakes in time to pursue his murderous plans remains uncertain, as does who will make it back to Earth.",
+    "reviewNote": "Dungeon hunting is explicit. The revised synopsis keeps William alive without claiming he is the region’s sole survivor and avoids importing the series footer."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-primal-hunter-3",
+    "inputHash": "9e17a8f8d391769e2400c3417453c8d5fb51c69aab3a3709ebdd89370592c6ed",
+    "evidenceHash": "a76933af1a500e31a076714d8da1bd27fbb0f864dd2bf549081768264c4955d5",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/the-primal-hunter-3/",
+    "allowedFeatures": [
+      "crafting",
+      "politics"
+    ],
+    "reviewNote": "Alchemy and political alliances support both features. The revised synopsis keeps hunting, alchemy and advancement as parallel pursuits instead of claiming a causal progression mechanic, and preserves the local scope of Jake’s hunting.",
+    "correctedSynopsis": "Back on Earth, Jake has grown wings and enjoys the freedom to hunt local wildlife. He focuses on hunting, alchemy and reaching D-grade while avoiding the responsibilities of the first city he founded. Across the planet, humanity builds new settlements as mortal and divine factions form alliances and compete to establish their influence."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-the-primal-hunter-4",
+    "inputHash": "f30ec550291c1fb12fca038310b6996f6046cc0d8cb3842e158bf8c8547d3c82",
+    "evidenceHash": "4631a4de3c6fbf5cdc1dcf0019c389d48875cfde7dc6d431582ca37c5e9cc119",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/the-primal-hunter-4/",
+    "allowedFeatures": [
+      "dungeon"
+    ],
+    "reviewNote": "The dungeon is directly established in the volume’s premise. The stats citation comes from the series footer, and the volume’s references to a grade and gaining levels do not establish the specific mechanics required by that tag. The revised synopsis preserves discovery without asserting newly opened access.",
+    "correctedSynopsis": "Having reached D-grade, Jake approaches Earth’s first World Congress as a chance to reconnect with friends while leaving political business to others whenever possible. The gathering presents opportunities that require preparation. For Jake, that means finding tougher prey and earning more levels. A newly revealed dungeon offers a place to hunt as Earth’s factions make plans of their own."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-defiance-of-the-fall-2",
+    "inputHash": "71b5a9339573e96c6d05290fa691832d4ad18042bf653d7f7e4de93457ada858",
+    "evidenceHash": "10890d4049ecc93b76a20aef5e9de520be1e24eff8ebf62185243e30db0e4527",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/defiance-of-the-fall-2/",
+    "allowedFeatures": [],
+    "correctedSynopsis": "Zac has secured his island, but his growing strength makes him a target on an Earth under pressure from invaders and nature alike. With rivals seeking to displace him and the System presenting fresh challenges, he heads for New Washington to find information about his missing family. Elsewhere, members of a forgotten cult assemble in secret, leaving their intentions unclear.",
+    "reviewNote": "The receipt claims no features. The revised synopsis stays with the family search, competing threats and secret gathering, removing mechanics supplied only by the series footer."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-defiance-of-the-fall-3",
+    "inputHash": "4822a88c2a55d62fb5fbaf5054fc50bd558098669e932914945202907b77b404",
+    "evidenceHash": "1ab098c01a85306b13dc6288072a29a82a26690d6298b8ce524ad156249698cd",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/defiance-of-the-fall-3/",
+    "allowedFeatures": [],
+    "correctedSynopsis": "Zac returns to Port Atwood with his rescued sister, but bringing her home has not made her safe. Expanding foreign factions and ancient enemies threaten Earth, pushing him to seek more strength through the Limited Hunt. His new abilities may help him protect his family, yet the System disrupts his training and the hunt conceals complications of its own.",
+    "reviewNote": "The stats citation describes the series rather than the volume. The revised synopsis preserves the rescue, threats and hunt while omitting the footer’s broader cultivation premise."
+  },
+  {
+    "entityType": "work",
+    "entityId": "work-defiance-of-the-fall-4",
+    "inputHash": "5e90a5ca18256b14164b111177bd8fcde6ce376c9fee87e58191785bfe90a470",
+    "evidenceHash": "75f8fff60af9fdf7dd643c4e5aeec55918c1fb9bf8a2acd1006d01598d7967dd",
+    "taxonomyVersion": "catalog-features-v1",
+    "reviewedAt": "2026-09-19T06:43:13.375Z",
+    "sourceUrl": "https://aethonbooks.com/book/defiance-of-the-fall-4/",
+    "allowedFeatures": [],
+    "correctedSynopsis": "Zac’s forces discover the Underworld after months of searching. Its resources and the warriors who survived the Integration underground could help resist the invasions above ground, where the Undead Empire is advancing and the Dominators are plotting. Reaching that possibility means confronting another danger first: golems are digging toward the planet’s center. The subterranean realm offers potential allies as well as immediate threats.",
+    "reviewNote": "The cultivation citation appears only in the series footer. The revised synopsis focuses on the discovered realm, potential support against the invasions and the golem threat, without borrowing the series mechanics."
   }
 ]
