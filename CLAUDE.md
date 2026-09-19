@@ -57,6 +57,8 @@ repository runners at 08:17 UTC. It requires a separately provisioned
 `CATALOG_DATA_TOKEN` scoped to private-repository Contents read/write. Neither
 private logs nor raw artifacts may be published. Recurring and manual producer
 runs must skip 22:00–02:00 UTC and reserve enough time to checkpoint before 22:00.
+An explicit user request can authorize the one-run `allow_outside_window` input
+for a manual refresh. Do not enable it routinely; scheduled runs cannot use it.
 Snapshot publication does not automatically deploy Cloudflare or GitHub Pages.
 
 The independent upstream is LitRPG Chart. Production deployment remains manual.
