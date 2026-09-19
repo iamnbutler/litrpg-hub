@@ -390,6 +390,12 @@ export function hasSpoilerMarkup(body: string): boolean {
 export const bodyKey = (body: string) => cheerio.load(body).text().replace(/\s+/g, ' ').trim();
 
 export function traitInput(rows: ReturnType<typeof readerEvidenceFor>) {
+  return selectReaderEvidence(rows);
+}
+
+/** Public impressions exclude spoilers by default. Private numeric quality assessment may opt
+ * in without copying and slowly diverging from the independence, dedupe and sampling rules. */
+export function selectReaderEvidence(rows: ReturnType<typeof readerEvidenceFor>, options: { includeSpoilers?: boolean } = {}) {
   const best = new Map<string, typeof rows[number]>();
   for (const row of rows) {
     if (row.body.length < readerThresholds.bodyChars) continue;
@@ -398,10 +404,10 @@ export function traitInput(rows: ReturnType<typeof readerEvidenceFor>) {
     // publishes the flag is trusted for it: elsewhere `contains_spoilers` records that we do
     // not know, and treating an assumption as a fact would silently delete a whole source's
     // evidence from an aggregate whose output is generated prose that quotes nothing.
-    if (row.contains_spoilers && SPOILER_AWARE_SOURCES.has(row.source_name)) continue;
+    if (!options.includeSpoilers && row.contains_spoilers && SPOILER_AWARE_SOURCES.has(row.source_name)) continue;
     // Markup is trusted even when the source's own flag says otherwise, and for every source,
     // because it is the comment itself declaring the spoiler rather than an assumption.
-    if (hasSpoilerMarkup(row.body)) continue;
+    if (!options.includeSpoilers && hasSpoilerMarkup(row.body)) continue;
     const held = best.get(row.author_key);
     if (!held || row.body.length > held.body.length ||
       (row.body.length === held.body.length && (row.published_at ?? '') < (held.published_at ?? ''))) best.set(row.author_key, row);
