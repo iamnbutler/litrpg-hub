@@ -23,4 +23,4 @@ Reader accounts and library synchronization remain in the app's Cloudflare
 Worker and D1 database. Their migrations are independent of producer migrations.
 Builds and browsing never acquire source data or call models. See the
 [app README](../README.md) for the public scheduled runner, publication boundary,
-and manual deployment workflow.
+and automatic Cloudflare deployment of verified catalog commits.

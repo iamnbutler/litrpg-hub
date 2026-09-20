@@ -81,8 +81,9 @@ skip **22:00–02:00 UTC**, including delayed and manual starts, and reserve tim
 a private checkpoint before 22:00.
 
 An explicitly requested one-off manual refresh can opt into `allow_outside_window`.
-It defaults to false, applies only to that dispatch, and is ignored for scheduled
-runs. The worker's work and checkpoint time limits remain in force.
+It defaults to false, applies only to that refresh and its deployment, and is
+ignored for scheduled runs. The work, checkpoint, and deployment time limits
+remain in force.
 
 `CATALOG_DATA_TOKEN` is provisioned as an encrypted secret in this public
 repository: a dedicated fine-grained token scoped to Contents read/write for
@@ -102,8 +103,36 @@ and saves a private checkpoint before committing allowed public JSON. Private
 child logs stay on the ephemeral runner; raw evidence and test output are never
 uploaded as public artifacts. Checkpoint failure prevents public publication.
 Runner loss can still interrupt a checkpoint, so inspect a failed run before
-retrying paid work. Neither Cloudflare nor GitHub Pages deploys automatically
-after a catalog commit.
+retrying paid work.
+
+After a successful refresh creates a public catalog commit, the same workflow
+automatically deploys it to **https://shelfgobl.in/**. It verifies the worker's
+completion receipt, the private-checkpoint flag, the public-only commit diff,
+and the pushed commit. A separate runner checks out that exact commit and runs
+the app checks, Worker typecheck, tests, and build without private data or
+deployment credentials. Only the final deployment step receives the encrypted
+`CLOUDFLARE_API_TOKEN` secret; the account and canonical Worker remain configured
+in `wrangler.jsonc`. The run summary records the verified commit and whether
+Cloudflare accepted its deployment.
+
+Provision `CLOUDFLARE_API_TOKEN` as an Actions repository secret with the required
+permissions to deploy the existing Worker before the first automatic deployment.
+A developer's local Wrangler sign-in does not configure this CI credential.
+
+Deployment reserves a fresh 15-minute window after runner delays and rechecks a
+five-minute reserve immediately before deploying. A late job is deferred; if
+`main` advanced after publication, deployment stops instead of rolling the app
+back. In either case the public catalog commit remains saved, but the live app
+is unchanged by that run. A failed check or deploy also leaves the checkpoint
+and commit intact. Verification-only and unchanged-catalog runs do not deploy.
+After a deferred job or a corrected deployment failure, rerun only the **deploy**
+job; the producer does not need to run or buy enrichment again. The retry still
+requires the recorded catalog commit to be current `main` and a permitted UTC
+window. A deferred job or failed pre-deployment check leaves the live site
+untouched; if Wrangler itself fails, check Cloudflare's deployment status before
+assuming whether the request reached it.
+The legacy GitHub Pages workflow remains manual. Account D1 migrations must
+still be reviewed and applied separately before deploying code that needs them.
 
 ## Accounts and deployment
 
@@ -126,8 +155,9 @@ npm run deploy:cloudflare  # Build at / and deploy the app + account Worker
 ```
 
 Register `https://shelfgobl.in/auth/callback/` in the GitHub OAuth app and keep
-`SITE_URL` / `OAUTH_GITHUB_REDIRECT_URI` aligned. Deployment is manual. The Pages
-workflow is also manual; a repository rename changes its project path. The
+`SITE_URL` / `OAUTH_GITHUB_REDIRECT_URI` aligned. Catalog refreshes deploy through
+the guarded workflow above; the command remains available for direct app
+deployments. The Pages workflow is manual; a repository rename changes its project path. The
 `BASE_PATH=/litrpg-hub` CI build tests the historical subpath only and does not
 promise that the old Pages URL remains hosted.
 

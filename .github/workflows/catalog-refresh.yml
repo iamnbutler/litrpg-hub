@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: 'Verify private producer code, or refresh and publish catalog JSON'
+        description: 'Verify private producer code, or refresh, publish and deploy catalog JSON'
         type: choice
         options: [verify, refresh]
         required: true
@@ -17,7 +17,7 @@ on:
         required: true
         default: true
       allow_outside_window:
-        description: 'Explicit one-run exception to the UTC window for a manual refresh'
+        description: 'Explicit one-run UTC exception for a manual refresh and its deployment'
         type: boolean
         required: true
         default: false
@@ -87,6 +87,9 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write
+    outputs:
+      published: ${{ steps.publication.outputs.published }}
+      sha: ${{ steps.publication.outputs.sha }}
     steps:
       - name: Check the UTC run window
         id: window
@@ -125,6 +128,12 @@ jobs:
           path: catalog
           persist-credentials: false
 
+      - name: Record the app checkout before publication
+        id: app_base
+        if: steps.window.outputs.allowed == 'true'
+        working-directory: app
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - uses: actions/setup-node@v4
         if: steps.window.outputs.allowed == 'true'
         with:
@@ -162,4 +171,92 @@ jobs:
           JEV_MODEL: jev-latest
           COVER_MODEL: gpt-4.1-mini
           CATALOG_NO_ENRICH: ${{ github.event_name == 'workflow_dispatch' && inputs.no_enrich || false }}
+          CATALOG_ALLOW_OUTSIDE_WINDOW: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_outside_window || false }}
+
+      # Only the sanitized completion receipt and the public Git history cross the job boundary.
+      - name: Verify checkpoint and exact public commit
+        id: publication
+        if: steps.window.outputs.allowed == 'true'
+        working-directory: app
+        run: node scripts/catalog-deploy.mjs receipt
+        env:
+          CATALOG_BASE_SHA: ${{ steps.app_base.outputs.sha }}
+          CATALOG_REFRESH_LOG: ${{ runner.temp }}/catalog-refresh.log
+
+  # A GITHUB_TOKEN push does not trigger ordinary push CI. Validate and deploy here,
+  # on a fresh runner containing only the exact public commit, with no private checkout.
+  deploy:
+    needs: refresh
+    if: needs.refresh.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Recheck the UTC window after refresh and runner delays
+        id: window
+        env:
+          CATALOG_ALLOW_OUTSIDE_WINDOW: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_outside_window || false }}
+        run: |
+          python3 - <<'PY'
+          import datetime, os
+          now = datetime.datetime.now(datetime.timezone.utc)
+          end = now.replace(hour=22, minute=0, second=0, microsecond=0)
+          manual_exception = os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch' and os.environ.get('CATALOG_ALLOW_OUTSIDE_WINDOW') == 'true'
+          # Reserve the entire deployment job, not just its final wrangler command.
+          allowed = manual_exception or (now.hour >= 2 and now + datetime.timedelta(minutes=15) <= end)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('allowed=' + str(allowed).lower() + '\n')
+          if not allowed:
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                  summary.write('Public catalog committed; Cloudflare deployment deferred because its 15-minute job would cross the UTC exclusion window. The live app has not been updated by this run.\n')
+          print('Deployment may run.' if allowed else 'Deployment deferred: outside the permitted UTC window or too close to 22:00 UTC.')
+          PY
+
+      - name: Check out the exact verified catalog commit
+        uses: actions/checkout@v4
+        if: steps.window.outputs.allowed == 'true'
+        with:
+          ref: ${{ needs.refresh.outputs.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        if: steps.window.outputs.allowed == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the public app without deployment credentials
+        if: steps.window.outputs.allowed == 'true'
+        timeout-minutes: 3
+        run: npm ci
+
+      - name: Validate and build the exact public snapshot
+        if: steps.window.outputs.allowed == 'true'
+        timeout-minutes: 6
+        run: |
+          npm run check
+          npm run check:worker
+          npm test
+          npm run build
+          npx wrangler deploy --dry-run --env=""
+        env:
+          BASE_PATH: ''
+
+      - name: Deploy the canonical Cloudflare Worker
+        id: cloudflare
+        if: steps.window.outputs.allowed == 'true'
+        timeout-minutes: 5
+        run: |
+          node scripts/catalog-deploy.mjs guard
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo 'Cloudflare deployment token is not configured.'
+            exit 1
+          fi
+          npx wrangler deploy --env=""
+          echo "Cloudflare accepted deployment of [\`$CATALOG_DEPLOY_SHA\`](https://github.com/iamnbutler/shelfgoblin/commit/$CATALOG_DEPLOY_SHA) to https://shelfgobl.in/. The build and app checks used this exact catalog commit." >> "$GITHUB_STEP_SUMMARY"
+        env:
+          # This secret is never present in the private producer or app installation/build.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CATALOG_DEPLOY_SHA: ${{ needs.refresh.outputs.sha }}
           CATALOG_ALLOW_OUTSIDE_WINDOW: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_outside_window || false }}

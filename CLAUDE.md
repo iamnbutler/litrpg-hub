@@ -50,7 +50,7 @@ ranking until calibrated and explicitly enabled.
 - `npm run build:contract` rebuilds changed shared contract source.
 - `npm run check`, `npm run check:worker`, `npm test`, `npm run build` verify the app.
 - `npm run db:migrate` applies reviewed account D1 migrations.
-- `npm run deploy:cloudflare` manually deploys the canonical app and account Worker.
+- `npm run deploy:cloudflare` builds and deploys the canonical app and account Worker directly.
 
 The public catalog workflow runs private producer code on standard public
 repository runners at 08:17 UTC. It requires a separately provisioned
@@ -59,6 +59,15 @@ private logs nor raw artifacts may be published. Recurring and manual producer
 runs must skip 22:00–02:00 UTC and reserve enough time to checkpoint before 22:00.
 An explicit user request can authorize the one-run `allow_outside_window` input
 for a manual refresh. Do not enable it routinely; scheduled runs cannot use it.
-Snapshot publication does not automatically deploy Cloudflare or GitHub Pages.
+Successful refreshes that publish a new catalog commit automatically deploy
+Cloudflare in the same workflow. The deployment job must check out the exact
+verified public commit, run app/Worker checks and tests, and build without private
+credentials. Only its final deployment step receives `CLOUDFLARE_API_TOKEN`.
+Recheck the UTC window after runner delays and immediately before deployment;
+the explicitly authorized manual exception covers that run's deployment too.
+Never deploy after checkpoint/publication failure, from a stale initial checkout,
+or after `main` advances past the verified commit. Verification-only and unchanged
+catalog runs do not deploy. Account D1 migrations remain separately reviewed and
+applied; the legacy GitHub Pages workflow remains manual.
 
-The independent upstream is LitRPG Chart. Production deployment remains manual.
+The independent upstream is LitRPG Chart.
