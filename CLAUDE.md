@@ -15,6 +15,8 @@ Use compact app headings and restrained book typography. Do not add marketing
 heroes, slogans, oversized headline layouts, promotional sections, or a landing
 page. Keep pipeline terminology out of reader-facing text; technical details
 belong in the catalog inspector or producer tools.
+Keep publisher titles intact for display. Alphabetical title ordering ignores leading
+English articles (A, An, The); those articles are not removed from names or identities.
 
 ## Repository boundary
 

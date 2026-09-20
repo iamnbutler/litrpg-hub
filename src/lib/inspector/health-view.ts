@@ -1,4 +1,5 @@
 import type { CatalogHealth, HealthCheck, HealthScore, HealthStatus, SeriesHealth, WorkHealth } from '../catalog-health';
+import { compareTitles } from '../title-sort';
 
 export type InspectorFilter = 'all' | 'missing' | 'review';
 export type InspectorSort = 'attention' | 'title' | 'completeness' | 'evidence' | 'freshness';
@@ -71,7 +72,7 @@ export function visibleSeries(rows: SeriesRow[], filter: InspectorFilter, query:
 			sort === 'completeness' ? a.series.completeness.percent - b.series.completeness.percent :
 			sort === 'evidence' ? a.series.evidenceQuality.percent - b.series.evidenceQuality.percent :
 			sort === 'freshness' ? (a.oldestSource ?? '').localeCompare(b.oldestSource ?? '') : 0;
-		return order || a.series.title.localeCompare(b.series.title) || a.series.id.localeCompare(b.series.id);
+		return order || compareTitles(a.series.title, b.series.title) || a.series.id.localeCompare(b.series.id);
 	});
 }
 

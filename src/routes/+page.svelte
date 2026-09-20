@@ -13,6 +13,7 @@
 	import { groupSeries, latestAudioRelease, searchSeries, matchingAudiobooks, resolveSeriesRef, seriesPopularity, seriesStarter, seriesTitle, workIndex, workRelease, type CatalogSeries, type CatalogWork } from '$lib/series';
 	import { eligibleSeriesEntries, recommendSeries } from '$lib/recommendations';
 	import { explicitEditionKind } from '$lib/edition';
+	import { compareTitles } from '$lib/title-sort';
 	import Icon from '$lib/components/Icon.svelte';
 	import BookTile from '$lib/components/BookTile.svelte';
 	import BookDetail from '$lib/components/BookDetail.svelte';
@@ -100,7 +101,7 @@
 	const coverOf = (series: CatalogSeries) => entryBySeries.get(series.id)?.book ?? seriesStarter(series, bookIndex);
 
 	const sortSeries = (list: CatalogSeries[]) => [...list].sort((a, b) =>
-		sort === 'title' ? a.title.localeCompare(b.title) :
+		sort === 'title' ? compareTitles(a.title, b.title) :
 		sort === 'volumes' ? b.works.length - a.works.length || seriesPopularity(b, bookIndex) - seriesPopularity(a, bookIndex) :
 		sort === 'new' ? (latestAudioRelease(b, today) ?? '').localeCompare(latestAudioRelease(a, today) ?? '') :
 		seriesPopularity(b, bookIndex) - seriesPopularity(a, bookIndex));

@@ -92,6 +92,22 @@ describe('inspector membership and honest missing states', () => {
 		const b = series({ id: 'b', sources: [{ url: 'https://example.test/b', status: 'unknown', checkedAt: null, fetchedAt: null, nextCheckAt: null }] });
 		expect(visibleSeries(seriesRows(report([], [a, b])), 'all', '', 'freshness').map((row) => row.series.id)).toEqual(['b', 'a']);
 	});
+	it('files inspector titles under their first word after A, An or The while preserving the displayed name', () => {
+		const names = ['The Primal Hunter', 'A Summoner Awakens', 'Cradle', 'An Outcast in Another World'];
+		const rows = seriesRows(report([], names.map((title, index) => series({ id: String(index), title }))));
+		expect(visibleSeries(rows, 'all', '', 'title').map((row) => row.series.title)).toEqual([
+			'Cradle', 'An Outcast in Another World', 'The Primal Hunter', 'A Summoner Awakens'
+		]);
+		expect(rows.map((row) => row.series.title)).toEqual(names);
+	});
+	it('keeps evidence priority and volume numbers ahead of alphabetical title order', () => {
+		const rows = seriesRows(report([
+			work({ id: 'last', number: 2, title: 'The Apple' }),
+			work({ id: 'first', number: 1, title: 'Zebra' })
+		], [series({ title: 'Zebra', evidenceQuality: score(10) }), series({ id: 'apple', title: 'The Apple', evidenceQuality: score(90) })]));
+		expect(rows[0].works.map((entry) => entry.id)).toEqual(['first', 'last']);
+		expect(visibleSeries(rows, 'all', '', 'evidence').map((row) => row.series.title)).toEqual(['Zebra', 'The Apple']);
+	});
 });
 
 describe('public snapshot read boundary', () => {
