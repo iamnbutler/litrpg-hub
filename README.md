@@ -115,9 +115,13 @@ deployment credentials. Only the final deployment step receives the encrypted
 in `wrangler.jsonc`. The run summary records the verified commit and whether
 Cloudflare accepted its deployment.
 
-Provision `CLOUDFLARE_API_TOKEN` as an Actions repository secret with the required
-permissions to deploy the existing Worker before the first automatic deployment.
-A developer's local Wrangler sign-in does not configure this CI credential.
+`CLOUDFLARE_API_TOKEN` is provisioned as an encrypted Actions repository secret.
+It has Workers Scripts:Edit for the configured Cloudflare account and Workers
+Routes:Edit only for `shelfgobl.in`; it has no D1 or DNS-edit permission. The
+credential expires **December 18, 2026 at 23:59:59 UTC** and is retained in the
+Dev vault as **Shelf Goblin Cloudflare Deploy**. Rotate it alongside
+`CATALOG_DATA_TOKEN`. A developer's local Wrangler sign-in does not configure
+this CI credential.
 
 Deployment reserves a fresh 15-minute window after runner delays and rechecks a
 five-minute reserve immediately before deploying. A late job is deferred; if
