@@ -49,7 +49,7 @@ describe('series tile rendering', () => {
 		expect(html).toContain('Dungeon Crawler Carl');
 		expect(html).toContain('Matt Dinniman');
 		expect(html).toContain('3 audiobooks');
-		expect(html).toContain('+ Follow');
+		expect(html).toContain('aria-label="Follow Dungeon Crawler Carl"');
 	});
 	it('shows read progress once the reader has started', () => {
 		const library = setWorkStatus(emptyLibrary(), series, series.works[0], 'read');
@@ -197,7 +197,8 @@ describe('the library is honest about gaps', () => {
 		const library = markSeriesRead(emptyLibrary(), series, TODAY);
 		const html = tile(series, gappy, library, true);
 		expect(html).toContain('All known audio read');
-		expect(html).toContain('Following');
+		expect(html).toContain('aria-label="Unfollow Dungeon Crawler Carl"');
+		expect(html).toContain('aria-pressed="true"');
 	});
 });
 
