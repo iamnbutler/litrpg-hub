@@ -15,6 +15,8 @@
 	import { explicitEditionKind } from '$lib/edition';
 	import { compareTitles } from '$lib/title-sort';
 	import Icon from '$lib/components/Icon.svelte';
+	import Popover from '$lib/components/Popover.svelte';
+	import InfiniteScroll from '$lib/components/InfiniteScroll.svelte';
 	import BookTile from '$lib/components/BookTile.svelte';
 	import BookDetail from '$lib/components/BookDetail.svelte';
 	import SeriesTile from '$lib/components/SeriesTile.svelte';
@@ -22,9 +24,13 @@
 	import UpNextRow from '$lib/components/UpNextRow.svelte';
 
 	type View = 'index' | 'series' | 'releases' | 'library' | 'similar' | 'settings';
-	const navigation: { id: View; label: string }[] = [
-		{ id: 'index', label: 'Series index' }, { id: 'similar', label: 'Similar series' },
-		{ id: 'releases', label: 'Releases' }, { id: 'library', label: 'My library' }
+	const navigation: { id: View; label: string; icon: string }[] = [
+		{ id: 'index', label: 'Series index', icon: 'book' }, { id: 'similar', label: 'Similar series', icon: 'sparkles' },
+		{ id: 'releases', label: 'Releases', icon: 'calendar' }, { id: 'library', label: 'My library', icon: 'bookmark' }
+	];
+	const sortOptions = [
+		{ id: 'popular', label: 'Popular' }, { id: 'new', label: 'Latest audiobook' },
+		{ id: 'volumes', label: 'Most books' }, { id: 'title', label: 'Title A–Z' }
 	];
 	const stateLabels: Record<SeriesState, string> = { 'in-progress': 'In progress', 'caught-up': 'Up to date', 'caught-up-partial': 'All known audio read', 'not-started': 'Not started' };
 	let catalog = $state.raw<Catalog | null>(null);
@@ -33,13 +39,14 @@
 	let query = $state(''), genre = $state('all');
 	let bookLayout: 'grid' | 'list' = $state('grid');
 	let sort = $state('popular'), includeUnclassified = $state(false), visibleCount = $state(24);
-	let filters: ReaderFilters = $state({ ...defaultFilters }), filtersOpen = $state(false);
+	let filters: ReaderFilters = $state({ ...defaultFilters });
 	let library = $state<SeriesLibrary>(emptyLibrary()), storageWarning = $state('');
 	let account = $state<AccountState>({ user: null, status: 'Checking sign-in…', ready: false, needsLogin: false, canImport: false, consent: noConsent() });
 	let consent = $state<AdultConsent>(noConsent());
 	let birthInput = $state(''), editingBirthDate = $state(false), consentBusy = $state(false), consentError = $state('');
 	let accountSync: AccountSync | undefined;
 	let signingOut = $state(false);
+	let avatarFailed = $state(false);
 	let legacyShelf: Library = {}, storedLibrary: SeriesLibrary | null = null, migrated = false, unreadableRecord: string | null = null;
 	let selectedId: string | null = $state(null), seriesId = $state(''), seedId = $state(''), seedQuery = $state('');
 	let weights: TasteWeights = $state({});
@@ -51,6 +58,7 @@
 	// a value frozen at load would keep claiming currency past an expiry on a long-open tab.
 	let nowIso = $state(new Date().toISOString());
 	const today = $derived(nowIso.slice(0, 10));
+	const viewLabel = $derived.by(() => view === 'settings' ? 'Settings' : navigation.find((item) => item.id === view)?.label ?? 'Series');
 
 	/** Re-derived from the stored date against the live clock, so a reader who turns 18 with the
 	 * tab open gains the option, and one whose claim no longer supports it loses it. */
@@ -112,6 +120,7 @@
 	});
 	const librarySeries = $derived.by(() => {
 		let result = searchSeries(followed, bookIndex, query);
+		if (genre !== 'all') result = result.filter((s) => s.genres.includes(genre));
 		// 'up-next' is a different presentation of the same library, not a series state.
 		if (libraryState !== 'all' && libraryState !== 'up-next') result = result.filter((s) => progressOf(s).state === libraryState);
 		return sortSeries(result);
@@ -281,11 +290,15 @@
 	function forgetBirthDate() {
 		void runConsent(noConsent(), () => { editingBirthDate = false; birthInput = ''; announce('Date of birth removed'); });
 	}
-	function resetFilters() { filters = { ...defaultFilters }; genre = 'all'; includeUnclassified = false; persist(storageKeys.filters, filters); }
+	function resetFilters() { filters = { ...defaultFilters }; genre = 'all'; includeUnclassified = false; visibleCount = 24; persist(storageKeys.filters, filters); }
+	function showMore(total: number) { visibleCount = Math.min(visibleCount + 24, total); }
 	/** The empty state's own action: resetFilters never touched the query, so offering only
 	 * "Reset filters" after a fruitless search did nothing visible. */
 	function clearSearch() { query = ''; visibleCount = 24; writeUrl(); }
-	function searchChanged() { if (view === 'similar') view = 'index'; visibleCount = 24; writeUrl(); }
+	function searchChanged() {
+		if (view !== 'index' && view !== 'library' && view !== 'releases') { view = 'index'; seriesId = ''; selectedId = null; }
+		visibleCount = 24; writeUrl();
+	}
 
 	function downloadLibrary() {
 		const blob = new Blob([JSON.stringify(libraryExport(library), null, 2)], { type: 'application/json' });
@@ -397,37 +410,51 @@
 </script>
 
 <svelte:head>
-	<title>{selectedBook ? `${selectedBook.title} · ` : currentSeries ? `${currentSeries.title} · ` : ''}Shelf Goblin</title>
+	<title>{selectedBook ? `${selectedBook.title} · ` : currentSeries ? `${currentSeries.title} · ` : view !== 'index' ? `${viewLabel} · ` : ''}Shelf Goblin</title>
 	<meta name="description" content="Follow LitRPG and progression fantasy series, track the audiobooks you have read, find similar series, and check release dates."/>
 </svelte:head>
 <svelte:window onpopstate={readUrl} onstorage={syncStorage}/>
 <a class="skip-link" href="#main">Skip to series</a>
 <header class="site-header">
-	<button class="brand" onclick={() => navigate('index')}><span class="brand-mark" aria-hidden="true">🪎</span>Shelf Goblin</button>
+	<button class="brand" aria-label="Shelf Goblin home" title="Shelf Goblin" onclick={() => navigate('index')}><span class="brand-mark" aria-hidden="true">🪎</span><span class="brand-name">Shelf Goblin</span></button>
 	<nav aria-label="Main navigation">
-		{#each navigation as item (item.id)}<button class:active={view === item.id || (item.id === 'index' && view === 'series')} aria-current={view === item.id ? 'page' : undefined} onclick={() => navigate(item.id)}>{item.label}{#if item.id === 'library' && followedCount}<span class="nav-count">{followedCount}</span>{/if}</button>{/each}
+		{#each navigation as item (item.id)}
+			{@const active = view === item.id || (item.id === 'index' && view === 'series')}
+			<button class:active aria-current={active ? 'page' : undefined} aria-label={item.label}
+				title={item.id === 'library' ? `${item.label} · ${followedCount} series` : item.label} onclick={() => navigate(item.id)}><Icon name={item.icon} size={17}/></button>
+		{/each}
 	</nav>
-	<form class="global-search" onsubmit={(e) => { e.preventDefault(); searchChanged(); }} role="search">
-		<Icon name="search" size={16}/><input aria-label="Search series, authors, or narrators" placeholder="Search series, authors…" bind:value={query} oninput={searchChanged}/>
-		{#if query}<button type="button" class="icon-button" aria-label="Clear search" onclick={() => { query = ''; writeUrl(); }}><Icon name="close" size={14}/></button>{/if}
-	</form>
-	<div class="account-controls">
-		{#if account.user && !account.needsLogin}
-			<span class="account-name" title={account.user.displayName}>@{account.user.username}</span>
-		{/if}
-		<button class="subtle-button" class:active={view === 'settings'} aria-current={view === 'settings' ? 'page' : undefined} onclick={() => navigate('settings')}>Settings</button>
-		{#if account.user && !account.needsLogin}
-			<button class="subtle-button" disabled={signingOut} onclick={signOut}>{signingOut ? 'Signing out…' : 'Sign out'}</button>
-		{:else}<button class="secondary-button" disabled={!account.ready} onclick={signIn}>{account.needsLogin ? 'Sign in again' : 'Sign in with GitHub'}</button>{/if}
+	<div class="header-tools">
+		<Popover label="Search" active={!!query} width={360}>
+			{#snippet trigger()}<Icon name="search" size={17}/>{#if query}<span class="active-dot"></span>{/if}{/snippet}
+			{#snippet children(close)}
+				<form class="global-search" onsubmit={(e) => { e.preventDefault(); searchChanged(); close(); }} role="search">
+					<Icon name="search" size={18}/><input aria-label="Search series, authors, or narrators" placeholder="Search series, authors…" bind:value={query} oninput={searchChanged} data-popover-focus/>
+					{#if query}<button type="button" class="icon-button" aria-label="Clear search" onclick={clearSearch}><Icon name="close" size={16}/></button>{/if}
+				</form>
+			{/snippet}
+		</Popover>
+		<Popover label="Account" title={account.user ? `Account · @${account.user.username}` : 'Account'} className="account-trigger" active={view === 'settings'} width={260}>
+			{#snippet trigger()}
+				<span class="avatar">{#if account.user?.avatarUrl && !avatarFailed}<img src={account.user.avatarUrl} alt="" onerror={() => (avatarFailed = true)}/>{:else if account.user}{account.user.username.slice(0, 1).toUpperCase()}{:else}<Icon name="user" size={15}/>{/if}</span>
+			{/snippet}
+			{#snippet children(close)}
+				<div class="account-summary">
+					<strong>{account.user && !account.needsLogin ? `@${account.user.username}` : 'Your account'}</strong>
+					{#if account.status}<span class="small-note" role="status">{account.status}</span>{/if}
+				</div>
+				<div class="menu-options">
+					<button onclick={() => { close(); navigate('settings'); }}><Icon name="settings" size={17}/>Settings</button>
+					{#if account.user && !account.needsLogin}
+						<button disabled={signingOut} onclick={signOut}><Icon name="logout" size={17}/>{signingOut ? 'Signing out…' : 'Sign out'}</button>
+					{:else}<button disabled={!account.ready} onclick={signIn}><Icon name="user" size={17}/>{account.needsLogin ? 'Sign in again' : 'Sign in with GitHub'}</button>{/if}
+				</div>
+			{/snippet}
+		</Popover>
 	</div>
 </header>
 <main id="main" class="main-shell">
-	{#if view !== 'series'}
-		<div class="page-heading">
-			<h1>{view === 'similar' ? 'Similar series' : view === 'releases' ? 'Audiobook releases' : view === 'library' ? 'My library' : view === 'settings' ? 'Settings' : 'Series index'}</h1>
-			{#if view === 'library'}<span class="small-note" role="status">{account.status}</span><div class="shelf-tools">{#if account.user}<button class="secondary-button" onclick={() => accountSync?.sync()}>Retry sync</button>{/if}<button class="secondary-button" onclick={downloadLibrary}>Export</button><label class="secondary-button import-library-label" for="library-import">Import</label><input class="visually-hidden" type="file" accept="application/json,.json" id="library-import" onchange={importLibrary} aria-label="Import a library backup"/></div>{/if}
-		</div>
-	{/if}
+	{#if view !== 'series'}<h1 class="visually-hidden">{viewLabel}</h1>{/if}
 	{#if storageWarning}<p class="notice" role="status">{storageWarning}</p>{/if}
 	{#if account.canImport}<div class="notice browser-library-notice"><span>You have a library saved in this browser.</span><button class="secondary-button" onclick={() => accountSync?.importGuest()}>Add it to my account</button></div>{/if}
 	{#if account.user && (account.status.includes('paused') || account.status.includes('Could not') || account.needsLogin)}<p class="notice" role="status">{account.status}</p>{/if}
@@ -458,55 +485,50 @@
 				<p class="small-note">{seed?.assessment ? 'Matches compare reading traits estimated from publisher descriptions. Books without profiles use genre overlap.' : 'This book has no reading profile yet. Results use genre overlap.'}</p>
 			</aside>
 			<section class="match-results" aria-label="Similar series">
-				<div class="browse-toolbar"><span>{similarSeries.length} series <span class="muted">· {semanticCount} matched by reading traits</span></span>{@render layoutControls()}{@render filterButton()}</div>
-				{@render preferences()}
+				<div class="browse-toolbar compact-toolbar"><span class="results-count" title={`${semanticCount} matched by reading traits`}>{similarSeries.length} series <span class="count-detail">· {semanticCount} matched by reading traits</span></span>{@render filterButton()}{@render layoutControls()}</div>
 				{#if similarSeries.length}<div class="book-list" class:cover-grid={bookLayout === 'grid'} role="list">{#each similarSeries as match (match.series.id)}{@render seriesTile(match.series, `${match.method === 'taste' ? 'Shared traits' : 'Shared genres'}: ${match.reasons.join(', ')}`, match.book)}{/each}</div>
 				{:else}<div class="empty-state"><p>No matches with these filters.</p><button class="secondary-button" onclick={resetFilters}>Reset filters</button></div>{/if}
 			</section>
 		</div>
 	{:else if view === 'releases'}
-		<div class="browse-toolbar">
-			<div class="segmented" aria-label="Release period">{#each [{ id: 'upcoming', label: 'Upcoming' }, { id: 'year', label: 'By year' }, { id: 'unknown', label: 'Date unknown' }] as mode (mode.id)}<button class:chosen={releaseMode === mode.id} onclick={() => { releaseMode = mode.id; visibleCount = 24; }}>{mode.label}</button>{/each}</div>
-			{#if releaseMode === 'year'}<select aria-label="Release year" bind:value={releaseYear} onchange={() => (visibleCount = 24)}>{#each years as year (year)}<option value={year}>{year}</option>{/each}</select><select aria-label="Release month" bind:value={releaseMonth} onchange={() => (visibleCount = 24)}><option value="all">All months</option>{#each Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')) as month (month)}<option value={month}>{new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(`2026-${month}-15T12:00:00Z`))}</option>{/each}</select>{/if}
-			<label class="checkbox-label"><input type="checkbox" bind:checked={followedOnly} onchange={() => (visibleCount = 24)}/>Only series I follow</label>
+		<div class="browse-toolbar compact-toolbar">
+			<span class="results-count" role="status">{releaseBooks.length.toLocaleString()} audiobook editions{query ? ` matching “${query}”` : ''}</span>
+			<Popover label="Release period" width={270} active={followedOnly}>
+				{#snippet trigger()}<Icon name="calendar" size={18}/><span class="control-label">{releaseMode === 'year' ? releaseYear : releaseMode === 'unknown' ? 'Date unknown' : 'Upcoming'}</span><span class="control-chevron"><Icon name="down" size={12}/></span>{/snippet}
+				{#snippet children(close)}
+					<div class="popover-heading"><strong>Release period</strong><button class="icon-button" aria-label="Close release period" onclick={close}><Icon name="close" size={16}/></button></div>
+					<div class="menu-options">{#each [{ id: 'upcoming', label: 'Upcoming' }, { id: 'year', label: 'By year' }, { id: 'unknown', label: 'Date unknown' }] as mode (mode.id)}<button aria-pressed={releaseMode === mode.id} onclick={() => { releaseMode = mode.id; visibleCount = 24; }}>{mode.label}{#if releaseMode === mode.id}<Icon name="check" size={15}/>{/if}</button>{/each}</div>
+					{#if releaseMode === 'year'}<div class="release-date-fields"><label>Year<select bind:value={releaseYear} onchange={() => (visibleCount = 24)}>{#each years as year (year)}<option value={year}>{year}</option>{/each}</select></label><label>Month<select bind:value={releaseMonth} onchange={() => (visibleCount = 24)}><option value="all">All months</option>{#each Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')) as month (month)}<option value={month}>{new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(`2026-${month}-15T12:00:00Z`))}</option>{/each}</select></label></div>{/if}
+					<label class="checkbox-label release-followed"><input type="checkbox" bind:checked={followedOnly} onchange={() => (visibleCount = 24)}/>Only series I follow</label>
+				{/snippet}
+			</Popover>
 			{@render filterButton()}
 		</div>
-		{@render preferences()}
-		<div class="results-meta"><span>{releaseBooks.length.toLocaleString()} audiobook editions{query ? ` matching “${query}”` : ''}</span><span>US Audible · {@render freshness()}</span></div>
-		{#if releaseBooks.length}{@render listHeading()}<div class="book-list" role="list">{#each releaseBooks.slice(0, visibleCount) as book (book.id)}<BookTile layout="list" {book} entry={entryOf(book)} onopen={openBook} onsave={saveBook} onlike={findSimilar}/>{/each}</div>{#if releaseBooks.length > visibleCount}<button class="load-more" onclick={() => (visibleCount += 24)}>Show 24 more</button>{/if}
+		{#if releaseBooks.length}{@render listHeading()}<div class="book-list" role="list">{#each releaseBooks.slice(0, visibleCount) as book (book.id)}<BookTile layout="list" {book} entry={entryOf(book)} onopen={openBook} onsave={saveBook} onlike={findSimilar}/>{/each}</div><InfiniteScroll shown={visibleCount} total={releaseBooks.length} label="audiobooks" onload={() => showMore(releaseBooks.length)}/>
 		{:else}<div class="empty-state"><p>No releases found. The source snapshot may be out of date.</p><button class="secondary-button" onclick={() => { releaseMode = 'year'; releaseYear = '2026'; }}>View 2026 releases</button></div>{/if}
 	{:else}
 		{@const list = view === 'library' ? librarySeries : indexSeries}
-		{#if view === 'library'}
-			<div class="shelf-tabs" aria-label="Library status">
-				<button class:chosen={libraryState === 'up-next'} onclick={() => { libraryState = 'up-next'; visibleCount = 24; }}>Up next <span>{upNext.length}</span></button>
-				<button class:chosen={libraryState === 'all'} onclick={() => { libraryState = 'all'; visibleCount = 24; }}>All <span>{followedCount}</span></button>
-				{#each Object.entries(stateLabels) as [key, label] (key)}<button class:chosen={libraryState === key} onclick={() => { libraryState = key; visibleCount = 24; }}>{label}<span>{libraryCounts[key] ?? 0}</span></button>{/each}
-			</div>
-		{/if}
+		<div class="browse-toolbar compact-toolbar">
+			<span class="results-count" role="status">{view === 'library' && libraryState === 'up-next' ? `${upNext.length} audiobooks waiting` : `${list.length.toLocaleString()} series`}{query && (view !== 'library' || libraryState !== 'up-next') ? ` matching “${query}”` : ''}</span>
+			{#if query}<button class="icon-button clear-query" aria-label="Clear search" title="Clear search" onclick={clearSearch}><Icon name="close" size={15}/></button>{/if}
+			{#if view === 'library'}{@render libraryStatusControl()}{/if}
+			{#if view !== 'library' || libraryState !== 'up-next'}{@render sortControl()}{@render filterButton()}{@render layoutControls()}{/if}
+		</div>
 		{#if view === 'library' && libraryState === 'up-next'}
-			<div class="results-meta"><span>{upNext.length} audiobook{upNext.length === 1 ? '' : 's'} waiting across {followedCount} series</span></div>
 			{#if upNext.length}
 				<div class="book-list" role="list">{#each upNext.slice(0, visibleCount) as item (item.series.id)}<UpNextRow series={item.series} work={item.work} book={bookIndex.get(item.work.bookId)} remaining={item.remaining} now={nowIso} onopen={openSeries} onread={(s, w) => setWorkRead(s, w, true)} onopenbook={openBook}/>{/each}</div>
-				{#if upNext.length > visibleCount}<button class="load-more" onclick={() => (visibleCount += 24)}>Show 24 more · {upNext.length - visibleCount} remaining</button>{/if}
+				<InfiniteScroll shown={visibleCount} total={upNext.length} label="audiobooks" onload={() => showMore(upNext.length)}/>
 			{:else}<div class="empty-state"><p>{followedCount ? 'Nothing waiting. You’re current on every series you follow.' : 'Follow a series and the next audiobook to listen to shows up here.'}</p><button class="secondary-button" onclick={() => navigate('index')}>Browse series</button></div>{/if}
 		{:else}
-		<div class="browse-toolbar">
-			<label class="inline-field">Sort<select bind:value={sort} aria-label="Sort series"><option value="popular">Popular</option><option value="new">Latest audiobook</option><option value="volumes">Most books</option><option value="title">Title A–Z</option></select></label>
-			<select bind:value={genre} aria-label="Filter by genre" onchange={() => (visibleCount = 24)}><option value="all">All genres</option>{#each Object.entries(genreLabels) as [key, label] (key)}<option value={key}>{label}</option>{/each}</select>
-			{#if view === 'index'}{#if adultOn}<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters.hideSexualized} onchange={(e) => setFilter('hideSexualized', e.currentTarget.checked)}/>Hide sexualized content</label>{/if}{@render filterButton()}{/if}
-		</div>
-		{@render preferences()}
-		{#if list.length || !searchFallback.length}<div class="results-meta"><span>{list.length.toLocaleString()} series{query ? ` matching “${query}”` : ''}</span><div class="results-controls">{@render layoutControls()}</div></div>{/if}
 		{#if list.length}
 			{#if bookLayout === 'list'}{@render seriesHeading()}{/if}
 			<div class="book-list" class:cover-grid={bookLayout === 'grid'} role="list">{#each list.slice(0, visibleCount) as series (series.id)}{@render seriesTile(series)}{/each}</div>
-			{#if list.length > visibleCount}<button class="load-more" onclick={() => (visibleCount += 24)}>Show 24 more · {list.length - visibleCount} remaining</button>{/if}
+			<InfiniteScroll shown={visibleCount} total={list.length} label="series" onload={() => showMore(list.length)}/>
 		{:else if searchFallback.length}
 			<div class="results-meta"><span>No series match “{query}”, but {searchFallback.length} matching audiobook{searchFallback.length === 1 ? '' : 's'} did.</span><span class="muted">Individual editions, not series starts</span></div>
 			{@render listHeading()}
 			<div class="book-list" role="list">{#each searchFallback as book (book.id)}<BookTile layout="list" {book} entry={entryOf(book)} onopen={openBook} onsave={saveBook} onlike={findSimilar}/>{/each}</div>
-		{:else}<div class="empty-state"><p>{view === 'library' ? (followedCount ? 'No series with this status.' : 'You aren’t following any series yet. Use “Follow” on a series to start.') : query ? `Nothing matches “${query}” with your current filters.` : 'No series match your filters.'}</p><button class="secondary-button" onclick={() => (view === 'library' ? navigate('index') : query ? clearSearch() : resetFilters())}>{view === 'library' ? 'Browse series' : query ? 'Clear search' : 'Reset filters'}</button></div>{/if}
+		{:else}<div class="empty-state"><p>{view === 'library' ? (followedCount ? 'No series with these filters.' : 'You aren’t following any series yet. Use the + on a series to start.') : query ? `Nothing matches “${query}” with your current filters.` : 'No series match your filters.'}</p><button class="secondary-button" onclick={() => (view === 'library' ? navigate('index') : query ? clearSearch() : resetFilters())}>{view === 'library' ? 'Browse series' : query ? 'Clear search' : 'Reset filters'}</button></div>{/if}
 		{/if}
 	{/if}
 	<footer>{@render freshness()}<a href="https://github.com/iamnbutler/litrpg-hub" target="_blank" rel="noreferrer">Source</a></footer>
@@ -516,20 +538,49 @@
 		following={isFollowing(library, series.id)} latest={latestAudioRelease(series, nowIso)} upcoming={progressOf(series).upcoming}
 		onopen={openSeries} onfollow={toggleFollow}/>
 {/snippet}
-{#snippet layoutControls()}<div class="view-controls" aria-label="Layout"><button aria-pressed={bookLayout === 'grid'} class:chosen={bookLayout === 'grid'} onclick={() => (bookLayout = 'grid')}>Grid</button><button aria-pressed={bookLayout === 'list'} class:chosen={bookLayout === 'list'} onclick={() => (bookLayout = 'list')}>List</button></div>{/snippet}
-{#snippet filterButton()}<button class="secondary-button filter-button" onclick={() => (filtersOpen = !filtersOpen)} aria-expanded={filtersOpen}><Icon name="filter" size={15}/>Filters <span class="muted">{activePreferenceCount}</span></button>{/snippet}
+{#snippet layoutControls()}<div class="view-controls" role="group" aria-label="Layout"><button aria-label="Grid view" title="Grid view" aria-pressed={bookLayout === 'grid'} class:chosen={bookLayout === 'grid'} onclick={() => (bookLayout = 'grid')}><Icon name="grid" size={17}/></button><button aria-label="List view" title="List view" aria-pressed={bookLayout === 'list'} class:chosen={bookLayout === 'list'} onclick={() => (bookLayout = 'list')}><Icon name="list" size={18}/></button></div>{/snippet}
+{#snippet sortControl()}
+	<Popover label="Sort series" title={`Sort: ${sortOptions.find((option) => option.id === sort)?.label}`} width={220}>
+		{#snippet trigger()}<Icon name="sort" size={18}/><span class="control-label">{sortOptions.find((option) => option.id === sort)?.label}</span><span class="control-chevron"><Icon name="down" size={12}/></span>{/snippet}
+		{#snippet children(close)}
+			<div class="popover-heading"><strong>Sort by</strong></div>
+			<div class="menu-options">{#each sortOptions as option (option.id)}<button aria-pressed={sort === option.id} onclick={() => { sort = option.id; visibleCount = 24; close(); }}>{option.label}{#if sort === option.id}<Icon name="check" size={15}/>{/if}</button>{/each}</div>
+		{/snippet}
+	</Popover>
+{/snippet}
+{#snippet libraryStatusControl()}
+	<Popover label="Library status" width={270} active={libraryState !== 'all'}>
+		{#snippet trigger()}<Icon name={libraryState === 'up-next' ? 'headphones' : 'bookmark'} size={18}/><span class="control-label">{libraryState === 'up-next' ? 'Up next' : libraryState === 'all' ? 'All' : stateLabels[libraryState as SeriesState]}</span><span class="control-chevron"><Icon name="down" size={12}/></span>{/snippet}
+		{#snippet children(close)}
+			<div class="popover-heading"><strong>My library</strong></div>
+			<div class="menu-options">
+				{#each [{ id: 'up-next', label: 'Up next', count: upNext.length }, { id: 'all', label: 'All series', count: followedCount }, ...Object.entries(stateLabels).map(([id, label]) => ({ id, label, count: libraryCounts[id] ?? 0 }))] as option (option.id)}
+					<button aria-pressed={libraryState === option.id} onclick={() => { libraryState = option.id; visibleCount = 24; close(); }}><span>{option.label}</span><span class="menu-count">{option.count}</span>{#if libraryState === option.id}<Icon name="check" size={15}/>{/if}</button>
+				{/each}
+			</div>
+		{/snippet}
+	</Popover>
+{/snippet}
+{#snippet filterButton()}
+	{@const count = (view === 'library' ? 0 : activePreferenceCount + Number(includeUnclassified)) + Number((view === 'index' || view === 'library') && genre !== 'all')}
+	<Popover label="Filters" title={`Filters · ${count} active`} width={320} active={(view === 'index' || view === 'library') && genre !== 'all'}>
+		{#snippet trigger()}<Icon name="filter" size={18}/>{#if count}<span class="control-count">{count}</span>{/if}{/snippet}
+		{#snippet children(close)}
+			<div class="popover-heading"><strong>Filters</strong><button class="icon-button" aria-label="Close filters" onclick={close}><Icon name="close" size={16}/></button></div>
+			{#if view === 'index' || view === 'library'}<label class="filter-field">Genre<select bind:value={genre} aria-label="Filter by genre" onchange={() => (visibleCount = 24)}><option value="all">All genres</option>{#each Object.entries(genreLabels) as [key, label] (key)}<option value={key}>{label}</option>{/each}</select></label>{/if}
+			{#if view !== 'library'}
+				<div class="preference-grid">
+					{#each filterOptions as option (option.key)}<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters[option.key]} onchange={(e) => setFilter(option.key, e.currentTarget.checked)}/>Hide {option.label.toLowerCase()}</label>{/each}
+					<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide books we’re unsure about</label>
+					<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include books without a genre</label>
+				</div>
+				<div class="preference-foot"><span>Your library and reading progress stay complete.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
+			{:else}<div class="preference-foot"><button class="subtle-button" onclick={() => { genre = 'all'; visibleCount = 24; }}>Reset</button></div>{/if}
+		{/snippet}
+	</Popover>
+{/snippet}
 {#snippet listHeading()}<div class="list-heading" aria-hidden="true"><span>Book / author</span><span>Audible rating</span><span>Release date</span><span>Your library</span></div>{/snippet}
 {#snippet seriesHeading()}<div class="list-heading series-heading" aria-hidden="true"><span>Series / author</span><span>Your progress</span><span>Latest audiobook</span><span>Follow</span></div>{/snippet}
-{#snippet preferences()}
-	{#if filtersOpen && view !== 'library'}<section class="preferences-panel" aria-label="Content filters">
-		<div class="preference-grid">
-			{#each filterOptions as option (option.key)}<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters[option.key]} onchange={(e) => setFilter(option.key, e.currentTarget.checked)}/>Hide {option.label.toLowerCase()}</label>{/each}
-			<label class="checkbox-label"><input type="checkbox" checked={effectiveFilters.hideUnknown} onchange={(e) => setFilter('hideUnknown', e.currentTarget.checked)}/>Also hide books we’re unsure about</label>
-			<label class="checkbox-label"><input type="checkbox" bind:checked={includeUnclassified} onchange={() => (visibleCount = 24)}/>Include books without a genre</label>
-		</div>
-		<div class="preference-foot"><span>Filters change what you see here. Your library and reading progress stay complete.</span><button class="subtle-button" onclick={resetFilters}>Reset</button></div>
-	</section>{/if}
-{/snippet}
 {#snippet settingsPage()}
 	<div class="settings-page">
 		<section class="settings-section">

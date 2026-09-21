@@ -10,7 +10,7 @@
 	let disclosure = $state(CLOSED);
 	const open = $derived(isOpen(disclosure));
 	// Held only so Escape can move focus off a link inside a panel that is about to be hidden.
-	let trigger: HTMLButtonElement | undefined = $state();
+	let trigger: HTMLButtonElement | undefined;
 	const act = (action: DisclosureAction) => { disclosure = reduceDisclosure(disclosure, action); };
 
 	// Hover is a mouse affordance. A touch tap also emits pointerenter, and letting it open the
@@ -63,7 +63,7 @@
 					<button
 						type="button"
 						class="info-trigger"
-						bind:this={trigger}
+						{@attach (node) => { trigger = node; }}
 						aria-expanded={open}
 						aria-controls={panelId}
 						onpointerdown={() => act('press')}
@@ -130,7 +130,7 @@
 <style>
 .impressions { border-top:1px solid var(--line); padding:16px 0; }
 .impressions-head { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:4px 12px; }
-h3 { font:600 14px var(--sans); margin:0; }
+h3 { font:500 17px var(--serif); margin:0; }
 .head-meta { display:flex; align-items:center; gap:6px; }
 .sampled { font-size:10px; color:var(--muted); }
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
@@ -177,7 +177,7 @@ h3 { font:600 14px var(--sans); margin:0; }
 /* auto-fit gives two columns where there is room and one where there is not, so a single
    approved column fills the width instead of leaving a gap beside it. */
 .split { display:grid; grid-template-columns:repeat(auto-fit, minmax(15rem, 1fr)); gap:14px 24px; margin-top:14px; }
-.column h4 { font:600 11px var(--sans); margin:0 0 6px; letter-spacing:0.02em; }
+.column h4 { font:500 11px var(--mono); margin:0 0 6px; letter-spacing:0.02em; }
 .column ul { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
 /* These bullets are the finding, standing where the observation paragraph used to. They carry
    its weight rather than the smaller, greyer treatment used for methodology and traits. */

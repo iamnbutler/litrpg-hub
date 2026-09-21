@@ -60,12 +60,12 @@
 			<label for={`through-${series.id}`}>Already listened through</label>
 			<select id={`through-${series.id}`} value="" onchange={(e) => { const chosen = catchUp.find((w) => w.id === e.currentTarget.value); e.currentTarget.value = ''; if (chosen) onthrough(series, chosen); }}>
 				<option value="">Choose a book…</option>
-				{#each catchUp as work}<option value={work.id}>{work.number != null ? `Book ${work.number} · ` : ''}{work.title}</option>{/each}
+				{#each catchUp as work (work.id)}<option value={work.id}>{work.number != null ? `Book ${work.number} · ` : ''}{work.title}</option>{/each}
 			</select>
 		</div>
 	{/if}
 	<ul class="progress-notes">
-		{#each progress.unresolved as note}<li>{note}.</li>{/each}
+		{#each progress.unresolved as note (note)}<li>{note}.</li>{/each}
 		{#if progress.state === 'caught-up-partial'}<li>You’ve finished everything we hold, so we won’t call you behind — but we can’t confirm you’re current either.</li>{/if}
 		{#if progress.upcoming}<li>Announced volumes are not counted until the audiobook is out.</li>{/if}
 	</ul>
@@ -118,19 +118,19 @@
 <style>
 .series-back { padding:2px 0 12px; }
 .series-head { display:grid; grid-template-columns:168px minmax(0,1fr); gap:26px; padding-bottom:22px; border-bottom:1px solid var(--line); }
-.series-art { aspect-ratio:1; display:grid; place-items:center; background:#eceee7; border-radius:4px; overflow:hidden; color:var(--green); align-self:start; }
+.series-art { aspect-ratio:1; display:grid; place-items:center; background:var(--surface); border-radius:4px; overflow:hidden; color:var(--green); align-self:start; }
 .series-art img { width:100%; height:100%; object-fit:contain; }
-.eyebrow { font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--green); line-height:1.6; }
-h1 { font:600 26px/1.25 var(--serif); margin:7px 0 6px; }
-.by { font-size:14px; color:var(--muted); }
+.eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--green); line-height:1.6; }
+h1 { font:500 30px/1.25 var(--serif); margin:7px 0 6px; }
+.by { font-size:16px; color:var(--secondary); }
 .counts { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--muted); margin-top:11px; }
 .counts .announced { color:var(--gold); }
 .counts .checked { color:var(--green); }
-.blurb { font-size:13px; line-height:1.6; margin-top:14px; max-width:68ch; display:-webkit-box; -webkit-line-clamp:4; line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+.blurb { font-size:15px; line-height:1.75; margin-top:14px; max-width:68ch; display:-webkit-box; -webkit-line-clamp:4; line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
 .narrators { font-size:12px; color:var(--muted); margin-top:10px; }
 .series-buttons { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:18px; }
 
-.progress-panel { background:#f0f2ea; border:1px solid var(--line); border-top:0; padding:14px 16px; }
+.progress-panel { background:var(--surface); border:1px solid var(--line); border-top:0; padding:14px 16px; }
 .progress-top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 16px; }
 .progress-top strong { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; } .progress-top strong.current { color:var(--green); }
 .up-next { font-size:12px; color:var(--muted); }
@@ -142,21 +142,21 @@ h1 { font:600 26px/1.25 var(--serif); margin:7px 0 6px; }
 .starter-impressions { margin-top:18px; }
 .work-section { margin-top:26px; }
 .section-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; padding-bottom:8px; border-bottom:1px solid var(--line); }
-h2 { font-size:14px; font-weight:600; }
+h2 { font:500 20px var(--serif); }
 .work-list { list-style:none; margin:0; padding:0; }
 .work-row { display:grid; grid-template-columns:34px minmax(0,1fr) 118px 26px; align-items:center; gap:14px; padding:12px 8px; border-bottom:1px solid var(--line); }
-.work-row:hover { background:#f1f3eb; }
+.work-row:hover { background:var(--surface-hover); }
 .work-row.pending { color:var(--muted); }
 .work-number { font:500 16px var(--serif); color:var(--muted); text-align:center; }
 .work-row.is-read .work-number { color:var(--green); }
 .work-info { min-width:0; }
-.work-info h3 { font-size:13px; font-weight:600; line-height:1.35; margin:0; }
-.work-info p { font-size:11px; color:var(--muted); margin-top:5px; line-height:1.5; }
-.read-toggle { display:inline-flex; align-items:center; gap:6px; justify-content:center; border:1px solid #d4d8ce; border-radius:4px; background:#fff; padding:6px 9px; font-size:11px; width:100%; }
-.read-toggle:hover:not(:disabled) { background:var(--sage); color:var(--green); }
-.read-toggle.done { background:var(--sage); border-color:#c3cfbb; color:var(--green); font-weight:600; }
-.tick { display:inline-grid; place-items:center; width:13px; height:13px; border:1px solid #c3cfbb; border-radius:2px; background:#fff; flex-shrink:0; }
-.read-toggle.done .tick { background:var(--green); border-color:var(--green); color:#fff; }
+.work-info h3 { font-size:15px; font-weight:500; line-height:1.35; margin:0; }
+.work-info p { font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:5px; line-height:1.5; }
+.read-toggle { display:inline-flex; align-items:center; gap:6px; justify-content:center; border:1px solid var(--line); border-radius:4px; background:var(--surface); padding:6px 9px; font-size:11px; width:100%; }
+.read-toggle:hover:not(:disabled) { background:var(--surface-hover); color:var(--green); }
+.read-toggle.done { background:var(--surface-hover); border-color:var(--line-strong); color:var(--green); font-weight:600; }
+.tick { display:inline-grid; place-items:center; width:13px; height:13px; border:1px solid var(--line-strong); border-radius:2px; background:var(--surface); flex-shrink:0; }
+.read-toggle.done .tick { background:var(--green); border-color:var(--green); color:var(--canvas); }
 .work-open { border:0; background:none; color:var(--muted); display:grid; place-items:center; padding:4px; } .work-open:hover { color:var(--green); }
 @media(max-width:800px) {
 	.series-head { grid-template-columns:104px minmax(0,1fr); gap:16px; }

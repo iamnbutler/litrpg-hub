@@ -1,0 +1,69 @@
+@font-face {
+	font-family: 'Lora';
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url('./assets/fonts/lora-latin.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Lilex';
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url('./assets/fonts/lilex-latin.woff2') format('woff2');
+}
+
+:root {
+	/* RYBitten's Munsell (1905) gamut, with warm paper surfaces and ink-darkened accents.
+	 * https://github.com/meodai/RYBitten/blob/main/src/cubes.ts */
+	--munsell-paper: #e4dac5;
+	--munsell-black: #2e2c26;
+	--munsell-red: #b5413c;
+	--munsell-yellow: #e5c151;
+	--munsell-orange: #dc893d;
+	--munsell-blue: #3b8fab;
+	--munsell-violet: #796186;
+	--munsell-green: #0daa72;
+
+	--canvas: color-mix(in srgb, var(--munsell-paper) 80%, white);
+	--surface: color-mix(in srgb, var(--munsell-paper) 68%, white);
+	--surface-raised: color-mix(in srgb, var(--munsell-paper) 45%, white);
+	--surface-hover: color-mix(in srgb, var(--munsell-black) 5%, var(--canvas));
+	--line: color-mix(in srgb, var(--munsell-black) 17%, var(--canvas));
+	--line-strong: color-mix(in srgb, var(--munsell-black) 30%, var(--canvas));
+	--ink: var(--munsell-black);
+	--secondary: color-mix(in srgb, var(--munsell-black) 84%, var(--munsell-paper));
+	--muted: color-mix(in srgb, var(--munsell-black) 70%, var(--munsell-paper));
+	--accent: color-mix(in srgb, var(--munsell-yellow) 32%, var(--munsell-black));
+	--accent-soft: color-mix(in srgb, var(--munsell-yellow) 19%, var(--surface));
+	--green: color-mix(in srgb, var(--munsell-green) 50%, var(--munsell-black));
+	--blue: color-mix(in srgb, var(--munsell-blue) 60%, var(--munsell-black));
+	--violet: color-mix(in srgb, var(--munsell-violet) 88%, var(--munsell-black));
+	--rust: color-mix(in srgb, var(--munsell-red) 88%, var(--munsell-black));
+	--gold: var(--accent);
+	--orange: color-mix(in srgb, var(--munsell-orange) 50%, var(--munsell-black));
+	--paper: var(--canvas);
+	--shadow: 0 12px 32px #2e2c2620;
+
+	--sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--serif: 'Lora', Georgia, 'Times New Roman', serif;
+	--mono: 'Lilex', 'SFMono-Regular', Consolas, monospace;
+	font-family: var(--serif);
+	font-size: 14px;
+	color: var(--ink);
+	background: var(--canvas);
+	color-scheme: light;
+	-webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent); color: var(--canvas); }
+
+.genre { color: var(--muted); }
+.genre-separator { padding: 0 .4em; color: var(--muted); }
+.genre[data-genre='litrpg'],.genre[data-genre='time-loop'] { color: var(--blue); }
+.genre[data-genre='progression'],.genre[data-genre='cultivation'],.genre[data-genre='wuxia'] { color: var(--gold); }
+.genre[data-genre='dungeon'],.genre[data-genre='system-apocalypse'],.genre[data-genre='monster-mc'] { color: var(--rust); }
+.genre[data-genre='isekai'],.genre[data-genre='academy'] { color: var(--violet); }
+.genre[data-genre='base-building'],.genre[data-genre='crafting'] { color: var(--green); }
+.genre[data-genre='tower-climbing'] { color: var(--orange); }
